@@ -2,11 +2,11 @@
  * @OnlyCurrentDoc
  */
 
-const SPREADSHEET_ID = '1nLdFSrK1dvfrYu_db8tGEFVYuBILmNL-3X1eC1nu8YM'; 
+const SPREADSHEET_ID = ''; 
 const ADMIN_EMAILS = ['byu.project.comp@gmail.com', 'ajeefes@gmail.com']; 
-const FOLDER_FOTO_RHK_ID = '13gHdT1Gt7S4uCeMskbIOTUy9FhHYzVBw'; //  ID lama untuk RHK
-const FOLDER_FOTO_MAKAN_ID = '14pVrsV8E9nxXNmHheXyxSEYJsqLWI3Mq'; // ID Folder Permakanan
-const FOLDER_FOTO_EKSTRA_ID = '14pVrsV8E9nxXNmHheXyxSEYJsqLWI3Mq'; // ID Folder Kegiatan/Ekstra
+const FOLDER_FOTO_RHK_ID = ''; //  ID lama untuk RHK
+const FOLDER_FOTO_MAKAN_ID = ''; // ID Folder Permakanan
+const FOLDER_FOTO_EKSTRA_ID = ''; // ID Folder Kegiatan/Ekstra
 
 function doGet(e) {
   return HtmlService.createTemplateFromFile('Index')
