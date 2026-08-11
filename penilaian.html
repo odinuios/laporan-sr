@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penilaian Siswa - Laporan Harian Kegiatan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root { 
+        --bg-main: #dcf2f7; --blue-dark: #124c73; --blue-card: #2790c9; 
+        --text-dark: #2c3e50; --text-gray: #7f8c8d; 
+    }
+    body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-main); margin: 0; padding: 0; color: var(--text-dark); }
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px 20px 40px 20px; }
+    .section-card { background: white; border-radius: 20px; padding: 35px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+    .btn-back { background: white; border: 1px solid #ddd; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--text-gray); display: flex; align-items: center; gap: 8px; }
+    .btn-back:hover { background: #f1f5f9; }
+    .btn-save { background: var(--blue-card); color: white; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    .btn-save:hover { background: #1f77a8; }
+  </style>
+</head>
+<body>
+
+  <!-- Bungkus konten utama dengan div hidden sesuai format SPA index.html -->
+  <div id="penilaian-content" class="hidden">
+    <div id="app-penilaian" class="min-h-screen pb-10">
+      
+      <div class="container">
+        <!-- Header Navigasi & Judul Halaman -->
+        <div class="header-pengaturan" style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+          <button class="btn-back" onclick="navigasiHalaman('dashboard-content')">
+            <i class="fa-solid fa-arrow-left"></i> Kembali
+          </button>
+          <h3 style="margin: 0; font-size: 14px; font-weight: 900; color: var(--blue-dark);">PENILAIAN ASRAMA SISWA</h3>
+        </div>
+
+        <!-- Toolbar Atas -->
+        <div class="section-card" style="padding: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+          <div class="flex items-center space-x-2">
+            <span style="color: var(--blue-dark); font-weight: bold; font-size: 13px;">Periode:</span>
+            <select v-model="selectedBulan" @change="loadData" class="border border-gray-300 rounded-lg px-3 py-2 text-gray-700 outline-none focus:border-blue-500 bg-white">
+              <option v-for="bln in listBulan" :value="bln">{{ bln }}</option>
+            </select>
+            <input type="number" v-model="selectedTahun" @change="loadData" class="border border-gray-300 rounded-lg px-3 py-2 w-24 text-gray-700 outline-none focus:border-blue-500 text-center">
+          </div>
+          <button @click="generateHasilSheet" :disabled="generating" class="btn-save" style="display: flex; align-items: center; gap: 8px;">
+            <i class="fas" :class="generating ? 'fa-spinner fa-spin' : 'fa-cogs'"></i> 
+            <span>{{ generating ? 'Memproses...' : 'Generate Sheet Hasil' }}</span>
+          </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+          <div class="section-card" style="margin-bottom: 0; padding: 20px; display: flex; align-items: center; gap: 15px;">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl"><i class="fas fa-user-friends"></i></div>
+            <div><div class="text-2xl font-black text-[#0f3c75]">{{ stats.siswaDinilai }}</div><div class="text-gray-500 text-sm">Siswa Dinilai</div></div>
+          </div>
+          <div class="section-card" style="margin-bottom: 0; padding: 20px; display: flex; align-items: center; gap: 15px;">
+            <div class="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-xl"><i class="fas fa-clipboard-check"></i></div>
+            <div><div class="text-2xl font-black text-[#0f3c75]">{{ stats.penilai }}</div><div class="text-gray-500 text-sm">Penilai</div></div>
+          </div>
+          <div class="section-card" style="margin-bottom: 0; padding: 20px; display: flex; align-items: center; gap: 15px;">
+            <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl"><i class="fas fa-arrow-trend-up"></i></div>
+            <div><div class="text-2xl font-black text-[#0f3c75]">{{ stats.rataSkor }}</div><div class="text-gray-500 text-sm">Rata-rata Skor</div></div>
+          </div>
+          <div class="section-card" style="margin-bottom: 0; padding: 20px; display: flex; align-items: center; gap: 15px;">
+            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center text-xl"><i class="fas fa-medal"></i></div>
+            <div><div class="text-2xl font-black text-[#0f3c75]">{{ stats.coverage }}</div><div class="text-gray-500 text-sm">Coverage</div></div>
+          </div>
+        </div>
+
+        <!-- Pilih Siswa -->
+        <div class="section-card">
+          <label class="block text-blue-900 font-bold mb-2 text-sm">Pilih Siswa</label>
+          <select v-model="selectedNisn" @change="selectStudent" class="w-full border border-blue-300 rounded-lg p-3 outline-none focus:border-blue-500 text-blue-900 bg-white">
+            <option value="">Pilih siswa asuh...</option>
+            <option v-for="siswa in students" :value="siswa.nisn">{{ siswa.nama }} ({{ siswa.nisn }})</option>
+          </select>
+        </div>
+
+        <!-- Form Pengisian Nilai -->
+        <div v-if="selectedNisn" class="mt-6">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="bg-[#dcf2f7] text-[#0f3c75] font-bold px-4 py-2 rounded-lg text-sm flex items-center border border-[#2790c9]">
+              <i class="fas fa-clipboard-list mr-2"></i> Penilai: {{ currentUser }}
+            </div>
+            <div class="text-gray-500 text-sm">{{ filledIndicatorsCount }}/{{ indicators.length }} indikator terisi</div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="text-blue-900 font-black mb-6 uppercase text-lg">INPUT NILAI — {{ currentUser }} <span class="float-right text-sm text-gray-400 font-normal mt-1">Range: 0-100</span></h2>
+            
+            <div v-for="(indicatorsList, category) in groupedIndicators" :key="category" class="mb-4 border border-blue-100 rounded-xl overflow-hidden shadow-sm">
+              <div @click="toggleCategory(category)" class="bg-[#f4f9fd] px-5 py-4 flex justify-between items-center cursor-pointer border-b border-blue-100 hover:bg-[#ebf4fa]">
+                <h3 class="font-bold text-[#0f3c75] uppercase">{{ category }}</h3>
+                <div class="flex items-center space-x-3 text-gray-500 text-sm">
+                  <span>{{ indicatorsList.length }} indikator</span>
+                  <i class="fas" :class="openCategories[category] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                </div>
+              </div>
+              
+              <div v-show="openCategories[category]" class="divide-y divide-gray-100 px-5 bg-white">
+                <div v-for="(ind, index) in indicatorsList" :key="ind.id" class="py-4 flex items-center justify-between hover:bg-gray-50 px-2 -mx-2 rounded-lg transition-colors">
+                  <div class="flex items-center space-x-3 flex-1 pr-4">
+                    <span class="text-gray-400 font-medium text-xs bg-gray-100 px-2 py-1 rounded whitespace-nowrap">{{ ind.id }}</span>
+                    <span class="text-[#0f3c75] text-sm md:text-base leading-snug">{{ ind.indicator }}</span>
+                  </div>
+                  <div class="flex items-center space-x-3 shrink-0">
+                    <input type="number" v-model="formScores[ind.id]" min="0" max="100" placeholder="0" class="w-16 border border-gray-300 rounded-lg p-1.5 text-center focus:outline-none focus:border-blue-500 text-[#0f3c75] font-medium shadow-sm">
+                    <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-sm bg-white" :class="getGradeColor(getGrade(formScores[ind.id]))">
+                      {{ getGrade(formScores[ind.id]) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+              <button @click="saveAssessment" :disabled="saving" class="btn-save">
+                <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i> {{ saving ? 'Menyimpan...' : 'Simpan Penilaian' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Penilaian Tersimpan -->
+        <div v-if="!selectedNisn" class="section-card mt-4">
+          <h3 class="text-[#0f3c75] font-black uppercase mb-4 text-sm">PENILAIAN TERSIMPAN — {{ selectedBulan.toUpperCase() }} {{ selectedTahun }}</h3>
+          
+          <div v-if="assessments.length === 0" class="text-center text-gray-400 py-6">Belum ada penilaian tersimpan.</div>
+          
+          <div class="divide-y divide-gray-100">
+            <div v-for="ass in assessments" :key="ass.id" class="py-4 flex items-center justify-between">
+              <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 rounded-full bg-[#e0f2fe] flex items-center justify-center text-blue-600"><i class="fas fa-user"></i></div>
+                <div>
+                  <div class="text-[#0f3c75] font-bold">{{ ass.nama }}</div>
+                  <div class="text-gray-500 text-sm">{{ ass.penilai }} · NISN: {{ ass.nisn }}</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-4">
+                <button @click="editAssessment(ass)" class="text-[#0f3c75] font-bold text-sm hover:underline">Edit</button>
+                <button @click="deleteAssessment(ass.id)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- Penutup .container -->
+    </div> <!-- Penutup #app-penilaian -->
+  </div> <!-- Penutup #penilaian-content -->
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          currentUser: 'Memuat...',
+          listBulan: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+          selectedBulan: 'Juli',
+          selectedTahun: 2026,
+          students: [], indicators: [], assessments: [],
+          selectedNisn: '', formScores: {}, openCategories: {},
+          loading: false, saving: false, generating: false
+        }
+      },
+      computed: {
+        groupedIndicators() {
+          const groups = {};
+          this.indicators.forEach(ind => {
+            if (!groups[ind.category]) groups[ind.category] = [];
+            groups[ind.category].push(ind);
+          });
+          return groups;
+        },
+        stats() {
+          const uniqueStudents = new Set(this.assessments.map(a => a.nisn)).size;
+          const uniqueAssessors = new Set(this.assessments.map(a => a.penilai)).size;
+          const totalScore = this.assessments.reduce((sum, a) => sum + parseFloat(a.rataRata || 0), 0);
+          const avgScore = this.assessments.length ? (totalScore / this.assessments.length).toFixed(1) : 0;
+          const coverage = this.students.length ? Math.round((uniqueStudents / this.students.length) * 100) : 0;
+          return { siswaDinilai: uniqueStudents, penilai: uniqueAssessors, rataSkor: avgScore, coverage: coverage + '%' };
+        },
+        filledIndicatorsCount() {
+          return Object.values(this.formScores).filter(v => v !== '' && v !== null).length;
+        }
+      },
+      methods: {
+        loadData() {
+          google.script.run.withSuccessHandler(res => {
+            this.students = res.students;
+            this.indicators = res.indicators;
+            this.assessments = res.assessments;
+            this.currentUser = res.currentUser;
+            for (const cat in this.groupedIndicators) {
+              if (!(cat in this.openCategories)) this.openCategories[cat] = true;
+            }
+          }).getAppData(this.selectedBulan, this.selectedTahun);
+        },
+        getGrade(score) {
+          if (score === '' || score === null || score === undefined) return '';
+          const s = parseFloat(score);
+          if (s >= 81) return 'A';
+          if (s >= 61) return 'B';
+          if (s >= 41) return 'C';
+          if (s >= 21) return 'D';
+          return 'E';
+        },
+        getGradeColor(grade) {
+          switch(grade) {
+            case 'A': return 'text-green-600 border-green-600';
+            case 'B': return 'text-blue-600 border-blue-600';
+            case 'C': return 'text-yellow-600 border-yellow-600';
+            case 'D': return 'text-orange-600 border-orange-600';
+            case 'E': return 'text-red-600 border-red-600';
+            default: return 'text-gray-200 border-gray-200';
+          }
+        },
+        toggleCategory(cat) { this.openCategories[cat] = !this.openCategories[cat]; },
+        selectStudent() {
+          this.formScores = {};
+          if (!this.selectedNisn) return;
+          const existing = this.assessments.find(a => a.nisn === this.selectedNisn && a.penilai === this.currentUser);
+          if (existing && existing.scores) {
+            this.formScores = { ...existing.scores };
+          } else {
+            this.indicators.forEach(ind => this.formScores[ind.id] = '');
+          }
+        },
+        saveAssessment() {
+          if (!this.selectedNisn) return;
+          this.saving = true;
+          const student = this.students.find(s => s.nisn === this.selectedNisn);
+          const payload = {
+            bulan: this.selectedBulan, tahun: this.selectedTahun,
+            nisn: this.selectedNisn, nama: student ? student.nama : '',
+            user: this.currentUser, scores: this.formScores
+          };
+          google.script.run.withSuccessHandler(res => {
+            this.assessments = res.assessments;
+            this.saving = false;
+            this.selectedNisn = '';
+            alert('Berhasil menyimpan penilaian!');
+          }).saveAssessment(payload);
+        },
+        editAssessment(ass) {
+          this.selectedNisn = ass.nisn;
+          this.selectStudent();
+          window.scrollTo(0, 0);
+        },
+        deleteAssessment(id) {
+          if(!confirm('Hapus riwayat penilaian ini?')) return;
+          google.script.run.withSuccessHandler(res => {
+            this.assessments = res.assessments;
+          }).deleteAssessment(id, this.selectedBulan, this.selectedTahun);
+        },
+        generateHasilSheet() {
+          if (!confirm(`Generate laporan hasil akhir untuk ${this.selectedBulan} ${this.selectedTahun}?`)) return;
+          this.generating = true;
+          google.script.run.withSuccessHandler(res => {
+            this.generating = false;
+            alert(res);
+          }).withFailureHandler(err => {
+            this.generating = false;
+            alert("Terjadi kesalahan: " + err);
+          }).generateSheetHasil(this.selectedBulan, this.selectedTahun);
+        }
+      },
+      mounted() { this.loadData(); }
+    }).mount('#app-penilaian');
+  </script>
+</body>
+</html>
