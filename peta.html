@@ -1,0 +1,383 @@
+<!-- CSS Leaflet & Suggestion Box -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #map { height: calc(100vh - 180px); width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid #ddd; z-index: 1;}
+    .info-window-content { max-width: 250px; font-size: 14px; font-family: 'Segoe UI', sans-serif;}
+    .info-window-content h3 { margin-top: 0; margin-bottom: 10px; color: #124c73; }
+    .info-window-content ul { padding-left: 0; list-style: none; margin: 0; }
+    .info-window-content li { margin-bottom: 5px; border-bottom: 1px dashed #eee; padding-bottom: 3px; }
+
+    /* CSS Baru untuk Kotak Pencarian dan Saran */
+    .search-container { position: relative; width: 100%; max-width: 300px; }
+    .suggestion-box {
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: white; border: 1px solid #ddd; border-radius: 8px;
+        max-height: 200px; overflow-y: auto; z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: none;
+        margin-top: 5px;
+    }
+    .suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 14px; }
+    .suggestion-item:hover { background: #f1f1f1; color: #124c73; font-weight: bold; }
+    .suggestion-item:last-child { border-bottom: none; }
+    
+    /* CSS Rute */
+    #rute-container { background: white; border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-top: 15px; display: none;}
+    .rute-item { display: inline-flex; align-items: center; background: #e0f2fe; color: #0284c7; padding: 5px 12px; border-radius: 20px; font-size: 13px; margin: 5px; font-weight: bold;}
+    .btn-rute-hapus { margin-left: 8px; cursor: pointer; color: #ef4444; border: none; background: none; font-weight: bold;}
+</style>
+
+<div id="peta-content" class="hidden">
+    <div class="header-pengaturan" style="justify-content: space-between; flex-wrap: wrap;">
+        <div style="display:flex; gap:15px; align-items:center;">
+            <button class="btn-back" onclick="navigasiHalaman('dashboard-content')"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+            <h3 class="section-title" style="margin:0;">Peta Rumah Siswa</h3>            
+        </div>
+        <div>
+            <input type="file" id="csvFileMap" accept=".csv" style="display:none;" onchange="importDataMap()">
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+                
+                <!-- Input Pencarian -->
+                <div class="search-container">
+                    <input type="text" id="input-cari-peta" placeholder="Cari nama siswa..." style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; width: 100%; box-sizing: border-box;" oninput="tampilkanSaran()">
+                    <div id="suggestion-box" class="suggestion-box"></div>
+                </div>
+                <br><small>Untuk membuat rute kunjungan, klik 'tambahkan ke rute' pada data anak. Sistem akan mencarikan rute dari lokasi SR</small>
+                
+                <!-- Tombol Export/Import -->
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn-save admin-only hidden" style="background: #107c41; padding: 10px 15px;" onclick="exportExcelMap()"><i class="fa-solid fa-file-excel"></i> Export</button>
+                    <button class="btn-save admin-only hidden" style="background: #0078d4; padding: 10px 15px;" onclick="document.getElementById('csvFileMap').click()"><i class="fa-solid fa-file-csv"></i> Import CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- KOLOM RUTE BARU -->
+        <div id="rute-container">
+            <h4 style="margin-top:0; color:var(--blue-dark); font-size: 14px;"><i class="fa-solid fa-route"></i> Rencana Perjalanan (Maksimal 5)</h4>
+            <div id="rute-list"></div>
+            <button class="btn-save" style="width:100%; margin-top:10px; display:none;" id="btn-generate-rute" onclick="generateGoogleMapsRoute()">
+                <i class="fa-solid fa-map-location-dot"></i> Buka Rute di Google Maps
+            </button>
+        </div>
+    <div class="section-card" style="padding: 15px;">
+        <div id="map-loading" style="text-align:center; padding: 50px; color: #2790c9;"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i><br><br>Memuat Peta...</div>
+        <div id="map" style="visibility: hidden;"></div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    let mapInstance;
+    let isMapInitialized = false;
+    let arrayMarkerSaya = []; 
+    let ruteTerpilih = [];
+    let kordinatSekolahRakyat = null;
+
+    function bukaPeta() {
+        navigasiHalaman('peta-content');
+        if(!isMapInitialized) {
+            initMap();
+            isMapInitialized = true;
+        } else {
+            setTimeout(() => { mapInstance.invalidateSize(); }, 200);
+        }
+    }
+
+    function initMap() {
+        mapInstance = L.map('map').setView([-2.548926, 118.0148634], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(mapInstance);
+        google.script.run.withSuccessHandler(plotMarkers).getSheetDataMap();
+    }
+
+    function plotMarkers(data) {
+        document.getElementById('map-loading').style.display = 'none';
+        const mapDiv = document.getElementById('map');
+        mapDiv.style.visibility = 'visible';
+        mapInstance.invalidateSize();
+        
+        if (data.error) {
+            mapDiv.innerHTML = "<div style='color:red; text-align:center; padding:20px; font-weight:bold;'>" + data.error + "</div>";
+            return;
+        }
+        
+        const rows = data.rows;
+        const headers = data.headers;
+
+        arrayMarkerSaya = [];
+        kordinatSekolahRakyat = null; // Reset setiap kali map dirender
+
+        rows.forEach(row => {
+            let cleanRow = {};
+            for (let key in row) {
+                if (key) cleanRow[key.toString().trim().toLowerCase()] = row[key];
+            }
+
+            let latVal = cleanRow['latitude'] || cleanRow['lat'];
+            let lngVal = cleanRow['longitude'] || cleanRow['lon'] || cleanRow['lng'];
+
+            if (latVal && lngVal && latVal !== "" && lngVal !== "") {
+                let lat = parseFloat(latVal.toString().replace(',', '.'));
+                let lng = parseFloat(lngVal.toString().replace(',', '.'));
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    // Extract Nama & NISN
+                    let namaAsli = cleanRow['nama siswa'] || cleanRow['nama'] || "Tanpa Nama";
+                    let nisn = cleanRow['nisn'] || "";
+                    let namaTampil = nisn ? `${namaAsli} (${nisn})` : namaAsli;
+                    
+                    // Deteksi titik awal "SEKOLAH RAKYAT"
+                    if (namaAsli.toUpperCase() === 'SEKOLAH RAKYAT') {
+                        kordinatSekolahRakyat = { lat: lat, lng: lng };
+                    }
+                    
+                    let infoContent = `<div class='info-window-content'>
+                        <h3><i class='fa-solid fa-user'></i> ${namaTampil}</h3><ul>`;
+                    
+                    headers.forEach(header => {
+                        let cleanHeader = header.toString().trim().toLowerCase();
+                        if (cleanHeader !== 'latitude' && cleanHeader !== 'longitude' && cleanHeader !== 'nama siswa' && cleanHeader !== 'nama' && cleanHeader !== 'nisn') {
+                           let value = row[header] ? row[header] : "-";
+                           infoContent += `<li><b>${header}:</b> ${value}</li>`;
+                        }
+                    });
+                    
+                    infoContent += `</ul>
+                        <button class="btn-save" style="font-size:11px; padding:5px 10px; width:100%; margin-top:10px;" 
+                        onclick="tambahKeRute('${namaTampil}', ${lat}, ${lng})">+ Tambahkan ke Rute</button>
+                        </div>`;
+
+                    let markerObj = L.marker([lat, lng]).addTo(mapInstance).bindPopup(infoContent);
+
+                    arrayMarkerSaya.push({
+                        nama: String(namaTampil), 
+                        lat: lat, lng: lng,
+                        marker: markerObj
+                    });
+                }
+            }
+        });
+    }
+
+    function exportExcelMap() {
+        google.script.run.withSuccessHandler(url => { window.open(url, '_blank'); }).getExportUrlMap();
+    }
+
+    function importDataMap() {
+        const file = document.getElementById("csvFileMap").files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            google.script.run.withSuccessHandler(msg => { 
+                alert(msg); 
+                document.getElementById('map').style.visibility = 'hidden';
+                document.getElementById('map-loading').style.display = 'block';
+                mapInstance.eachLayer((layer) => { if (layer instanceof L.Marker) { mapInstance.removeLayer(layer) } }); 
+                google.script.run.withSuccessHandler(plotMarkers).getSheetDataMap(); 
+            }).importCSVMap(e.target.result);
+        };
+        reader.readAsText(file);
+    }
+
+    function tampilkanSaran() {
+        const inputRaw = document.getElementById('input-cari-peta').value;
+        const keyword = inputRaw.toLowerCase().trim();
+        const suggestionBox = document.getElementById('suggestion-box');
+
+        suggestionBox.innerHTML = ''; 
+
+        if (keyword === "") {
+            suggestionBox.style.display = 'none';
+            return;
+        }
+
+        const hasilFilter = arrayMarkerSaya.filter(item => {
+            const namaSiswaCek = item.nama ? item.nama.toLowerCase() : "";
+            return namaSiswaCek.includes(keyword);
+        });
+
+        if (hasilFilter.length > 0) {
+            suggestionBox.style.display = 'block';
+            hasilFilter.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item';
+                div.innerHTML = `<i class="fa-solid fa-location-dot" style="margin-right:8px; color:#c0392b;"></i>${item.nama}`;
+                
+                div.onclick = function() {
+                    pilihSiswa(item);
+                };
+                suggestionBox.appendChild(div);
+            });
+        } else {
+            suggestionBox.style.display = 'block';
+            suggestionBox.innerHTML = '<div style="padding:10px; color:#888; font-size:13px; text-align:center;">Siswa tidak ditemukan</div>';
+        }
+    }
+
+    function pilihSiswa(item) {
+        document.getElementById('input-cari-peta').value = item.nama;
+        document.getElementById('suggestion-box').style.display = 'none';
+
+        if (!mapInstance.hasLayer(item.marker)) {
+            item.marker.addTo(mapInstance);
+        }
+
+        mapInstance.flyTo(item.marker.getLatLng(), 16, {
+            animate: true,
+            duration: 1.5 
+        });
+        
+        item.marker.openPopup();
+    }
+
+    document.addEventListener('click', function(event) {
+        const inputEl = document.getElementById('input-cari-peta');
+        const boxEl = document.getElementById('suggestion-box');
+        if (inputEl && boxEl) {
+            if (!inputEl.contains(event.target) && !boxEl.contains(event.target)) {
+                boxEl.style.display = 'none';
+            }
+        }
+    });
+
+    // ===========================
+    // FUNGSI RUTE PERJALANAN
+    // ===========================
+
+    function tambahKeRute(nama, lat, lng) {
+        if (ruteTerpilih.length >= 5) {
+            alert("Maksimal 5 tujuan perjalanan.");
+            return;
+        }
+        if (ruteTerpilih.find(r => r.nama === nama)) return; // Jangan duplikat
+
+        ruteTerpilih.push({ nama: nama, lat: lat, lng: lng });
+        renderRuteUI();
+    }
+
+    function hapusDariRute(index) {
+        ruteTerpilih.splice(index, 1);
+        renderRuteUI();
+    }
+
+    function renderRuteUI() {
+        const container = document.getElementById('rute-container');
+        const list = document.getElementById('rute-list');
+        const btn = document.getElementById('btn-generate-rute');
+        
+        list.innerHTML = '';
+        if (ruteTerpilih.length > 0) {
+            container.style.display = 'block';
+            btn.style.display = 'block';
+            ruteTerpilih.forEach((r, idx) => {
+                list.innerHTML += `<div class="rute-item">${idx+1}. ${r.nama} <button class="btn-rute-hapus" onclick="hapusDariRute(${idx})"><i class="fa-solid fa-xmark"></i></button></div>`;
+            });
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    // ===========================
+    // FUNGSI RUTE PERJALANAN (UPDATE RUTE TERDEKAT)
+    // ===========================
+
+    function tambahKeRute(nama, lat, lng) {
+        if (ruteTerpilih.length >= 5) {
+            alert("Maksimal 5 tujuan perjalanan.");
+            return;
+        }
+        if (ruteTerpilih.find(r => r.nama === nama)) return; // Jangan duplikat
+
+        ruteTerpilih.push({ nama: nama, lat: lat, lng: lng });
+        renderRuteUI();
+    }
+
+    function hapusDariRute(index) {
+        ruteTerpilih.splice(index, 1);
+        renderRuteUI();
+    }
+
+    function renderRuteUI() {
+        const container = document.getElementById('rute-container');
+        const list = document.getElementById('rute-list');
+        const btn = document.getElementById('btn-generate-rute');
+        
+        list.innerHTML = '';
+        if (ruteTerpilih.length > 0) {
+            container.style.display = 'block';
+            btn.style.display = 'block';
+            ruteTerpilih.forEach((r, idx) => {
+                list.innerHTML += `<div class="rute-item">${idx+1}. ${r.nama} <button class="btn-rute-hapus" onclick="hapusDariRute(${idx})"><i class="fa-solid fa-xmark"></i></button></div>`;
+            });
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    // Fungsi tambahan untuk menghitung jarak antar dua titik koordinat (Haversine formula)
+    function hitungJarak(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius bumi dalam km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function generateGoogleMapsRoute() {
+        if (ruteTerpilih.length === 0) return;
+        
+        let url = "https://www.google.com/maps/dir/";
+        let titikSekarang = kordinatSekolahRakyat;
+        
+        // 1. Titik Awal: SEKOLAH RAKYAT
+        if (titikSekarang) {
+            url += `${titikSekarang.lat},${titikSekarang.lng}/`;
+        } else {
+            alert("Peringatan: Koordinat 'SEKOLAH RAKYAT' tidak ditemukan di dalam database siswa.\nRute akan langsung dimulai dari tujuan pilihan pertama Anda.");
+            // Jika sekolah rakyat tidak ada, jadikan titik pertama yang dipilih sebagai awalan
+            titikSekarang = ruteTerpilih[0]; 
+        }
+
+        // 2. Mengurutkan Rute Terdekat (Nearest Neighbor)
+        let sisaRute = [...ruteTerpilih];
+        let ruteTerurut = [];
+
+        // Hapus elemen pertama dari sisaRute jika sekolah rakyat tidak ada (karena sudah jadi titik awal)
+        if (!kordinatSekolahRakyat) {
+            sisaRute.shift();
+            url += `${titikSekarang.lat},${titikSekarang.lng}/`;
+        }
+
+        while (sisaRute.length > 0) {
+            let indexTerdekat = 0;
+            let jarakTerdekat = Infinity;
+
+            for (let i = 0; i < sisaRute.length; i++) {
+                let jarak = hitungJarak(titikSekarang.lat, titikSekarang.lng, sisaRute[i].lat, sisaRute[i].lng);
+                if (jarak < jarakTerdekat) {
+                    jarakTerdekat = jarak;
+                    indexTerdekat = i;
+                }
+            }
+
+            // Pindahkan titik terdekat ke array terurut
+            let titikSelanjutnya = sisaRute.splice(indexTerdekat, 1)[0];
+            ruteTerurut.push(titikSelanjutnya);
+            
+            // Jadikan titik ini sebagai patokan untuk mencari titik terdekat berikutnya
+            titikSekarang = titikSelanjutnya;
+        }
+
+        // 3. Masukkan semua koordinat tujuan yang sudah diurutkan dari yang terdekat
+        ruteTerurut.forEach(r => {
+            url += `${r.lat},${r.lng}/`;
+        });
+        
+        // 4. Buka link maps di tab baru
+        window.open(url, '_blank');
+    }
+</script>
