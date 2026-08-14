@@ -2,11 +2,12 @@
  * @OnlyCurrentDoc
  */
 
-const SPREADSHEET_ID = ''; 
+const SPREADSHEET_ID = '1nLdFSrK1dvfrYu_db8tGEFVYuBILmNL-3X1eC1nu8YM'; 
 const ADMIN_EMAILS = ['byu.project.comp@gmail.com', 'ajeefes@gmail.com']; 
-const FOLDER_FOTO_RHK_ID = ''; //  ID lama untuk RHK
-const FOLDER_FOTO_MAKAN_ID = ''; // ID Folder Permakanan
-const FOLDER_FOTO_EKSTRA_ID = ''; // ID Folder Kegiatan/Ekstra
+const FOLDER_FOTO_RHK_ID = '13gHdT1Gt7S4uCeMskbIOTUy9FhHYzVBw'; //  ID lama untuk RHK
+const FOLDER_FOTO_MAKAN_ID = '14pVrsV8E9nxXNmHheXyxSEYJsqLWI3Mq'; // ID Folder Permakanan
+const FOLDER_FOTO_EKSTRA_ID = '14pVrsV8E9nxXNmHheXyxSEYJsqLWI3Mq'; // ID Folder Kegiatan/Ekstra
+const FOLDER_ASSESMEN_SISWA_ID = '1YeZugs9o4N5T4S1A8ydyQE_YH8cSfRLL'; //ID Folder assesmen siswa
 
 function doGet(e) {
   return HtmlService.createTemplateFromFile('Index')
@@ -1829,7 +1830,6 @@ function generateSheetHasil(bulan, tahun) {
   return `Berhasil mencetak hasil ke sheet: ${targetSheetName}`;
 }
 
-// Tambahkan di bagian paling bawah Kode.gs
 function getPenilaianHtml() {
   return HtmlService.createHtmlOutputFromFile('penilaian').getContent();
 }
@@ -3199,5 +3199,191 @@ function hapusSemuaDataNotifikasi() {
     return { success: true };
   } catch (error) {
     return { success: false, message: error.toString() };
+  }
+}
+
+// Fungsi Assesmen boooy v
+function getStudentData() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName('DataSiswa'); 
+  
+  // Mengambil data mulai dari baris ke-3 (karena baris 1 header, baris 2 kosong/warna)
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 3) return [];
+  
+  var data = sheet.getRange(3, 1, lastRow - 2, 14).getValues();
+  
+  var students = data.map(function(row) {
+    var namaSiswa = row[2] ? row[2].toString().trim() : ""; // Kolom C (Nama)
+    var nisn = row[0] ? row[0].toString().trim() : "";      // Kolom A (NISN)
+    
+    // Gabungkan Nama dan NISN. Jika NISN kosong, tampilkan nama saja.
+    var namaLengkap = nisn ? namaSiswa + " (" + nisn + ")" : namaSiswa;
+    
+    return {
+      nama: namaLengkap, // Tampil sebagai "NAMA (NISN)"
+      kelas: row[11],    // Kolom L (Kelas)
+      wali: row[12],     // Kolom M (Wali Asuh)
+      kamar: row[13]     // Kolom N (Kamar)
+    };
+  }).filter(function(s) { 
+    // Filter agar siswa yang namanya kosong tidak masuk ke daftar
+    return s.nama && s.nama.toString().trim() !== ""; 
+  });
+  
+  return students;
+}
+
+// Fungsi untuk menyimpan data asesmen lengkap ke Google Sheets
+function submitForm(payload) {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName('HasilAssesment');
+  
+  if (!sheet) {
+    sheet = ss.insertSheet('HasilAssesment');
+    var headers = [
+      "Tanggal Input", "Nama Siswa", "Kelas", "Asrama/Kamar", "Wali Asuh", "Tanggal Asesmen",
+      "ASPEK BIOLOGIS", "ASPEK PSIKOLOGIS", "ASPEK SOSIAL", "ASPEK SPIRITUAL", "ASPEK KELUARGA", "Penilai"
+    ];
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#d9ead3");
+  }
+
+  var data = sheet.getDataRange().getValues();
+  var targetRow = -1;
+
+  // Format bulan & tahun dari tanggal asesmen baru untuk pengecekan periode
+  var tglInputBaru = new Date(payload.tanggal);
+  var bulanBaru = tglInputBaru.getMonth();
+  var tahunBaru = tglInputBaru.getFullYear();
+
+  // 1. Cek jika dikirim rowIndex dari frontend (mode edit langsung)
+  if (payload.rowIndex && payload.rowIndex > 1) {
+    targetRow = payload.rowIndex;
+  } else {
+    // 2. Cek otomatis berdasarkan Nama Siswa dan Periode Bulan/Tahun yang sama
+    for (var i = 1; i < data.length; i++) {
+      var namaSheet = String(data[i][1]).trim().toLowerCase();
+      var namaPayload = String(payload.nama).trim().toLowerCase();
+      
+      if (namaSheet === namaPayload && data[i][5]) {
+        var tglSheet = new Date(data[i][5]);
+        if (tglSheet.getMonth() === bulanBaru && tglSheet.getFullYear() === tahunBaru) {
+          targetRow = i + 1; // Baris ditemukan di sheet (indeks mulai dari 1)
+          break;
+        }
+      }
+    }
+  }
+
+  var rowData = [
+    new Date(),             // Tanggal Input / Update
+    payload.nama,           
+    payload.kelas,          
+    payload.kamar,          
+    payload.wali,           
+    payload.tanggal,        
+    payload.biologis,       
+    payload.psikologis,     
+    payload.sosial,         
+    payload.spiritual,      
+    payload.keluarga,       
+    payload.user            // Penilai (bisa memperbarui penilai jika diedit user lain pada bulan yang sama)
+  ];
+
+  if (targetRow > 1) {
+    // Timpa/Update data pada baris yang sama (mencegah duplikasi bulan yang sama)
+    sheet.getRange(targetRow, 1, 1, rowData.length).setValues([rowData]);
+    return { success: true, message: "Data asesmen berhasil diperbarui (update)!" };
+  } else {
+    // Tambah baris baru jika belum ada data di periode bulan tersebut
+    sheet.appendRow(rowData);
+    return { success: true, message: "Data asesmen berhasil disimpan!" };
+  }
+}
+// Fungsi untuk mengambil riwayat asesmen yang disimpan ke UI
+function getHistoryAssesment() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName('HasilAssesment');
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  
+  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 12).getValues();
+  let result = [];
+  
+  data.forEach((row, index) => {
+    let tglFormat = (row[5] instanceof Date) ? Utilities.formatDate(row[5], "GMT+7", "yyyy-MM-dd") : String(row[5] || '');
+    
+    result.push({
+      rowIndex: index + 2, // Baris asli di Google Sheets
+      tanggal: tglFormat,
+      nama: row[1],
+      kelas: row[2],
+      kamar: row[3],
+      wali: row[4],
+      biologis: row[6],
+      psikologis: row[7],
+      sosial: row[8],
+      spiritual: row[9],
+      keluarga: row[10],
+      penilai: row[11]
+    });
+  });
+  
+  return result.reverse();
+}
+
+function simpanPDFAsesmenKeDrive(base64Data, fileName) {
+  var parentFolderId = '1YeZugs9o4N5T4S1A8ydyQE_YH8cSfRLL';
+  var parentFolder = DriveApp.getFolderById(parentFolderId);
+  
+  // Buat nama folder berdasarkan Bulan dan Tahun saat ini (Contoh: Agustus_2026_assesmen)
+  var monthsIndo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  var now = new Date();
+  var folderName = monthsIndo[now.getMonth()] + "_" + now.getFullYear() + "_assesmen";
+  
+  var targetFolder;
+  var folders = parentFolder.getFoldersByName(folderName);
+  
+  if (folders.hasNext()) {
+    targetFolder = folders.next();
+  } else {
+    targetFolder = parentFolder.createFolder(folderName);
+  }
+  
+  // Konversi Base64 ke Blob file PDF
+  var decodedBytes = Utilities.base64Decode(base64Data);
+  var blob = Utilities.newBlob(decodedBytes, 'application/pdf', fileName);
+  
+  // Cek jika file dengan nama sama sudah ada di dalam folder, hapus atau timpa agar tidak duplikat menumpuk
+  var existingFiles = targetFolder.getFilesByName(fileName);
+  while (existingFiles.hasNext()) {
+    existingFiles.next().setTrashed(true);
+  }
+  
+  var savedFile = targetFolder.createFile(blob);
+  
+  return {
+    success: true,
+    message: "File tersimpan di folder: " + folderName + " / " + fileName,
+    fileUrl: savedFile.getUrl()
+  };
+}
+function deleteAssessmentByRow(rowIndex) {
+  try {
+    // Ganti 'HasilAssesment' dengan nama sheet tempat data Anda disimpan
+    const sheetName = 'HasilAssesment'; 
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(sheetName);
+    
+    if (!sheet) {
+      throw new Error("Sheet tidak ditemukan.");
+    }
+    
+    // Hapus baris berdasarkan rowIndex
+    sheet.deleteRow(rowIndex);
+    
+    return { status: 'success', message: 'Data berhasil dihapus.' };
+  } catch (error) {
+    throw new Error(error.message);
   }
 }
