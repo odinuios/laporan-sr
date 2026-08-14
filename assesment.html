@@ -1,0 +1,1991 @@
+<div id="assesment-content" class="hidden p-6 max-w-5xl mx-auto bg-white rounded-xl shadow-md space-y-6 mb-10 text-sm">
+  <!-- Header -->
+  <div class="flex justify-between items-center border-b pb-4">
+    <button onclick="if(typeof navigasiHalaman === 'function') navigasiHalaman('dashboard-content')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors">← Kembali</button>
+    <h2 class="text-xl font-bold text-gray-800">ASESMEN SISWA</h2>
+    <span id="step-indicator" class="font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Langkah 1 dari 6</span>
+  </div>
+
+<!-- ==========================================
+       TOP CARDS: RINGKASAN PERHATIAN KHUSUS
+  =========================================== -->
+  <div class="mb-6 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+    <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+      <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      Indikator Assesmen Bulan Berjalan
+    </h3>
+    
+    <!-- Scrollable container -->
+    <!-- Grid Container Responsif -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-2">
+      
+      <!-- Card 1: Indikasi Depresi -->
+      <div onclick="toggleExpand('list-depresi')" class="relative w-full bg-red-50 border border-red-200 rounded-xl p-4 cursor-pointer hover:shadow-md transition-all">
+        <button onclick="showCardInfo(event, 'depresi')" class="absolute top-2 right-2 text-red-300 hover:text-red-600 transition-colors" title="Info Sumber Data">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <div class="flex items-center gap-3 pr-5">
+          <div class="w-10 h-10 shrink-0 rounded-lg bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg">⚠️</div>
+          <div>
+            <h4 class="font-bold text-gray-800 text-xs">Indikasi Depresi</h4>
+            <p class="text-xl font-extrabold text-red-600"><span id="count-depresi">0</span> <span class="text-xs font-normal text-gray-500">Siswa</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Menarik Diri -->
+      <div onclick="toggleExpand('list-sosial')" class="relative w-full bg-yellow-50 border border-yellow-200 rounded-xl p-4 cursor-pointer hover:shadow-md transition-all">
+        <button onclick="showCardInfo(event, 'sosial')" class="absolute top-2 right-2 text-yellow-400 hover:text-yellow-600 transition-colors" title="Info Sumber Data">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <div class="flex items-center gap-3 pr-5">
+          <div class="w-10 h-10 shrink-0 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600 font-bold text-lg">😔</div>
+          <div>
+            <h4 class="font-bold text-gray-800 text-xs">Menarik Diri (Sosial)</h4>
+            <p class="text-xl font-extrabold text-yellow-600"><span id="count-sosial">0</span> <span class="text-xs font-normal text-gray-500">Siswa</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Kendala Spiritual -->
+      <div onclick="toggleExpand('list-spiritual')" class="relative w-full bg-purple-50 border border-purple-200 rounded-xl p-4 cursor-pointer hover:shadow-md transition-all">
+        <button onclick="showCardInfo(event, 'spiritual')" class="absolute top-2 right-2 text-purple-300 hover:text-purple-600 transition-colors" title="Info Sumber Data">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <div class="flex items-center gap-3 pr-5">
+          <div class="w-10 h-10 shrink-0 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-lg">📿</div>
+          <div>
+            <h4 class="font-bold text-gray-800 text-xs">Kendala Spiritual</h4>
+            <p class="text-xl font-extrabold text-purple-600"><span id="count-spiritual">0</span> <span class="text-xs font-normal text-gray-500">Siswa</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Fisik & Pola Hidup -->
+      <div onclick="toggleExpand('list-fisik')" class="relative w-full bg-cyan-50 border border-cyan-200 rounded-xl p-4 cursor-pointer hover:shadow-md transition-all">
+        <button onclick="showCardInfo(event, 'fisik')" class="absolute top-2 right-2 text-cyan-400 hover:text-cyan-600 transition-colors" title="Info Sumber Data">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <div class="flex items-center gap-3 pr-5">
+          <div class="w-10 h-10 shrink-0 rounded-lg bg-cyan-100 flex items-center justify-center text-cyan-600 font-bold text-lg">🩺</div>
+          <div>
+            <h4 class="font-bold text-gray-800 text-xs">Fisik & Pola Hidup</h4>
+            <p class="text-xl font-extrabold text-cyan-600"><span id="count-fisik">0</span> <span class="text-xs font-normal text-gray-500">Siswa</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Kendala Belajar/Fokus -->
+      <div onclick="toggleExpand('list-fokus')" class="relative w-full bg-orange-50 border border-orange-200 rounded-xl p-4 cursor-pointer hover:shadow-md transition-all">
+        <button onclick="showCardInfo(event, 'fokus')" class="absolute top-2 right-2 text-orange-300 hover:text-orange-600 transition-colors" title="Info Sumber Data">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <div class="flex items-center gap-3 pr-5">
+          <div class="w-10 h-10 shrink-0 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-lg">🎯</div>
+          <div>
+            <h4 class="font-bold text-gray-800 text-xs">Kendala Fokus & Belajar</h4>
+            <p class="text-xl font-extrabold text-orange-600"><span id="count-fokus">0</span> <span class="text-xs font-normal text-gray-500">Siswa</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6: Karakter & Etika -->
+      <div onclick="toggleExpand('list-karakter')" class="relative w-full bg-slate-50 border border-slate-200 rounded-xl p-4 cursor-pointer hover:shadow-md transition-all">
+        <button onclick="showCardInfo(event, 'karakter')" class="absolute top-2 right-2 text-slate-400 hover:text-slate-600 transition-colors" title="Info Sumber Data">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <div class="flex items-center gap-3 pr-5">
+          <div class="w-10 h-10 shrink-0 rounded-lg bg-slate-200 flex items-center justify-center text-slate-700 font-bold text-lg">⚖️</div>
+          <div>
+            <h4 class="font-bold text-gray-800 text-xs">Perhatian Karakter & Etika</h4>
+            <p class="text-xl font-extrabold text-slate-700"><span id="count-karakter">0</span> <span class="text-xs font-normal text-gray-500">Siswa</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 7: Potensi Pendekatan Keluarga -->
+      <div onclick="toggleExpand('list-keluarga')" class="relative w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 cursor-pointer hover:shadow-md transition-all">
+        <button onclick="showCardInfo(event, 'keluarga')" class="absolute top-2 right-2 text-emerald-400 hover:text-emerald-600 transition-colors" title="Info Sumber Data">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <div class="flex items-center gap-3 pr-5">
+          <div class="w-10 h-10 shrink-0 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-lg">👨‍👩‍👦</div>
+          <div>
+            <h4 class="font-bold text-gray-800 text-xs">Potensi Pendekatan Keluarga</h4>
+            <p class="text-xl font-extrabold text-emerald-600"><span id="count-keluarga">0</span> <span class="text-xs font-normal text-gray-500">Siswa</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 8: Siswa Sudah Dinilai -->
+      <div class="relative w-full bg-green-50 border border-green-200 rounded-xl p-4">
+        <button onclick="showCardInfo(event, 'selesai')" class="absolute top-2 right-2 text-green-400 hover:text-green-600 transition-colors" title="Info Sumber Data">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
+        <div class="flex items-center gap-3 pr-5">
+          <div class="w-10 h-10 shrink-0 rounded-lg bg-green-100 flex items-center justify-center text-green-600 font-bold text-lg">✅</div>
+          <div>
+            <h4 class="font-bold text-gray-800 text-xs">Sudah Dinilai</h4>
+            <p class="text-xl font-extrabold text-green-600"><span id="count-sudah-dinilai">0</span> <span class="text-xs font-normal text-gray-500">Siswa</span></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Expanded Lists Container -->
+    <div id="expandable-lists" class="mt-2 space-y-2">
+      <div id="list-depresi" class="expand-panel hidden bg-white border border-red-200 p-4 rounded-lg shadow-inner">
+        <p class="text-xs font-bold text-red-600 mb-2 uppercase">Daftar Siswa - Indikasi Depresi / Luka Emosional</p>
+        <ul id="ul-depresi" class="list-disc pl-5 text-gray-700 space-y-1 text-xs"><li class="italic text-gray-400">Tidak ada data</li></ul>
+      </div>
+      <div id="list-sosial" class="expand-panel hidden bg-white border border-yellow-200 p-4 rounded-lg shadow-inner">
+        <p class="text-xs font-bold text-yellow-600 mb-2 uppercase">Daftar Siswa - Menarik Diri & Kendala Sosial</p>
+        <ul id="ul-sosial" class="list-disc pl-5 text-gray-700 space-y-1 text-xs"><li class="italic text-gray-400">Tidak ada data</li></ul>
+      </div>
+      <div id="list-spiritual" class="expand-panel hidden bg-white border border-purple-200 p-4 rounded-lg shadow-inner">
+        <p class="text-xs font-bold text-purple-600 mb-2 uppercase">Daftar Siswa - Kendala Disiplin Spiritual</p>
+        <ul id="ul-spiritual" class="list-disc pl-5 text-gray-700 space-y-1 text-xs"><li class="italic text-gray-400">Tidak ada data</li></ul>
+      </div>
+      <div id="list-fisik" class="expand-panel hidden bg-white border border-cyan-200 p-4 rounded-lg shadow-inner">
+        <p class="text-xs font-bold text-cyan-600 mb-2 uppercase">Daftar Siswa - Perlu Perhatian Fisik/Gizi/Sanitasi</p>
+        <ul id="ul-fisik" class="list-disc pl-5 text-gray-700 space-y-1 text-xs"><li class="italic text-gray-400">Tidak ada data</li></ul>
+      </div>
+      <div id="list-fokus" class="expand-panel hidden bg-white border border-orange-200 p-4 rounded-lg shadow-inner">
+        <p class="text-xs font-bold text-orange-600 mb-2 uppercase">Daftar Siswa - Kendala Fokus & Kemandirian Belajar</p>
+        <ul id="ul-fokus" class="list-disc pl-5 text-gray-700 space-y-1 text-xs"><li class="italic text-gray-400">Tidak ada data</li></ul>
+      </div>
+      <div id="list-karakter" class="expand-panel hidden bg-white border border-slate-200 p-4 rounded-lg shadow-inner">
+        <p class="text-xs font-bold text-slate-700 mb-2 uppercase">Daftar Siswa - Perlu Pembinaan Karakter & Etika</p>
+        <ul id="ul-karakter" class="list-disc pl-5 text-gray-700 space-y-1 text-xs"><li class="italic text-gray-400">Tidak ada data</li></ul>
+      </div>
+      <div id="list-keluarga" class="expand-panel hidden bg-white border border-emerald-200 p-4 rounded-lg shadow-inner">
+        <p class="text-xs font-bold text-emerald-600 mb-2 uppercase">Daftar Siswa - Rekomendasi Solusi Melalui Pendekatan Keluarga</p>
+        <ul id="ul-keluarga" class="list-disc pl-5 text-gray-700 space-y-1 text-xs"><li class="italic text-gray-400">Tidak ada data</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <form id="form-asesmen" onsubmit="handleFormSubmit(event)">
+    
+    <!-- ==========================================
+         STEP 0: IDENTITAS SISWA
+    =========================================== -->
+    <div class="form-step space-y-4" data-step="0">
+      <h3 class="text-lg font-bold text-blue-700 border-b pb-2">A. Identitas Siswa</h3>
+      <select id="select-nama" name="nama" class="w-full p-2 border rounded" required onchange="autoFillStudentInfo()">
+        <option value="" disabled selected>-- Pilih Siswa --</option>
+      </select>
+      <div class="grid grid-cols-3 gap-4">
+        <input type="text" id="input-kelas" name="kelas" class="p-2 border rounded bg-gray-50" placeholder="Kelas" readonly>
+        <input type="text" id="input-kamar" name="kamar" class="p-2 border rounded bg-gray-50" placeholder="Kamar" readonly>
+        <input type="text" id="input-wali" name="wali" class="p-2 border rounded bg-gray-50" placeholder="Wali Asuh" readonly>
+      </div>
+      <input type="date" name="tanggal" class="w-full p-2 border rounded" required>
+    </div>
+
+    <!-- ==========================================
+         STEP 1: ASPEK BIOLOGIS
+    =========================================== -->
+    <div class="form-step space-y-6 hidden" data-step="1">
+      <h3 class="text-lg font-bold text-blue-700 border-b pb-2">B. Aspek Biologis (Fisik & Kesehatan)</h3>
+      
+      <div class="space-y-4">
+        <!-- 1. Kondisi Kesehatan Umum -->
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">1. Kondisi Kesehatan Umum</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+            <label><input type="radio" name="bio_1_kondisi" value="Sangat Baik"> Sangat Baik (fit, aktif, tidak ada keluhan)</label>
+            <label><input type="radio" name="bio_1_kondisi" value="Baik"> Baik (sesekali keluhan ringan)</label>
+            <label><input type="radio" name="bio_1_kondisi" value="Cukup"> Cukup (sering mengeluh ringan)</label>
+            <label><input type="radio" name="bio_1_kondisi" value="Kurang"> Kurang (sering sakit/memerlukan perhatian khusus)</label>
+          </div>
+          <input type="text" name="bio_1_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <!-- 2. Riwayat Kesehatan -->
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">2. Riwayat Kesehatan</p>
+          <input type="text" name="bio_2_riwayat_penyakit" class="w-full p-1.5 border rounded mb-2" placeholder="Riwayat penyakit (asma, maag, alergi, dll)...">
+          <input type="text" name="bio_2_riwayat_obat" class="w-full p-1.5 border rounded mb-2" placeholder="Riwayat pengobatan/obat rutin...">
+          <input type="text" name="bio_2_alergi" class="w-full p-1.5 border rounded mb-2" placeholder="Alergi makanan/obat...">
+          <input type="text" name="bio_2_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <!-- 3. Pola Makan & Nutrisi -->
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">3. Pola Makan & Nutrisi</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-40 inline-block">Frekuensi makan:</span> <label class="mr-3"><input type="radio" name="bio_3_frekuensi" value="Teratur"> Teratur (3x/hari)</label> <label class="mr-3"><input type="radio" name="bio_3_frekuensi" value="Kurang"> Kurang</label> <label><input type="radio" name="bio_3_frekuensi" value="Tidak teratur"> Tidak teratur</label></div>
+            <div><span class="w-40 inline-block">Nafsu makan:</span> <label class="mr-3"><input type="radio" name="bio_3_nafsu" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="bio_3_nafsu" value="Cukup"> Cukup</label> <label><input type="radio" name="bio_3_nafsu" value="Kurang"> Kurang</label></div>
+            <div><span class="w-40 inline-block">Kebiasaan makan:</span> <label class="mr-3"><input type="radio" name="bio_3_kebiasaan" value="Menghabiskan"> Menghabiskan</label> <label><input type="radio" name="bio_3_kebiasaan" value="Sering tersisa"> Sering tersisa</label></div>
+            <div><span class="w-40 inline-block">Konsumsi air putih:</span> <label class="mr-3"><input type="radio" name="bio_3_air" value="Cukup"> Cukup</label> <label><input type="radio" name="bio_3_air" value="Kurang"> Kurang</label></div>
+          </div>
+          <input type="text" name="bio_3_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan (pilih-pilih makanan/dll)...">
+        </div>
+
+        <!-- 4. Pola Tidur & Istirahat -->
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">4. Pola Tidur & Istirahat</p>
+          <input type="text" name="bio_4_jam" class="w-full p-1.5 border rounded mb-2" placeholder="Jam tidur malam...">
+          <div class="space-y-2 mb-2">
+            <div><span class="w-40 inline-block">Durasi tidur:</span> <label class="mr-3"><input type="radio" name="bio_4_durasi" value="7-8 jam"> 7–8 jam</label> <label class="mr-3"><input type="radio" name="bio_4_durasi" value="<7 jam"> &lt;7 jam</label> <label><input type="radio" name="bio_4_durasi" value=">8 jam"> &gt;8 jam</label></div>
+            <div><span class="w-40 inline-block">Kualitas tidur:</span> <label class="mr-3"><input type="radio" name="bio_4_kualitas" value="Nyenyak"> Nyenyak</label> <label class="mr-3"><input type="radio" name="bio_4_kualitas" value="Sering terbangun"> Sering terbangun</label> <label><input type="radio" name="bio_4_kualitas" value="Sulit tidur"> Sulit tidur</label></div>
+          </div>
+          <input type="text" name="bio_4_kebiasaan" class="w-full p-1.5 border rounded mb-2" placeholder="Kebiasaan (begadang/tidur siang berlebih)...">
+          <input type="text" name="bio_4_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <!-- 5. Kebersihan Diri -->
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">5. Kebersihan Diri (Personal Hygiene)</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-40 inline-block">Mandi:</span> <label class="mr-3"><input type="radio" name="bio_5_mandi" value="2x/hari"> 2x/hari</label> <label class="mr-3"><input type="radio" name="bio_5_mandi" value="1x/hari"> 1x/hari</label> <label><input type="radio" name="bio_5_mandi" value="Tidak teratur"> Tidak teratur</label></div>
+            <div><span class="w-40 inline-block">Sikat gigi:</span> <label class="mr-3"><input type="radio" name="bio_5_gigi" value="2x/hari"> 2x/hari</label> <label class="mr-3"><input type="radio" name="bio_5_gigi" value="1x/hari"> 1x/hari</label> <label><input type="radio" name="bio_5_gigi" value="Jarang"> Jarang</label></div>
+            <div><span class="w-40 inline-block">Kebersihan pakaian:</span> <label class="mr-3"><input type="radio" name="bio_5_pakaian" value="Bersih"> Bersih</label> <label class="mr-3"><input type="radio" name="bio_5_pakaian" value="Cukup"> Cukup</label> <label><input type="radio" name="bio_5_pakaian" value="Kurang"> Kurang</label></div>
+            <div><span class="w-40 inline-block">Kuku & rambut:</span> <label class="mr-3"><input type="radio" name="bio_5_kuku" value="Rapi"> Rapi</label> <label class="mr-3"><input type="radio" name="bio_5_kuku" value="Cukup"> Cukup</label> <label><input type="radio" name="bio_5_kuku" value="Kurang"> Kurang</label></div>
+          </div>
+          <input type="text" name="bio_5_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <!-- 6. Aktivitas Fisik -->
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">6. Aktivitas Fisik & Kebugaran</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-48 inline-block">Keaktifan olahraga:</span> <label class="mr-3"><input type="radio" name="bio_6_olahraga" value="Aktif"> Aktif</label> <label class="mr-3"><input type="radio" name="bio_6_olahraga" value="Cukup"> Cukup</label> <label><input type="radio" name="bio_6_olahraga" value="Kurang"> Kurang</label></div>
+            <div><span class="w-48 inline-block">Partisipasi kegiatan fisik:</span> <label class="mr-3"><input type="radio" name="bio_6_fisik" value="Rutin"> Rutin</label> <label class="mr-3"><input type="radio" name="bio_6_fisik" value="Kadang"> Kadang</label> <label><input type="radio" name="bio_6_fisik" value="Jarang"> Jarang</label></div>
+            <div><span class="w-48 inline-block">Daya tahan tubuh:</span> <label class="mr-3"><input type="radio" name="bio_6_imun" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="bio_6_imun" value="Cukup"> Cukup</label> <label><input type="radio" name="bio_6_imun" value="Mudah lelah"> Mudah lelah</label></div>
+          </div>
+          <input type="text" name="bio_6_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <!-- 7. Kondisi Fisik Umum -->
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">7. Kondisi Fisik Umum</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-40 inline-block">Postur tubuh:</span> <label class="mr-3"><input type="radio" name="bio_7_postur" value="Proporsional"> Proporsional</label> <label><input type="radio" name="bio_7_postur" value="Kurang ideal"> Kurang ideal</label></div>
+            <div><span class="w-40 inline-block">Berat badan:</span> <label class="mr-3"><input type="radio" name="bio_7_bb" value="Ideal"> Ideal</label> <label class="mr-3"><input type="radio" name="bio_7_bb" value="Kurang"> Kurang</label> <label><input type="radio" name="bio_7_bb" value="Berlebih"> Berlebih</label></div>
+            <div><span class="w-40 inline-block">Tinggi badan:</span> <label class="mr-3"><input type="radio" name="bio_7_tb" value="Sesuai usia"> Sesuai usia</label> <label><input type="radio" name="bio_7_tb" value="Perlu pemantauan"> Perlu pemantauan</label></div>
+          </div>
+          <input type="text" name="bio_7_vital" class="w-full p-1.5 border rounded mb-2" placeholder="Tanda vital (jika ada)...">
+          <input type="text" name="bio_7_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <!-- 8. Keluhan Kesehatan -->
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">8. Keluhan Kesehatan Saat Ini</p>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
+            <label><input type="checkbox" name="bio_8_keluhan" value="Tidak ada"> Tidak ada</label>
+            <label><input type="checkbox" name="bio_8_keluhan" value="Sakit kepala"> Sakit kepala</label>
+            <label><input type="checkbox" name="bio_8_keluhan" value="Batuk/pilek"> Batuk/pilek</label>
+            <div class="flex items-center gap-2"><input type="checkbox" name="bio_8_keluhan" value="Nyeri"> Nyeri: <input type="text" name="bio_8_nyeri_detail" class="w-20 p-1 border rounded text-xs" placeholder="bagian..."></div>
+          </div>
+          <input type="text" name="bio_8_lainnya" class="w-full p-1.5 border rounded mb-2" placeholder="Lainnya...">
+          <input type="text" name="bio_8_tindakan" class="w-full p-1.5 border rounded" placeholder="Tindakan yang sudah dilakukan...">
+        </div>
+
+        <!-- 9. Kesehatan Lingkungan -->
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">9. Kesehatan Lingkungan & Kebiasaan Sehat</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-48 inline-block">Kerapian tempat tidur:</span> <label class="mr-3"><input type="radio" name="bio_9_kasur" value="Rapi"> Rapi</label> <label class="mr-3"><input type="radio" name="bio_9_kasur" value="Cukup"> Cukup</label> <label><input type="radio" name="bio_9_kasur" value="Kurang"> Kurang</label></div>
+            <div><span class="w-48 inline-block">Kebersihan kamar:</span> <label class="mr-3"><input type="radio" name="bio_9_kamar" value="Bersih"> Bersih</label> <label class="mr-3"><input type="radio" name="bio_9_kamar" value="Cukup"> Cukup</label> <label><input type="radio" name="bio_9_kamar" value="Kurang"> Kurang</label></div>
+            <div><span class="w-48 inline-block">Kebiasaan hidup sehat:</span> <label class="mr-3"><input type="radio" name="bio_9_kebiasaan" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="bio_9_kebiasaan" value="Cukup"> Cukup</label> <label><input type="radio" name="bio_9_kebiasaan" value="Perlu pembinaan"> Perlu pembinaan</label></div>
+          </div>
+          <input type="text" name="bio_9_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+      </div>
+      <textarea name="bio_catatan_umum" rows="2" class="w-full p-2 border rounded border-blue-300" placeholder="Catatan Umum Aspek Biologis..."></textarea>
+    </div>
+
+    <!-- ==========================================
+         STEP 2: ASPEK PSIKOLOGIS
+    =========================================== -->
+    <div class="form-step space-y-6 hidden" data-step="2">
+      <h3 class="text-lg font-bold text-blue-700 border-b pb-2">C. Aspek Psikologis (Emosi & Perilaku)</h3>
+      <div class="space-y-4">
+        
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">1. Kondisi Emosi Umum</p>
+          <div class="grid grid-cols-1 gap-1 mb-2">
+            <label><input type="radio" name="psi_1_emosi" value="Sangat Stabil"> Sangat Stabil (tenang, mampu mengelola emosi dengan baik)</label>
+            <label><input type="radio" name="psi_1_emosi" value="Stabil"> Stabil (sesekali berubah, masih terkendali)</label>
+            <label><input type="radio" name="psi_1_emosi" value="Cukup"> Cukup (mudah berubah suasana hati)</label>
+            <label><input type="radio" name="psi_1_emosi" value="Kurang Stabil"> Kurang Stabil (sering marah, cemas, atau murung)</label>
+          </div>
+          <input type="text" name="psi_1_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">2. Ekspresi Emosi</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-56 inline-block">Cara mengekspresikan emosi:</span> <label class="mr-3"><input type="radio" name="psi_2_cara" value="Terbuka"> Terbuka</label> <label class="mr-3"><input type="radio" name="psi_2_cara" value="Cukup"> Cukup</label> <label><input type="radio" name="psi_2_cara" value="Tertutup"> Tertutup</label></div>
+            <div><span class="w-56 inline-block">Respons saat marah:</span> <label class="mr-3"><input type="radio" name="psi_2_marah" value="Terkontrol"> Terkontrol</label> <label class="mr-3"><input type="radio" name="psi_2_marah" value="Perlu diingatkan"> Perlu diingatkan</label> <label><input type="radio" name="psi_2_marah" value="Meledak-ledak"> Meledak-ledak</label></div>
+            <div><span class="w-56 inline-block">Respons saat sedih:</span> <label class="mr-3"><input type="radio" name="psi_2_sedih" value="Mampu bangkit"> Mampu bangkit</label> <label class="mr-3"><input type="radio" name="psi_2_sedih" value="Perlu dukungan"> Perlu dukungan</label> <label><input type="radio" name="psi_2_sedih" value="Menarik diri"> Menarik diri</label></div>
+          </div>
+          <input type="text" name="psi_2_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">3. Kepercayaan Diri (Self-Confidence)</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="psi_3_pd" value="Tinggi"> Tinggi (berani tampil/berpendapat)</label>
+            <label class="block"><input type="radio" name="psi_3_pd" value="Cukup"> Cukup (kadang ragu)</label>
+            <label class="block"><input type="radio" name="psi_3_pd" value="Rendah"> Rendah (sering minder/menarik diri)</label>
+          </div>
+          <div class="mb-2"><span class="w-56 inline-block">Keberanian tampil di depan umum:</span> <label class="mr-3"><input type="radio" name="psi_3_tampil" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="psi_3_tampil" value="Cukup"> Cukup</label> <label><input type="radio" name="psi_3_tampil" value="Kurang"> Kurang</label></div>
+          <input type="text" name="psi_3_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">4. Motivasi Belajar</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="psi_4_motivasi" value="Tinggi"> Tinggi (inisiatif, semangat)</label>
+            <label class="block"><input type="radio" name="psi_4_motivasi" value="Sedang"> Sedang (perlu dorongan)</label>
+            <label class="block"><input type="radio" name="psi_4_motivasi" value="Rendah"> Rendah (kurang minat)</label>
+          </div>
+          <div class="mb-2"><span class="w-56 inline-block">Ketekunan dalam belajar:</span> <label class="mr-3"><input type="radio" name="psi_4_tekun" value="Tekun"> Tekun</label> <label class="mr-3"><input type="radio" name="psi_4_tekun" value="Cukup"> Cukup</label> <label><input type="radio" name="psi_4_tekun" value="Mudah menyerah"> Mudah menyerah</label></div>
+          <input type="text" name="psi_4_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">5. Konsentrasi & Fokus</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="psi_5_konsentrasi" value="Baik"> Baik (fokus dalam kegiatan)</label>
+            <label class="block"><input type="radio" name="psi_5_konsentrasi" value="Cukup"> Cukup (kadang terdistraksi)</label>
+            <label class="block"><input type="radio" name="psi_5_konsentrasi" value="Kurang"> Kurang (sering tidak fokus)</label>
+          </div>
+          <div class="mb-2"><span class="w-56 inline-block">Daya ingat:</span> <label class="mr-3"><input type="radio" name="psi_5_ingat" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="psi_5_ingat" value="Cukup"> Cukup</label> <label><input type="radio" name="psi_5_ingat" value="Perlu latihan"> Perlu latihan</label></div>
+          <input type="text" name="psi_5_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">6. Kemandirian</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="psi_6_mandiri" value="Mandiri"> Mandiri (mampu mengurus diri sendiri)</label>
+            <label class="block"><input type="radio" name="psi_6_mandiri" value="Cukup"> Cukup (kadang masih bergantung)</label>
+            <label class="block"><input type="radio" name="psi_6_mandiri" value="Kurang"> Kurang (sering bergantung pada orang lain)</label>
+          </div>
+          <div class="mb-2"><span class="w-56 inline-block">Inisiatif dalam tugas:</span> <label class="mr-3"><input type="radio" name="psi_6_inisiatif" value="Tinggi"> Tinggi</label> <label class="mr-3"><input type="radio" name="psi_6_inisiatif" value="Cukup"> Cukup</label> <label><input type="radio" name="psi_6_inisiatif" value="Rendah"> Rendah</label></div>
+          <input type="text" name="psi_6_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">7. Disiplin & Kepatuhan</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="psi_7_disiplin" value="Baik"> Baik (taat aturan tanpa diingatkan)</label>
+            <label class="block"><input type="radio" name="psi_7_disiplin" value="Cukup"> Cukup (perlu diingatkan)</label>
+            <label class="block"><input type="radio" name="psi_7_disiplin" value="Kurang"> Kurang (sering melanggar)</label>
+          </div>
+          <div class="mb-2"><span class="w-56 inline-block">Konsistensi perilaku:</span> <label class="mr-3"><input type="radio" name="psi_7_konsisten" value="Konsisten"> Konsisten</label> <label class="mr-3"><input type="radio" name="psi_7_konsisten" value="Cukup"> Cukup</label> <label><input type="radio" name="psi_7_konsisten" value="Tidak konsisten"> Tidak konsisten</label></div>
+          <input type="text" name="psi_7_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">8. Pengendalian Diri (Self-Control)</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="psi_8_kontrol" value="Baik"> Baik (mampu menahan diri)</label>
+            <label class="block"><input type="radio" name="psi_8_kontrol" value="Cukup"> Cukup (kadang impulsif)</label>
+            <label class="block"><input type="radio" name="psi_8_kontrol" value="Kurang"> Kurang (sering bertindak tanpa berpikir)</label>
+          </div>
+          <div class="mb-2"><span class="w-56 inline-block">Respons terhadap teguran:</span> <label class="mr-3"><input type="radio" name="psi_8_teguran" value="Menerima"> Menerima</label> <label class="mr-3"><input type="radio" name="psi_8_teguran" value="Cukup"> Cukup</label> <label><input type="radio" name="psi_8_teguran" value="Menolak"> Menolak</label></div>
+          <input type="text" name="psi_8_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">9. Perilaku Sosial-Emosional</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-48 inline-block">Empati terhadap teman:</span> <label class="mr-3"><input type="radio" name="psi_9_empati" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="psi_9_empati" value="Cukup"> Cukup</label> <label><input type="radio" name="psi_9_empati" value="Kurang"> Kurang</label></div>
+            <div><span class="w-48 inline-block">Kepedulian:</span> <label class="mr-3"><input type="radio" name="psi_9_peduli" value="Tinggi"> Tinggi</label> <label class="mr-3"><input type="radio" name="psi_9_peduli" value="Cukup"> Cukup</label> <label><input type="radio" name="psi_9_peduli" value="Rendah"> Rendah</label></div>
+            <div><span class="w-48 inline-block">Mudah tersinggung:</span> <label class="mr-3"><input type="radio" name="psi_9_tersinggung" value="Tidak"> Tidak</label> <label class="mr-3"><input type="radio" name="psi_9_tersinggung" value="Kadang"> Kadang</label> <label><input type="radio" name="psi_9_tersinggung" value="Sering"> Sering</label></div>
+          </div>
+          <input type="text" name="psi_9_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">10. Indikasi Perilaku Khusus</p>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-2">
+            <label><input type="checkbox" name="psi_10_khusus" value="Tidak ada"> Tidak ada</label>
+            <label><input type="checkbox" name="psi_10_khusus" value="Menarik diri"> Menarik diri</label>
+            <label><input type="checkbox" name="psi_10_khusus" value="Agresif/verbal/emosional"> Agresif/verbal/emosional</label>
+            <label><input type="checkbox" name="psi_10_khusus" value="Manipulatif"> Manipulatif</label>
+            <label><input type="checkbox" name="psi_10_khusus" value="Kurang jujur"> Kurang jujur</label>
+          </div>
+          <input type="text" name="psi_10_lainnya" class="w-full p-1.5 border rounded mb-2" placeholder="Lainnya...">
+          <input type="text" name="psi_10_tindakan" class="w-full p-1.5 border rounded" placeholder="Tindakan yang sudah dilakukan...">
+        </div>
+      </div>
+      <textarea name="psi_catatan_umum" rows="2" class="w-full p-2 border rounded border-blue-300" placeholder="Catatan Umum Aspek Psikologis..."></textarea>
+    </div>
+
+    <!-- ==========================================
+         STEP 3: ASPEK SOSIAL
+    =========================================== -->
+    <div class="form-step space-y-6 hidden" data-step="3">
+      <h3 class="text-lg font-bold text-blue-700 border-b pb-2">D. Aspek Sosial (Interaksi & Adaptasi)</h3>
+      <div class="space-y-4">
+        
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">1. Hubungan dengan Teman Sebaya</p>
+          <div class="grid grid-cols-1 gap-1 mb-2">
+            <label><input type="radio" name="sos_1_hubungan" value="Sangat Baik"> Sangat Baik (akrab, mudah bergaul)</label>
+            <label><input type="radio" name="sos_1_hubungan" value="Baik"> Baik (berinteraksi cukup baik)</label>
+            <label><input type="radio" name="sos_1_hubungan" value="Cukup"> Cukup (terbatas pada kelompok tertentu)</label>
+            <label><input type="radio" name="sos_1_hubungan" value="Kurang"> Kurang (sering menyendiri/konflik)</label>
+          </div>
+          <input type="text" name="sos_1_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">2. Kemampuan Berkomunikasi</p>
+          <div class="grid grid-cols-1 gap-1 mb-2">
+            <label><input type="radio" name="sos_2_komunikasi" value="Baik"> Baik (jelas, sopan, mudah dipahami)</label>
+            <label><input type="radio" name="sos_2_komunikasi" value="Cukup"> Cukup (kadang kurang jelas/percaya diri)</label>
+            <label><input type="radio" name="sos_2_komunikasi" value="Kurang"> Kurang (sulit menyampaikan pendapat)</label>
+          </div>
+          <div class="mb-2"><span class="w-40 inline-block">Gaya komunikasi:</span> <label class="mr-3"><input type="radio" name="sos_2_gaya" value="Asertif"> Asertif</label> <label class="mr-3"><input type="radio" name="sos_2_gaya" value="Pasif"> Pasif</label> <label><input type="radio" name="sos_2_gaya" value="Agresif"> Agresif</label></div>
+          <input type="text" name="sos_2_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">3. Kerja Sama & Kebersamaan</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-64 inline-block">Partisipasi dalam kegiatan kelompok:</span> <label class="mr-3"><input type="radio" name="sos_3_partisipasi" value="Aktif"> Aktif</label> <label class="mr-3"><input type="radio" name="sos_3_partisipasi" value="Cukup"> Cukup</label> <label><input type="radio" name="sos_3_partisipasi" value="Pasif"> Pasif</label></div>
+            <div><span class="w-64 inline-block">Kemampuan bekerja sama:</span> <label class="mr-3"><input type="radio" name="sos_3_kerjasama" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="sos_3_kerjasama" value="Cukup"> Cukup</label> <label><input type="radio" name="sos_3_kerjasama" value="Kurang"> Kurang</label></div>
+            <div><span class="w-64 inline-block">Sikap saat kerja kelompok:</span> <label class="mr-3"><input type="radio" name="sos_3_sikap" value="Kooperatif"> Kooperatif</label> <label class="mr-3"><input type="radio" name="sos_3_sikap" value="Cukup"> Cukup</label> <label><input type="radio" name="sos_3_sikap" value="Egois"> Egois</label></div>
+          </div>
+          <input type="text" name="sos_3_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">4. Kepedulian & Empati Sosial</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-64 inline-block">Kepedulian terhadap teman:</span> <label class="mr-3"><input type="radio" name="sos_4_peduli" value="Tinggi"> Tinggi</label> <label class="mr-3"><input type="radio" name="sos_4_peduli" value="Cukup"> Cukup</label> <label><input type="radio" name="sos_4_peduli" value="Rendah"> Rendah</label></div>
+            <div><span class="w-64 inline-block">Respons terhadap teman yang membutuhkan:</span> <label class="mr-3"><input type="radio" name="sos_4_respons" value="Sigap"> Sigap</label> <label class="mr-3"><input type="radio" name="sos_4_respons" value="Cukup"> Cukup</label> <label><input type="radio" name="sos_4_respons" value="Acuh"> Acuh</label></div>
+            <div><span class="w-64 inline-block">Sikap tolong-menolong:</span> <label class="mr-3"><input type="radio" name="sos_4_tolong" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="sos_4_tolong" value="Cukup"> Cukup</label> <label><input type="radio" name="sos_4_tolong" value="Kurang"> Kurang</label></div>
+          </div>
+          <input type="text" name="sos_4_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">5. Kepatuhan terhadap Aturan Sosial</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="sos_5_patuh" value="Baik"> Baik (taat tanpa diingatkan)</label>
+            <label class="block"><input type="radio" name="sos_5_patuh" value="Cukup"> Cukup (perlu diingatkan)</label>
+            <label class="block"><input type="radio" name="sos_5_patuh" value="Kurang"> Kurang (sering melanggar)</label>
+          </div>
+          <div class="mb-2"><span class="w-48 inline-block">Sikap terhadap tata tertib:</span> <label class="mr-3"><input type="radio" name="sos_5_sikap" value="Positif"> Positif</label> <label class="mr-3"><input type="radio" name="sos_5_sikap" value="Biasa"> Biasa</label> <label><input type="radio" name="sos_5_sikap" value="Menolak"> Menolak</label></div>
+          <input type="text" name="sos_5_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">6. Adaptasi di Lingkungan Asrama</p>
+          <div class="grid grid-cols-1 gap-1 mb-2">
+            <label><input type="radio" name="sos_6_adaptasi" value="Sangat Baik"> Sangat Baik (nyaman, cepat beradaptasi)</label>
+            <label><input type="radio" name="sos_6_adaptasi" value="Baik"> Baik (cukup menyesuaikan)</label>
+            <label><input type="radio" name="sos_6_adaptasi" value="Cukup"> Cukup (masih butuh waktu)</label>
+            <label><input type="radio" name="sos_6_adaptasi" value="Kurang"> Kurang (belum nyaman/sering mengeluh)</label>
+          </div>
+          <input type="text" name="sos_6_keluhan" class="w-full p-1.5 border rounded mb-2" placeholder="Keluhan yang muncul (jika ada)...">
+          <input type="text" name="sos_6_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">7. Interaksi dengan Wali Asuh/Guru</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="sos_7_interaksi" value="Terbuka"> Terbuka (mudah diajak komunikasi)</label>
+            <label class="block"><input type="radio" name="sos_7_interaksi" value="Cukup"> Cukup (kadang terbuka)</label>
+            <label class="block"><input type="radio" name="sos_7_interaksi" value="Tertutup"> Tertutup (jarang berkomunikasi)</label>
+          </div>
+          <div class="mb-2"><span class="w-48 inline-block">Sikap terhadap arahan:</span> <label class="mr-3"><input type="radio" name="sos_7_arahan" value="Menerima"> Menerima</label> <label class="mr-3"><input type="radio" name="sos_7_arahan" value="Cukup"> Cukup</label> <label><input type="radio" name="sos_7_arahan" value="Menolak"> Menolak</label></div>
+          <input type="text" name="sos_7_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">8. Penyelesaian Konflik</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="sos_8_konflik" value="Baik"> Baik (mampu menyelesaikan dengan baik)</label>
+            <label class="block"><input type="radio" name="sos_8_konflik" value="Cukup"> Cukup (perlu bantuan)</label>
+            <label class="block"><input type="radio" name="sos_8_konflik" value="Kurang"> Kurang (sering terlibat konflik)</label>
+          </div>
+          <div class="mb-2"><span class="w-48 inline-block">Cara menyelesaikan masalah:</span> <label class="mr-3"><input type="radio" name="sos_8_cara" value="Musyawarah"> Musyawarah</label> <label class="mr-3"><input type="radio" name="sos_8_cara" value="Menghindar"> Menghindar</label> <label><input type="radio" name="sos_8_cara" value="Emosional"> Emosional</label></div>
+          <input type="text" name="sos_8_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">9. Partisipasi Kegiatan Sosial</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="sos_9_partisipasi" value="Aktif"> Aktif (sering terlibat kegiatan)</label>
+            <label class="block"><input type="radio" name="sos_9_partisipasi" value="Cukup"> Cukup (kadang ikut)</label>
+            <label class="block"><input type="radio" name="sos_9_partisipasi" value="Kurang"> Kurang (jarang/tidak ikut)</label>
+          </div>
+          <input type="text" name="sos_9_jenis" class="w-full p-1.5 border rounded mb-2" placeholder="Jenis kegiatan yang diikuti...">
+          <input type="text" name="sos_9_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">10. Indikasi Perilaku Sosial Khusus</p>
+          <div class="grid grid-cols-2 gap-2 mb-2">
+            <label><input type="checkbox" name="sos_10_khusus" value="Tidak ada"> Tidak ada</label>
+            <label><input type="checkbox" name="sos_10_khusus" value="Menarik diri dari lingkungan"> Menarik diri dari lingkungan</label>
+            <label><input type="checkbox" name="sos_10_khusus" value="Sulit bergaul"> Sulit bergaul</label>
+            <label><input type="checkbox" name="sos_10_khusus" value="Dominan/ingin menang sendiri"> Dominan/ingin menang sendiri</label>
+            <label><input type="checkbox" name="sos_10_khusus" value="Mudah terpengaruh teman"> Mudah terpengaruh teman</label>
+          </div>
+          <input type="text" name="sos_10_lainnya" class="w-full p-1.5 border rounded mb-2" placeholder="Lainnya...">
+          <input type="text" name="sos_10_tindakan" class="w-full p-1.5 border rounded" placeholder="Tindakan yang sudah dilakukan...">
+        </div>
+
+      </div>
+      <textarea name="sos_catatan_umum" rows="2" class="w-full p-2 border rounded border-blue-300" placeholder="Catatan Umum Aspek Sosial..."></textarea>
+    </div>
+
+    <!-- ==========================================
+         STEP 4: ASPEK SPIRITUAL
+    =========================================== -->
+    <div class="form-step space-y-6 hidden" data-step="4">
+      <h3 class="text-lg font-bold text-blue-700 border-b pb-2">E. Aspek Spiritual (Ibadah & Sikap Religius)</h3>
+      <div class="space-y-4">
+        
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">1. Kedisiplinan Ibadah Wajib (Shalat)</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="spi_1_wajib" value="Sangat Baik"> Sangat Baik (tepat waktu, berjamaah, tanpa diingatkan)</label>
+            <label class="block"><input type="radio" name="spi_1_wajib" value="Baik"> Baik (umumnya tepat waktu, kadang diingatkan)</label>
+            <label class="block"><input type="radio" name="spi_1_wajib" value="Cukup"> Cukup (sering diingatkan)</label>
+            <label class="block"><input type="radio" name="spi_1_wajib" value="Kurang"> Kurang (sering lalai/menunda)</label>
+          </div>
+          <div class="mb-2"><span class="w-48 inline-block">Konsistensi berjamaah:</span> <label class="mr-3"><input type="radio" name="spi_1_jamaah" value="Rutin"> Rutin</label> <label class="mr-3"><input type="radio" name="spi_1_jamaah" value="Cukup"> Cukup</label> <label><input type="radio" name="spi_1_jamaah" value="Jarang"> Jarang</label></div>
+          <input type="text" name="spi_1_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">2. Pelaksanaan Ibadah Sunnah</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="spi_2_sunnah" value="Aktif"> Aktif (sering melaksanakan: dhuha, tahajud, dll)</label>
+            <label class="block"><input type="radio" name="spi_2_sunnah" value="Cukup"> Cukup (kadang melaksanakan)</label>
+            <label class="block"><input type="radio" name="spi_2_sunnah" value="Kurang"> Kurang (jarang/tidak melaksanakan)</label>
+          </div>
+          <input type="text" name="spi_2_jenis" class="w-full p-1.5 border rounded mb-2" placeholder="Jenis ibadah sunnah yang dilakukan...">
+          <input type="text" name="spi_2_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">3. Interaksi dengan Al-Qur’an</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-48 inline-block">Kemampuan membaca:</span> <label class="mr-3"><input type="radio" name="spi_3_baca" value="Lancar"> Lancar</label> <label class="mr-3"><input type="radio" name="spi_3_baca" value="Cukup"> Cukup</label> <label><input type="radio" name="spi_3_baca" value="Perlu bimbingan"> Perlu bimbingan</label></div>
+            <div><span class="w-48 inline-block">Keteraturan mengaji:</span> <label class="mr-3"><input type="radio" name="spi_3_ngaji" value="Rutin"> Rutin</label> <label class="mr-3"><input type="radio" name="spi_3_ngaji" value="Cukup"> Cukup</label> <label><input type="radio" name="spi_3_ngaji" value="Jarang"> Jarang</label></div>
+            <div><span class="w-48 inline-block">Hafalan (jika ada):</span> <label class="mr-3"><input type="radio" name="spi_3_hafal" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="spi_3_hafal" value="Cukup"> Cukup</label> <label><input type="radio" name="spi_3_hafal" value="Perlu pembinaan"> Perlu pembinaan</label></div>
+          </div>
+          <input type="text" name="spi_3_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">4. Keikutsertaan Kegiatan Keagamaan</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="spi_4_ikut" value="Aktif"> Aktif (antusias dan terlibat)</label>
+            <label class="block"><input type="radio" name="spi_4_ikut" value="Cukup"> Cukup (ikut namun pasif)</label>
+            <label class="block"><input type="radio" name="spi_4_ikut" value="Kurang"> Kurang (sering tidak ikut)</label>
+          </div>
+          <input type="text" name="spi_4_jenis" class="w-full p-1.5 border rounded mb-2" placeholder="Jenis kegiatan (muhadhoroh, kajian, dll)...">
+          <input type="text" name="spi_4_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">5. Sikap & Akhlak Sehari-hari</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="spi_5_akhlak" value="Sangat Baik"> Sangat Baik (sopan, santun, menghormati)</label>
+            <label class="block"><input type="radio" name="spi_5_akhlak" value="Baik"> Baik (umumnya baik)</label>
+            <label class="block"><input type="radio" name="spi_5_akhlak" value="Cukup"> Cukup (perlu diingatkan)</label>
+            <label class="block"><input type="radio" name="spi_5_akhlak" value="Kurang"> Kurang (perlu pembinaan intensif)</label>
+          </div>
+          <div class="space-y-2 mb-2 mt-2">
+            <div><span class="w-48 inline-block">Sikap kepada teman:</span> <label class="mr-3"><input type="radio" name="spi_5_teman" value="Baik"> Baik</label> <label class="mr-3"><input type="radio" name="spi_5_teman" value="Cukup"> Cukup</label> <label><input type="radio" name="spi_5_teman" value="Kurang"> Kurang</label></div>
+            <div><span class="w-48 inline-block">Sikap kepada guru/wali:</span> <label class="mr-3"><input type="radio" name="spi_5_guru" value="Hormat"> Hormat</label> <label class="mr-3"><input type="radio" name="spi_5_guru" value="Cukup"> Cukup</label> <label><input type="radio" name="spi_5_guru" value="Kurang"> Kurang</label></div>
+          </div>
+          <input type="text" name="spi_5_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">6. Kesadaran Beribadah</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="spi_6_sadar" value="Tinggi"> Tinggi (inisiatif sendiri)</label>
+            <label class="block"><input type="radio" name="spi_6_sadar" value="Cukup"> Cukup (kadang diingatkan)</label>
+            <label class="block"><input type="radio" name="spi_6_sadar" value="Rendah"> Rendah (sering menunggu perintah)</label>
+          </div>
+          <div class="mb-2"><span class="w-56 inline-block">Respons terhadap ajakan ibadah:</span> <label class="mr-3"><input type="radio" name="spi_6_respons" value="Antusias"> Antusias</label> <label class="mr-3"><input type="radio" name="spi_6_respons" value="Biasa"> Biasa</label> <label><input type="radio" name="spi_6_respons" value="Enggan"> Enggan</label></div>
+          <input type="text" name="spi_6_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">7. Pemahaman Nilai Keagamaan</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="spi_7_paham" value="Baik"> Baik (memahami dan mengamalkan)</label>
+            <label class="block"><input type="radio" name="spi_7_paham" value="Cukup"> Cukup (memahami sebagian)</label>
+            <label class="block"><input type="radio" name="spi_7_paham" value="Kurang"> Kurang (perlu pembinaan)</label>
+          </div>
+          <div class="mb-2"><span class="w-56 inline-block">Penerapan dalam keseharian:</span> <label class="mr-3"><input type="radio" name="spi_7_terap" value="Konsisten"> Konsisten</label> <label class="mr-3"><input type="radio" name="spi_7_terap" value="Cukup"> Cukup</label> <label><input type="radio" name="spi_7_terap" value="Kurang"> Kurang</label></div>
+          <input type="text" name="spi_7_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">8. Kebiasaan Dzikir & Doa</p>
+          <div class="space-y-1 mb-2">
+            <label class="block"><input type="radio" name="spi_8_dzikir" value="Rutin"> Rutin (dzikir harian, doa sebelum/sesudah aktivitas)</label>
+            <label class="block"><input type="radio" name="spi_8_dzikir" value="Cukup"> Cukup (kadang dilakukan)</label>
+            <label class="block"><input type="radio" name="spi_8_dzikir" value="Kurang"> Kurang (jarang dilakukan)</label>
+          </div>
+          <input type="text" name="spi_8_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">9. Lingkungan & Pengaruh Spiritual</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-56 inline-block">Pergaulan mendukung ibadah:</span> <label class="mr-3"><input type="radio" name="spi_9_dukung" value="Ya"> Ya</label> <label class="mr-3"><input type="radio" name="spi_9_dukung" value="Cukup"> Cukup</label> <label><input type="radio" name="spi_9_dukung" value="Kurang"> Kurang</label></div>
+            <div><span class="w-56 inline-block">Pengaruh teman terhadap ibadah:</span> <label class="mr-3"><input type="radio" name="spi_9_pengaruh" value="Positif"> Positif</label> <label class="mr-3"><input type="radio" name="spi_9_pengaruh" value="Netral"> Netral</label> <label><input type="radio" name="spi_9_pengaruh" value="Negatif"> Negatif</label></div>
+          </div>
+          <input type="text" name="spi_9_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">10. Indikasi Perilaku Spiritual Khusus</p>
+          <div class="grid grid-cols-2 gap-2 mb-2">
+            <label><input type="checkbox" name="spi_10_khusus" value="Tidak ada"> Tidak ada</label>
+            <label><input type="checkbox" name="spi_10_khusus" value="Kurang disiplin ibadah"> Kurang disiplin ibadah</label>
+            <label><input type="checkbox" name="spi_10_khusus" value="Kurang sopan santun"> Kurang sopan santun</label>
+            <label><input type="checkbox" name="spi_10_khusus" value="Enggan mengikuti kegiatan keagamaan"> Enggan mengikuti kegiatan keagamaan</label>
+          </div>
+          <input type="text" name="spi_10_lainnya" class="w-full p-1.5 border rounded mb-2" placeholder="Lainnya...">
+          <input type="text" name="spi_10_tindakan" class="w-full p-1.5 border rounded" placeholder="Tindakan yang sudah dilakukan...">
+        </div>
+
+      </div>
+      <textarea name="spi_catatan_umum" rows="2" class="w-full p-2 border rounded border-blue-300" placeholder="Catatan Umum Aspek Spiritual..."></textarea>
+    </div>
+
+    <!-- ==========================================
+         STEP 5: HUBUNGAN KELUARGA
+    =========================================== -->
+    <div class="form-step space-y-6 hidden" data-step="5">
+      <h3 class="text-lg font-bold text-blue-700 border-b pb-2">F. Aspek Hubungan dengan Keluarga (Pendalaman Psikososial)</h3>
+      <div class="bg-yellow-50 text-yellow-800 p-3 rounded text-xs">
+        <strong>Catatan penting:</strong> Digunakan dengan pendekatan empatik, menjaga kerahasiaan, dan tidak memaksa siswa bercerita. Jika ditemukan indikasi berat, disarankan koordinasi dengan Guru BK/konselor.
+      </div>
+      
+      <div class="space-y-4">
+        
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">1. Persepsi Siswa terhadap Keluarga</p>
+          <div class="mb-3">
+            <span class="block mb-1 text-gray-700">Perasaan siswa saat membicarakan keluarga:</span>
+            <div class="flex flex-wrap gap-3">
+              <label><input type="radio" name="kel_1_perasaan" value="Nyaman & bahagia"> Nyaman & bahagia</label>
+              <label><input type="radio" name="kel_1_perasaan" value="Biasa saja"> Biasa saja</label>
+              <label><input type="radio" name="kel_1_perasaan" value="Enggan bercerita"> Enggan bercerita</label>
+              <label><input type="radio" name="kel_1_perasaan" value="Terlihat sedih/tertekan"> Terlihat sedih/tertekan</label>
+            </div>
+          </div>
+          <div class="mb-2">
+            <span class="block mb-1 text-gray-700">Cara siswa menggambarkan keluarganya:</span>
+            <div class="flex flex-wrap gap-3">
+              <label><input type="radio" name="kel_1_cara" value="Hangat & mendukung"> Hangat & mendukung</label>
+              <label><input type="radio" name="kel_1_cara" value="Cukup baik"> Cukup baik</label>
+              <label><input type="radio" name="kel_1_cara" value="Kurang dekat"> Kurang dekat</label>
+              <label><input type="radio" name="kel_1_cara" value="Penuh konflik"> Penuh konflik</label>
+            </div>
+          </div>
+          <input type="text" name="kel_1_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan pengamatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">2. Kedekatan Emosional (Attachment)</p>
+          <div class="space-y-2 mb-2">
+            <div><span class="w-56 inline-block">Kedekatan dengan orang tua/wali:</span> <label class="mr-2"><input type="radio" name="kel_2_dekat" value="Sangat dekat"> Sangat dekat</label> <label class="mr-2"><input type="radio" name="kel_2_dekat" value="Cukup dekat"> Cukup dekat</label> <label class="mr-2"><input type="radio" name="kel_2_dekat" value="Kurang dekat"> Kurang dekat</label> <label><input type="radio" name="kel_2_dekat" value="Jauh/asing"> Jauh/asing</label></div>
+            <div><span class="w-56 inline-block">Keterbukaan bercerita:</span> <label class="mr-2"><input type="radio" name="kel_2_terbuka" value="Terbuka"> Terbuka</label> <label class="mr-2"><input type="radio" name="kel_2_terbuka" value="Cukup"> Cukup</label> <label><input type="radio" name="kel_2_terbuka" value="Tertutup"> Tertutup</label></div>
+            <div><span class="w-56 inline-block">Respon siswa saat dihubungi keluarga:</span> <label class="mr-2"><input type="radio" name="kel_2_respon" value="Antusias"> Antusias</label> <label class="mr-2"><input type="radio" name="kel_2_respon" value="Biasa"> Biasa</label> <label><input type="radio" name="kel_2_respon" value="Enggan"> Enggan</label></div>
+          </div>
+          <input type="text" name="kel_2_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">3. Pengalaman Emosional dalam Keluarga</p>
+          <div class="mb-3">
+            <span class="block mb-1 text-gray-700 italic text-xs">(tidak ditanya langsung, tetapi digali melalui pendekatan halus)</span>
+            <span class="block mb-1 text-gray-700">Indikasi pengalaman tidak menyenangkan:</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <label><input type="checkbox" name="kel_3_indikasi" value="Tidak tampak"> Tidak tampak</label>
+              <label><input type="checkbox" name="kel_3_indikasi" value="Pernah dimarahi keras"> Pernah dimarahi keras</label>
+              <label><input type="checkbox" name="kel_3_indikasi" value="Kurang perhatian/kasih sayang"> Kurang perhatian/kasih sayang</label>
+              <label><input type="checkbox" name="kel_3_indikasi" value="Sering dibandingkan"> Sering dibandingkan</label>
+              <label><input type="checkbox" name="kel_3_indikasi" value="Pernah mengalami perlakuan kasar"> Pernah mengalami perlakuan kasar</label>
+            </div>
+            <input type="text" name="kel_3_lainnya" class="w-full p-1.5 border rounded mt-2 text-xs" placeholder="Lainnya...">
+          </div>
+          <div class="mb-2">
+            <span class="w-56 inline-block">Reaksi siswa saat topik keluarga muncul:</span> <label class="mr-2"><input type="radio" name="kel_3_reaksi" value="Tenang"> Tenang</label> <label class="mr-2"><input type="radio" name="kel_3_reaksi" value="Menghindar"> Menghindar</label> <label><input type="radio" name="kel_3_reaksi" value="Emosional"> Emosional (menangis/marah)</label>
+          </div>
+          <input type="text" name="kel_3_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">4. Indikasi Luka Emosional (Inner Child)</p>
+          <span class="block mb-2 text-gray-700 italic text-xs">(diamati dari perilaku sehari-hari)</span>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+            <label><input type="checkbox" name="kel_4_inner" value="Mudah merasa tidak dihargai"> Mudah merasa tidak dihargai</label>
+            <label><input type="checkbox" name="kel_4_inner" value="Sangat membutuhkan perhatian/pengakuan"> Sangat membutuhkan perhatian/pengakuan</label>
+            <label><input type="checkbox" name="kel_4_inner" value="Takut melakukan kesalahan"> Takut melakukan kesalahan</label>
+            <label><input type="checkbox" name="kel_4_inner" value="Sulit percaya pada orang lain"> Sulit percaya pada orang lain</label>
+            <label><input type="checkbox" name="kel_4_inner" value="Menarik diri/tertutup"> Menarik diri/tertutup</label>
+            <label><input type="checkbox" name="kel_4_inner" value="Cenderung agresif/defensif"> Cenderung agresif/defensif</label>
+            <label><input type="checkbox" name="kel_4_inner" value="Perfeksionis berlebihan"> Perfeksionis berlebihan</label>
+          </div>
+          <input type="text" name="kel_4_lainnya" class="w-full p-1.5 border rounded mb-2 text-xs" placeholder="Lainnya...">
+          <input type="text" name="kel_4_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan pengamatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">5. Pola Pengasuhan yang Terlihat (Dari Cerita/Perilaku)</p>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
+            <label><input type="checkbox" name="kel_5_pola" value="Hangat & suportif"> Hangat & suportif</label>
+            <label><input type="checkbox" name="kel_5_pola" value="Cukup terarah"> Cukup terarah</label>
+            <label><input type="checkbox" name="kel_5_pola" value="Otoriter (keras/menuntut)"> Otoriter (keras/menuntut)</label>
+            <label><input type="checkbox" name="kel_5_pola" value="Kurang perhatian"> Kurang perhatian</label>
+            <label><input type="checkbox" name="kel_5_pola" value="Tidak konsisten"> Tidak konsisten</label>
+          </div>
+          <div class="mb-2">
+            <span class="block mb-1 text-gray-700">Dampak pada siswa:</span>
+            <div class="flex flex-wrap gap-3">
+              <label><input type="radio" name="kel_5_dampak" value="Percaya diri"> Percaya diri</label>
+              <label><input type="radio" name="kel_5_dampak" value="Cukup stabil"> Cukup stabil</label>
+              <label><input type="radio" name="kel_5_dampak" value="Ragu/minder"> Ragu/minder</label>
+              <label><input type="radio" name="kel_5_dampak" value="Cemas/tertekan"> Cemas/tertekan</label>
+            </div>
+          </div>
+          <input type="text" name="kel_5_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">6. Kondisi Keluarga yang Mempengaruhi</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+            <label><input type="checkbox" name="kel_6_kondisi" value="Tidak ada"> Tidak ada</label>
+            <label><input type="checkbox" name="kel_6_kondisi" value="Orang tua berpisah/tidak utuh"> Orang tua berpisah/tidak utuh</label>
+            <label><input type="checkbox" name="kel_6_kondisi" value="Konflik keluarga"> Konflik keluarga</label>
+            <label><input type="checkbox" name="kel_6_kondisi" value="Keterbatasan ekonomi"> Keterbatasan ekonomi</label>
+            <label><input type="checkbox" name="kel_6_kondisi" value="Orang tua jarang di rumah"> Orang tua jarang di rumah</label>
+          </div>
+          <input type="text" name="kel_6_lainnya" class="w-full p-1.5 border rounded mb-2 text-xs" placeholder="Lainnya...">
+          <input type="text" name="kel_6_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">7. Mekanisme Koping Siswa (Cara Menghadapi Perasaan)</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+            <label><input type="checkbox" name="kel_7_koping" value="Bercerita ke orang lain"> Bercerita ke orang lain</label>
+            <label><input type="checkbox" name="kel_7_koping" value="Menyibukkan diri (belajar/kegiatan)"> Menyibukkan diri (belajar/kegiatan)</label>
+            <label><input type="checkbox" name="kel_7_koping" value="Menarik diri"> Menarik diri</label>
+            <label><input type="checkbox" name="kel_7_koping" value="Menunjukkan emosi (marah/sedih)"> Menunjukkan emosi (marah/sedih)</label>
+            <label><input type="checkbox" name="kel_7_koping" value="Berperilaku mencari perhatian"> Berperilaku mencari perhatian</label>
+          </div>
+          <input type="text" name="kel_7_lainnya" class="w-full p-1.5 border rounded mb-2 text-xs" placeholder="Lainnya...">
+          <input type="text" name="kel_7_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">8. Kebutuhan Emosional Siswa</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+            <label><input type="checkbox" name="kel_8_kebutuhan" value="Perhatian & kasih sayang"> Perhatian & kasih sayang</label>
+            <label><input type="checkbox" name="kel_8_kebutuhan" value="Penguatan/validasi"> Penguatan/validasi</label>
+            <label><input type="checkbox" name="kel_8_kebutuhan" value="Rasa aman & nyaman"> Rasa aman & nyaman</label>
+            <label><input type="checkbox" name="kel_8_kebutuhan" value="Pendampingan intensif"> Pendampingan intensif</label>
+            <label><input type="checkbox" name="kel_8_kebutuhan" value="Konseling profesional"> Konseling profesional</label>
+          </div>
+          <input type="text" name="kel_8_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+        <div class="border p-3 rounded bg-gray-50">
+          <p class="font-bold mb-2">9. Rekomendasi Pendampingan</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+            <label><input type="checkbox" name="kel_9_rekomendasi" value="Pendekatan personal oleh wali asuh"> Pendekatan personal oleh wali asuh</label>
+            <label><input type="checkbox" name="kel_9_rekomendasi" value="Komunikasi intens dengan orang tua"> Komunikasi intens dengan orang tua</label>
+            <label><input type="checkbox" name="kel_9_rekomendasi" value="Pendampingan Guru BK"> Pendampingan Guru BK</label>
+            <label><input type="checkbox" name="kel_9_rekomendasi" value="Kegiatan penguatan karakter/spiritual"> Kegiatan penguatan karakter/spiritual</label>
+            <label><input type="checkbox" name="kel_9_rekomendasi" value="Rujukan lanjutan (jika diperlukan)"> Rujukan lanjutan (jika diperlukan)</label>
+          </div>
+          <input type="text" name="kel_9_catatan" class="w-full p-1.5 border rounded" placeholder="Catatan...">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tombol Navigasi Bawah -->
+    <div class="flex justify-between items-center pt-6 border-t mt-6 bg-white sticky bottom-0 py-4 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
+      <button type="button" id="btn-prev" onclick="changeStep(-1)" class="px-5 py-2.5 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg hidden transition-colors">← Sebelumnya</button>
+      <div class="ml-auto flex gap-3">
+        <button type="button" id="btn-next" onclick="changeStep(1)" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">Selanjutnya →</button>
+        <button type="submit" id="btn-submit" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg hidden transition-colors shadow-lg">Simpan Asesmen ✓</button>
+      </div>
+    </div>
+  </form>
+
+<!-- ==========================================
+       BOTTOM CARDS: PENILAIAN TERSIMPAN (Hidden Default)
+  =========================================== -->
+  <div id="wrapper-saved-assessments" class="mt-12 pt-8 border-t border-gray-200 hidden">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-sm font-extrabold text-blue-900 uppercase tracking-wider">Penilaian Tersimpan — <span id="title-student-name">Siswa</span></h3>
+        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Edit/Hapus khusus Admin & Penilai terkait</span>
+    </div>
+    
+    <div id="saved-assessments-container" class="space-y-3">
+        <div class="p-4 text-center text-gray-500 text-sm italic bg-gray-50 rounded-xl border border-gray-200">
+            Memuat data penilaian tersimpan...
+        </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==========================================
+     MODAL PREVIEW ASESMEN
+=========================================== -->
+<div id="modal-preview-asesmen" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity">
+  <!-- Kontainer Modal -->
+  <div id="modal-content" class="bg-white rounded-xl shadow-2xl w-11/12 md:w-3/4 lg:w-3/5 max-h-[90vh] flex flex-col relative transition-all duration-300">
+    
+    <!-- Header Modal -->
+    <div class="flex justify-between items-center p-4 border-b bg-gray-50 rounded-t-xl" id="modal-header">
+      <h3 class="font-bold text-blue-800 flex items-center gap-2">
+        📄 Preview Asesmen Tersimpan
+      </h3>
+      <div class="flex items-center gap-3">
+        <!-- Tombol Zoom (Perbesar/Perkecil) -->
+        <button onclick="toggleZoomModal()" title="Perbesar/Perkecil" class="text-gray-500 hover:text-blue-600 p-1 bg-white border rounded shadow-sm">
+          <svg id="icon-zoom" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+        </button>
+        <!-- Tombol Tutup -->
+        <button onclick="closeModalPreview()" title="Tutup" class="text-gray-500 hover:text-red-600 font-bold p-1 bg-white border rounded shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Body Modal (Area yang bisa di-scroll) -->
+    <div id="preview-body" class="p-6 overflow-y-auto hide-scrollbar text-sm text-gray-700 space-y-4 bg-white">
+      <!-- Konten akan dirender oleh JavaScript -->
+    </div>
+    
+    <!-- Footer Modal -->
+    <div class="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end">
+      <button onclick="closeModalPreview()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition-colors font-medium">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Styling tambahan agar horizontal scroll rapi tanpa scrollbar bawaan browser */
+  .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+  }
+  .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+</style>
+
+<script>
+  let currentStep = 0;
+  const totalSteps = 5; // Indeks maksimal form-step (0 sampai 5)
+  let dataSiswaGlobal = [];
+  // Variabel baru untuk menyimpan user aktif dan data riwayat
+  let currentUserEmail = ""; 
+  let savedAssessmentsGlobal = [];
+
+  // ==========================================
+  //inisialisasi Saat Halaman Dimuat
+  // ==========================================
+  document.addEventListener("DOMContentLoaded", function() {
+    loadStudentDataToDropdown();
+    initUserDataAndHistory();
+  });
+
+  // ==========================================
+  // LOGIKA EXPAND CARDS ATAS
+  // ==========================================
+  function toggleExpand(id) {
+    const panels = document.querySelectorAll('.expand-panel');
+    const targetPanel = document.getElementById(id);
+    
+    // Tutup panel lain jika sedang terbuka
+    panels.forEach(panel => {
+      if(panel.id !== id && !panel.classList.contains('hidden')) {
+        panel.classList.add('hidden');
+      }
+    });
+    
+    // Toggle panel yang diklik
+    targetPanel.classList.toggle('hidden');
+  }
+
+  // ==========================================
+  // 1. FUNGSI MEMUAT & AUTOFILL DATA SISWA
+  // ==========================================
+  function loadStudentDataToDropdown() {
+    const selectNama = document.getElementById('select-nama');
+    selectNama.innerHTML = '<option value="" disabled selected>-- Memuat Data Siswa... --</option>';
+    
+    if(typeof google !== 'undefined' && google.script) {
+        google.script.run
+        .withSuccessHandler(function(students) {
+            dataSiswaGlobal = students; 
+            
+            // 1. Siapkan opsi default
+            // Perhatikan: Value dibuat kosong "" agar placeholder Select2 bisa berfungsi dengan baik
+            selectNama.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+            
+            // 2. Masukkan data siswa ke dalam dropdown
+            students.forEach(function(siswa) {
+                const option = document.createElement('option');
+                option.value = siswa.nama;
+                option.text = siswa.nama;
+                selectNama.appendChild(option);
+            });
+
+            // 3. Terapkan Select2 pada dropdown (Fitur Search)
+            $('#select-nama').select2({
+                placeholder: "Ketik atau pilih nama siswa",
+                width: '100%'
+            });
+            
+        })
+        .withFailureHandler(function(error) {
+            console.error("Gagal memuat data:", error);
+            selectNama.innerHTML = '<option value="" disabled selected>-- Gagal Memuat Data --</option>';
+        })
+        .getStudentData();
+    }
+}
+
+  function autoFillStudentInfo() {
+    const selectedName = document.getElementById('select-nama').value;
+    const student = dataSiswaGlobal.find(s => s.nama === selectedName);
+    
+    if (student) {
+      document.getElementById('input-kelas').value = student.kelas || "";
+      document.getElementById('input-kamar').value = student.kamar || "";
+      document.getElementById('input-wali').value = student.wali || "";
+    }
+
+    const wrapper = document.getElementById('wrapper-saved-assessments');
+    const formElement = document.getElementById('form-asesmen');
+    
+    if (selectedName) {
+        wrapper.classList.remove('hidden');
+        document.getElementById('title-student-name').textContent = selectedName;
+        
+        // Filter riwayat berdasarkan siswa yang dipilih
+        const filteredData = savedAssessmentsGlobal.filter(item => item.nama.toLowerCase().trim() === selectedName.toLowerCase().trim());
+        renderAssessments(filteredData);
+
+        // Cek apakah user yang sedang login sudah pernah menilai siswa ini
+        const existingAssessmentByMe = filteredData.find(item => item.penilai && item.penilai.toLowerCase().trim() === currentUserEmail.toLowerCase().trim());
+        
+        // Cek apakah sudah dinilai oleh user LAIN
+        const existingAssessmentByOther = filteredData.find(item => item.penilai && item.penilai.toLowerCase().trim() !== currentUserEmail.toLowerCase().trim());
+
+        if (existingAssessmentByMe) {
+            // Skenario 1: Sudah dinilai oleh user yang sama -> Nonaktifkan form / arahkan edit
+            alert(`Pemberitahuan: Anda sudah pernah menilai siswa ${selectedName}. Silakan gunakan tombol Edit di bawah jika ingin mengubah data.`);
+            // Opsional: Kunci tombol selanjutnya atau form agar tidak submit dobel
+            toggleFormDisabled(true);
+        } else if (existingAssessmentByOther) {
+            // Skenario 2: Sudah dinilai oleh user lain -> Beri peringatan konfirmasi
+            let penilaiLain = existingAssessmentByOther.penilai;
+            let tglNilai = existingAssessmentByOther.tanggal;
+            
+            let konfirmasi = confirm(`Siswa ${selectedName} sudah dinilai oleh ${penilaiLain} pada tanggal ${tglNilai}, yakin ingin menilai ulang?`);
+            if (!konfirmasi) {
+                // Jika pilih Batal, reset pilihan dropdown
+                document.getElementById('select-nama').value = "";
+                document.getElementById('input-kelas').value = "";
+                document.getElementById('input-kamar').value = "";
+                document.getElementById('input-wali').value = "";
+                wrapper.classList.add('hidden');
+                toggleFormDisabled(false);
+            } else {
+                toggleFormDisabled(false);
+            }
+        } else {
+            toggleFormDisabled(false);
+        }
+
+    } else {
+        wrapper.classList.add('hidden');
+        toggleFormDisabled(false);
+    }
+  }
+
+  // Fungsi pembantu untuk mengaktifkan/menonaktifkan interaksi form
+  function toggleFormDisabled(disable) {
+      const steps = document.querySelectorAll('.form-step input, .form-step select, .form-step textarea');
+      steps.forEach(el => {
+          if(el.id !== 'select-nama') { // Biarkan dropdown nama tetap bisa diubah
+              el.disabled = disable;
+          }
+      });
+      const btnNext = document.getElementById('btn-next');
+      if(btnNext) btnNext.disabled = disable;
+  }
+
+  // ==========================================
+  // 2. FUNGSI NAVIGASI FORM
+  // ==========================================
+  function changeStep(direction) {
+    const steps = document.querySelectorAll('.form-step');
+    steps[currentStep].classList.add('hidden');
+    
+    currentStep += direction;
+    if (currentStep < 0) currentStep = 0;
+    if (currentStep > totalSteps) currentStep = totalSteps;
+    
+    steps[currentStep].classList.remove('hidden');
+    document.getElementById('step-indicator').textContent = `Langkah ${currentStep + 1} dari ${totalSteps + 1}`;
+    
+    document.getElementById('btn-prev').classList.toggle('hidden', currentStep === 0);
+    document.getElementById('btn-next').classList.toggle('hidden', currentStep === totalSteps);
+    document.getElementById('btn-submit').classList.toggle('hidden', currentStep !== totalSteps);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ==========================================
+  // 3. PENGAMBILAN DATA PENILAI DAN RIWAYAT
+  // ==========================================
+  function initUserDataAndHistory() {
+    if(typeof google !== 'undefined' && google.script) {
+        // 1. Ambil Email User Aktif (PERBAIKAN: getEmailUser, BUKAN getUserActive)
+        google.script.run.withSuccessHandler(email => {
+            currentUserEmail = email;
+            // 2. Setelah dapat email, ambil riwayat asesmen dari Sheet "HasilAssesment"
+            loadSavedAssessments();
+        }).getEmailUser();
+    }
+  }
+
+  function loadSavedAssessments() {
+    if(typeof google !== 'undefined' && google.script) {
+        google.script.run
+        .withSuccessHandler(data => {
+            savedAssessmentsGlobal = data;
+            
+            // Hitung statistik untuk card atas
+            let countDepresi = 0, countSosial = 0, countSpiritual = 0;
+            let countFisik = 0, countFokus = 0, countKarakter = 0, countKeluarga = 0;
+            
+            let listDepresiHtml = "", listSosialHtml = "", listSpiritualHtml = "";
+            let listFisikHtml = "", listFokusHtml = "", listKarakterHtml = "", listKeluargaHtml = "";
+            
+            // Hitung unik siswa yang sudah dinilai
+            let uniqueSiswaDinilai = new Set(data.map(item => item.nama.toLowerCase().trim()));
+            if(document.getElementById('count-sudah-dinilai')) {
+                document.getElementById('count-sudah-dinilai').textContent = uniqueSiswaDinilai.size;
+            }
+
+            data.forEach(item => {
+                let safeName = item.nama.replace(/'/g, "\\'"); 
+                let linkLihat = ` <a href="javascript:void(0)" onclick="lihatAsesmen('${safeName}')" class="text-blue-500 hover:text-blue-700 hover:underline text-xs ml-1 font-medium">Lihat Asesmen</a>`;
+                
+                let bio = item.biologis ? item.biologis.toLowerCase() : "";
+                let psi = item.psikologis ? item.psikologis.toLowerCase() : "";
+                let sos = item.sosial ? item.sosial.toLowerCase() : "";
+                let spi = item.spiritual ? item.spiritual.toLowerCase() : "";
+                let kel = item.keluarga ? item.keluarga.toLowerCase() : "";
+
+                // 1. Indikasi Depresi
+                if (psi.includes('depresi') || psi.includes('kurang stabil')) {
+                    countDepresi++;
+                    listDepresiHtml += `<li><strong>${item.nama} (${item.kelas})</strong> - Indikasi emosional/psikologis.${linkLihat}</li>`;
+                }
+                
+                // 2. Menarik Diri Sosial
+                if (sos.includes('menarik diri') || sos.includes('kurang')) {
+                    countSosial++;
+                    listSosialHtml += `<li><strong>${item.nama} (${item.kelas})</strong> - Kendala interaksi sosial.${linkLihat}</li>`;
+                }
+                
+                // 3. Kendala Spiritual
+                if (spi.includes('kurang') || spi.includes('lalai')) {
+                    countSpiritual++;
+                    listSpiritualHtml += `<li><strong>${item.nama} (${item.kelas})</strong> - Kendala kedisiplinan ibadah.${linkLihat}</li>`;
+                }
+
+                // 4. Fisik & Pola Hidup (Cek nafsu makan kurang, jarang mandi, kurang olahraga, BB kurang)
+                if (bio.includes('nafsu (kurang)') || bio.includes('mandi (tidak teratur)') || bio.includes('olahraga (kurang)') || bio.includes('bb (kurang)')) {
+                    countFisik++;
+                    listFisikHtml += `<li><strong>${item.nama} (${item.kelas})</strong> - Perlu perhatian perbaikan asupan fisik & pola hidup.${linkLihat}</li>`;
+                }
+
+                // 5. Fokus & Kemandirian Belajar (Cek fokus kurang, kurang mandiri/disiplin/kontrol diri)
+                if (psi.includes('fokus: kurang') || psi.includes('mandiri: kurang') || psi.includes('disiplin: kurang') || psi.includes('kontrol diri: kurang')) {
+                    countFokus++;
+                    listFokusHtml += `<li><strong>${item.nama} (${item.kelas})</strong> - Terdapat kendala fokus & kemandirian.${linkLihat}</li>`;
+                }
+
+                // 6. Karakter & Etika (Cek perilaku tidak jujur atau kurang sopan)
+                if (psi.includes('kurang jujur') || spi.includes('kurang sopan santun')) {
+                    countKarakter++;
+                    listKarakterHtml += `<li><strong>${item.nama} (${item.kelas})</strong> - Membutuhkan pembinaan karakter khusus.${linkLihat}</li>`;
+                }
+
+                // 7. Potensi Pendekatan Keluarga (Cek hubungan keluarga yang sangat baik sebagai kunci solusi)
+                if (kel.includes('nyaman & bahagia') || kel.includes('sangat dekat') || kel.includes('terbuka')) {
+                    countKeluarga++;
+                    listKeluargaHtml += `<li><strong>${item.nama} (${item.kelas})</strong> - Hubungan keluarga baik, sangat direkomendasikan diskusi via orang tua.${linkLihat}</li>`;
+                }
+            });
+
+            // Render Counts ke HTML
+            if(document.getElementById('count-depresi')) document.getElementById('count-depresi').textContent = countDepresi;
+            if(document.getElementById('count-sosial')) document.getElementById('count-sosial').textContent = countSosial;
+            if(document.getElementById('count-spiritual')) document.getElementById('count-spiritual').textContent = countSpiritual;
+            if(document.getElementById('count-fisik')) document.getElementById('count-fisik').textContent = countFisik;
+            if(document.getElementById('count-fokus')) document.getElementById('count-fokus').textContent = countFokus;
+            if(document.getElementById('count-karakter')) document.getElementById('count-karakter').textContent = countKarakter;
+            if(document.getElementById('count-keluarga')) document.getElementById('count-keluarga').textContent = countKeluarga;
+
+            // Render Lists ke HTML
+            const noDataHtml = '<li class="italic text-gray-400">Tidak ada data</li>';
+            if(document.getElementById('ul-depresi')) document.getElementById('ul-depresi').innerHTML = listDepresiHtml !== "" ? listDepresiHtml : noDataHtml;
+            if(document.getElementById('ul-sosial')) document.getElementById('ul-sosial').innerHTML = listSosialHtml !== "" ? listSosialHtml : noDataHtml;
+            if(document.getElementById('ul-spiritual')) document.getElementById('ul-spiritual').innerHTML = listSpiritualHtml !== "" ? listSpiritualHtml : noDataHtml;
+            if(document.getElementById('ul-fisik')) document.getElementById('ul-fisik').innerHTML = listFisikHtml !== "" ? listFisikHtml : noDataHtml;
+            if(document.getElementById('ul-fokus')) document.getElementById('ul-fokus').innerHTML = listFokusHtml !== "" ? listFokusHtml : noDataHtml;
+            if(document.getElementById('ul-karakter')) document.getElementById('ul-karakter').innerHTML = listKarakterHtml !== "" ? listKarakterHtml : noDataHtml;
+            if(document.getElementById('ul-keluarga')) document.getElementById('ul-keluarga').innerHTML = listKeluargaHtml !== "" ? listKeluargaHtml : noDataHtml;
+        })
+        .withFailureHandler(err => {
+            console.error(err);
+        })
+        .getHistoryAssesment();
+    }
+  }
+
+// Variabel penanda baris atau status edit
+let currentEditRowIndex = null;
+
+  function editAssessment(namaSiswa) {
+    // Cari data asesmen berdasarkan nama siswa
+    const targetData = savedAssessmentsGlobal.find(item => {
+        let dbName = item.nama ? item.nama.trim().toLowerCase() : "";
+        return dbName.includes(namaSiswa.trim().toLowerCase());
+    });
+
+    if (!targetData) {
+        alert("Data untuk diedit tidak ditemukan di riwayat.");
+        return;
+    }
+
+    // Simpan nomor baris sheet untuk proses update agar tidak duplikat
+    currentEditRowIndex = targetData.rowIndex;
+
+    // 1. Pilih otomatis nama siswa di dropdown Identitas
+    const selectNama = document.getElementById('select-nama');
+    selectNama.value = targetData.nama;
+    autoFillStudentInfo(); // Mengisi kelas, kamar, wali otomatis
+
+    // 2. Set tanggal asesmen jika ada
+    if(targetData.tanggal) {
+        const inputTgl = document.querySelector('input[name="tanggal"]');
+        if(inputTgl) inputTgl.value = targetData.tanggal;
+    }
+
+    // 3. Parsing dan isi kembali pilihan form dari teks kompilasi database
+    fillFormFromDatabase(targetData);
+
+    // Buka kunci form agar bisa diedit
+    toggleFormDisabled(false);
+    
+    // Ubah teks tombol submit agar user tahu sedang dalam mode edit/update
+    const btnSubmit = document.getElementById('btn-submit');
+    if(btnSubmit) btnSubmit.textContent = 'Simpan Perubahan (Update) ✓';
+
+    alert(`Mode Edit aktif untuk ${targetData.nama}. Data lama berhasil dimuat ke form. Silakan perbarui dan klik 'Simpan Perubahan'.`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Fungsi pembantu untuk mencentang kembali input form berdasarkan teks database
+  function fillFormFromDatabase(data) {
+    // 1. Reset form input teks/textarea khusus yang bukan identitas utama
+    const formElements = document.querySelectorAll('#form-asesmen input, #form-asesmen textarea');
+    formElements.forEach(el => {
+        if (el.type === 'radio' || el.type === 'checkbox') {
+            el.checked = false;
+        } else if ((el.type === 'text' || el.tagName === 'TEXTAREA') && 
+                   el.name !== 'nama' && el.name !== 'kelas' && el.name !== 'kamar' && el.name !== 'wali' && el.name !== 'tanggal') {
+            el.value = '';
+        }
+    });
+
+    // 2. Gabungkan seluruh teks aspek dari database
+    const fullText = (data.biologis || "") + "\n" + 
+                     (data.psikologis || "") + "\n" + 
+                     (data.sosial || "") + "\n" + 
+                     (data.spiritual || "") + "\n" + 
+                     (data.keluarga || "");
+
+    const lines = fullText.split('\n');
+
+    // 3. Petakan ulang pencocokan data ke elemen form secara presisi
+    formElements.forEach(el => {
+        if (!el.name || ['nama', 'kelas', 'kamar', 'wali', 'tanggal'].includes(el.name)) return;
+
+        // A. Handle Radio & Checkbox
+        if (el.type === 'radio' || el.type === 'checkbox') {
+            if (el.value && el.value !== 'on' && fullText.includes(el.value)) {
+                el.checked = true;
+            }
+        } 
+        // B. Handle Textbox Catatan & Input Lainnya
+        else if (el.type === 'text' || el.tagName === 'TEXTAREA') {
+            let fieldName = el.name;
+
+            lines.forEach(line => {
+                // Tangani Catatan Umum (Contoh: [*] Catatan Umum Biologis: ...)
+                if (fieldName.includes('catatan_umum') && line.includes('[*]') && line.toLowerCase().includes('catatan umum')) {
+                    let parts = line.split(':');
+                    if (parts.length >= 2) {
+                        let val = parts.slice(1).join(':').trim();
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+
+                // Tangani Catatan Spesifik per Poin (Contoh: [1] Kesehatan Umum: ... | Catatan: text)
+                if (fieldName.includes('_catatan')) {
+                    // Ekstrak nomor poin dari name elemen, misal bio_1_catatan -> angka 1
+                    let matchNum = fieldName.match(/_(\d+)_/);
+                    if (matchNum && matchNum[1]) {
+                        let targetPoinTag = `[${matchNum[1]}]`;
+                        
+                        // Pastikan baris di database diawali atau mengandung tag nomor poin tersebut
+                        if (line.trim().startsWith(targetPoinTag)) {
+                            if (line.includes('Catatan:')) {
+                                let subParts = line.split('Catatan:');
+                                if (subParts[1]) {
+                                    // Ambil teks catatan sebelum pemisah pipa "|" berikutnya
+                                    let catatanVal = subParts[1].split('|')[0].trim();
+                                    if (catatanVal && catatanVal !== '-') {
+                                        el.value = catatanVal;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Tangani input teks khusus di dalam baris (seperti riwayat penyakit, alergi, jam tidur, dll)
+                if (fieldName.includes('riwayat_penyakit') && line.includes('[2] Riwayat:')) {
+                    if (line.includes('Penyakit (') && line.includes(')')) {
+                        let val = line.split('Penyakit (')[1].split(')')[0];
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+                if (fieldName.includes('riwayat_obat') && line.includes('[2] Riwayat:')) {
+                    if (line.includes('Obat (') && line.includes(')')) {
+                        let val = line.split('Obat (')[1].split(')')[0];
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+                if (fieldName.includes('alergi') && line.includes('[2] Riwayat:')) {
+                    if (line.includes('Alergi (') && line.includes(')')) {
+                        let val = line.split('Alergi (')[1].split(')')[0];
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+                if (fieldName.includes('bio_4_jam') && line.includes('[4] Tidur:')) {
+                    if (line.includes('Jam (')) {
+                        let val = line.split('Jam (')[1].split(')')[0];
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+            });
+        }
+    });
+  }
+
+  function renderAssessments(data) {
+    const container = document.getElementById('saved-assessments-container');
+    container.innerHTML = '';
+
+    if (!data || data.length === 0) {
+        container.innerHTML = '<div class="p-4 text-center text-gray-500 text-sm italic bg-gray-50 rounded-xl border border-gray-200">Belum ada penilaian tersimpan untuk siswa ini.</div>';
+        return;
+    }
+
+    const adminEmails = ['byu.project.comp@gmail.com', 'ajeefes@gmail.com'];
+    const isAdmin = adminEmails.includes(currentUserEmail.toLowerCase().trim());
+
+    data.forEach((item, index) => {
+        const isOwner = (item.penilai && item.penilai.toLowerCase().trim() === currentUserEmail.toLowerCase().trim());
+        const canModify = isAdmin || isOwner;
+        
+        const btnEditClass = canModify ? "text-blue-700 hover:text-blue-900 cursor-pointer font-bold" : "text-gray-400 cursor-not-allowed font-bold";
+        const btnDelClass = canModify ? "text-red-500 hover:text-red-700 cursor-pointer" : "text-gray-300 cursor-not-allowed";
+        const attrAction = canModify ? "" : "disabled";
+
+        // Ekstrak NISN dan Bersihkan Nama untuk Parameter PDF
+        let matchNisn = item.nama.match(/\(([^)]+)\)/);
+        let nisnVal = matchNisn ? matchNisn[1] : '000000';
+        let namaBersih = item.nama.replace(/\s*\(.*?\)\s*/g, '').trim();
+
+        const card = `
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between p-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex shrink-0 items-center justify-center font-bold">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm">${item.nama}</h4>
+                    <p class="text-xs text-gray-500 mt-0.5">Dinilai oleh: <strong>${item.penilai || 'Sistem'}</strong> pada ${item.tanggal} | Kelas: ${item.kelas}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 w-full md:w-auto justify-end border-t md:border-0 pt-3 md:pt-0">
+                <!-- Tombol Generate PDF -->
+                <button onclick="generateAndSavePDFAsesmen('${namaBersih}', '${nisnVal}')" class="text-green-600 hover:text-green-800 text-sm font-bold flex items-center gap-1 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200 transition-colors cursor-pointer">
+                    📄 PDF
+                </button>
+                <!-- Tombol Edit yang sudah dihubungkan ke fungsi editAssessment -->
+                <button ${canModify ? `onclick="editAssessment('${item.nama}')"` : ''} class="${btnEditClass} text-sm px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 transition-colors" ${attrAction}>Edit</button>
+                <button ${canModify ? `onclick="deleteAssessment('${item.nama}', ${item.rowIndex})"` : ''} class="${btnDelClass} text-lg" ${attrAction} title="Hapus Asesmen">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+        </div>
+        `;
+        container.insertAdjacentHTML('beforeend', card);
+    });
+  }
+
+  // ==========================================
+  // 4. FUNGSI SIMPAN DATA
+  // ==========================================
+  function handleFormSubmit(event) {
+    event.preventDefault();
+    const form = document.getElementById('form-asesmen');
+    const fd = new FormData(form);
+
+    const get = (name) => {
+      let values = fd.getAll(name);
+      if (values.length === 0 || values[0] === "") return "-";
+      return values.join(", ");
+    };
+
+    let payload = {
+      rowIndex: currentEditRowIndex,
+      nama: get('nama'),
+      kelas: get('kelas'),
+      kamar: get('kamar'),
+      wali: get('wali'),
+      tanggal: get('tanggal'),
+      user: currentUserEmail,
+
+      biologis:
+        "[1] Kesehatan Umum: " + get('bio_1_kondisi') + " | Catatan: " + get('bio_1_catatan') + "\n" +
+        "[2] Riwayat: Penyakit (" + get('bio_2_riwayat_penyakit') + "), Obat (" + get('bio_2_riwayat_obat') + "), Alergi (" + get('bio_2_alergi') + ") | Catatan: " + get('bio_2_catatan') + "\n" +
+        "[3] Makan: Frekuensi (" + get('bio_3_frekuensi') + "), Nafsu (" + get('bio_3_nafsu') + "), Kebiasaan (" + get('bio_3_kebiasaan') + "), Air (" + get('bio_3_air') + ") | Catatan: " + get('bio_3_catatan') + "\n" +
+        "[4] Tidur: Jam (" + get('bio_4_jam') + "), Durasi (" + get('bio_4_durasi') + "), Kualitas (" + get('bio_4_kualitas') + "), Kebiasaan (" + get('bio_4_kebiasaan') + ") | Catatan: " + get('bio_4_catatan') + "\n" +
+        "[5] Kebersihan: Mandi (" + get('bio_5_mandi') + "), Gigi (" + get('bio_5_gigi') + "), Pakaian (" + get('bio_5_pakaian') + "), Kuku/Rambut (" + get('bio_5_kuku') + ") | Catatan: " + get('bio_5_catatan') + "\n" +
+        "[6] Fisik: Olahraga (" + get('bio_6_olahraga') + "), Partisipasi (" + get('bio_6_fisik') + "), Imun (" + get('bio_6_imun') + ") | Catatan: " + get('bio_6_catatan') + "\n" +
+        "[7] Kondisi Umum: Postur (" + get('bio_7_postur') + "), BB (" + get('bio_7_bb') + "), TB (" + get('bio_7_tb') + "), Vital (" + get('bio_7_vital') + ") | Catatan: " + get('bio_7_catatan') + "\n" +
+        "[8] Keluhan: " + get('bio_8_keluhan') + (get('bio_8_nyeri_detail') !== '-' ? " (Nyeri: "+get('bio_8_nyeri_detail')+")" : "") + " | Lainnya: " + get('bio_8_lainnya') + " | Tindakan: " + get('bio_8_tindakan') + "\n" +
+        "[9] Lingkungan: Kasur (" + get('bio_9_kasur') + "), Kamar (" + get('bio_9_kamar') + "), Kebiasaan (" + get('bio_9_kebiasaan') + ") | Catatan: " + get('bio_9_catatan') + "\n" +
+        "[*] Catatan Umum Biologis: " + get('bio_catatan_umum'),
+
+      psikologis:
+        "[1] Emosi: " + get('psi_1_emosi') + " | Catatan: " + get('psi_1_catatan') + "\n" +
+        "[2] Ekspresi: Cara (" + get('psi_2_cara') + "), Marah (" + get('psi_2_marah') + "), Sedih (" + get('psi_2_sedih') + ") | Catatan: " + get('psi_2_catatan') + "\n" +
+        "[3] PD: Tingkat (" + get('psi_3_pd') + "), Tampil (" + get('psi_3_tampil') + ") | Catatan: " + get('psi_3_catatan') + "\n" +
+        "[4] Motivasi: " + get('psi_4_motivasi') + " | Tekun: " + get('psi_4_tekun') + " | Catatan: " + get('psi_4_catatan') + "\n" +
+        "[5] Fokus: " + get('psi_5_konsentrasi') + " | Ingat: " + get('psi_5_ingat') + " | Catatan: " + get('psi_5_catatan') + "\n" +
+        "[6] Mandiri: " + get('psi_6_mandiri') + " | Inisiatif: " + get('psi_6_inisiatif') + " | Catatan: " + get('psi_6_catatan') + "\n" +
+        "[7] Disiplin: " + get('psi_7_disiplin') + " | Konsisten: " + get('psi_7_konsisten') + " | Catatan: " + get('psi_7_catatan') + "\n" +
+        "[8] Kontrol Diri: " + get('psi_8_kontrol') + " | Teguran: " + get('psi_8_teguran') + " | Catatan: " + get('psi_8_catatan') + "\n" +
+        "[9] Sosial-Emosi: Empati (" + get('psi_9_empati') + "), Peduli (" + get('psi_9_peduli') + "), Tersinggung (" + get('psi_9_tersinggung') + ") | Catatan: " + get('psi_9_catatan') + "\n" +
+        "[10] Khusus: " + get('psi_10_khusus') + " | Lainnya: " + get('psi_10_lainnya') + " | Tindakan: " + get('psi_10_tindakan') + "\n" +
+        "[*] Catatan Umum Psikologis: " + get('psi_catatan_umum'),
+
+      sosial:
+        "[1] Hubungan Teman: " + get('sos_1_hubungan') + " | Catatan: " + get('sos_1_catatan') + "\n" +
+        "[2] Komunikasi: " + get('sos_2_komunikasi') + " | Gaya: " + get('sos_2_gaya') + " | Catatan: " + get('sos_2_catatan') + "\n" +
+        "[3] Kerja Sama: Partisipasi (" + get('sos_3_partisipasi') + "), Kemampuan (" + get('sos_3_kerjasama') + "), Sikap (" + get('sos_3_sikap') + ") | Catatan: " + get('sos_3_catatan') + "\n" +
+        "[4] Peduli: Kepedulian (" + get('sos_4_peduli') + "), Respons (" + get('sos_4_respons') + "), Tolong (" + get('sos_4_tolong') + ") | Catatan: " + get('sos_4_catatan') + "\n" +
+        "[5] Aturan: Patuh (" + get('sos_5_patuh') + "), Sikap (" + get('sos_5_sikap') + ") | Catatan: " + get('sos_5_catatan') + "\n" +
+        "[6] Adaptasi: " + get('sos_6_adaptasi') + " | Keluhan: " + get('sos_6_keluhan') + " | Catatan: " + get('sos_6_catatan') + "\n" +
+        "[7] Interaksi: " + get('sos_7_interaksi') + " | Arahan: " + get('sos_7_arahan') + " | Catatan: " + get('sos_7_catatan') + "\n" +
+        "[8] Konflik: Penyelesaian (" + get('sos_8_konflik') + "), Cara (" + get('sos_8_cara') + ") | Catatan: " + get('sos_8_catatan') + "\n" +
+        "[9] Partisipasi Sosial: " + get('sos_9_partisipasi') + " | Jenis: " + get('sos_9_jenis') + " | Catatan: " + get('sos_9_catatan') + "\n" +
+        "[10] Khusus: " + get('sos_10_khusus') + " | Lainnya: " + get('sos_10_lainnya') + " | Tindakan: " + get('sos_10_tindakan') + "\n" +
+        "[*] Catatan Umum Sosial: " + get('sos_catatan_umum'),
+
+      spiritual:
+        "[1] Shalat Wajib: " + get('spi_1_wajib') + " | Jamaah: " + get('spi_1_jamaah') + " | Catatan: " + get('spi_1_catatan') + "\n" +
+        "[2] Sunnah: " + get('spi_2_sunnah') + " | Jenis: " + get('spi_2_jenis') + " | Catatan: " + get('spi_2_catatan') + "\n" +
+        "[3] Al-Qur'an: Baca (" + get('spi_3_baca') + "), Ngaji (" + get('spi_3_ngaji') + "), Hafal (" + get('spi_3_hafal') + ") | Catatan: " + get('spi_3_catatan') + "\n" +
+        "[4] Kegiatan Agama: " + get('spi_4_ikut') + " | Jenis: " + get('spi_4_jenis') + " | Catatan: " + get('spi_4_catatan') + "\n" +
+        "[5] Akhlak: " + get('spi_5_akhlak') + " | Ke Teman (" + get('spi_5_teman') + "), Ke Guru (" + get('spi_5_guru') + ") | Catatan: " + get('spi_5_catatan') + "\n" +
+        "[6] Kesadaran Ibadah: " + get('spi_6_sadar') + " | Respons: " + get('spi_6_respons') + " | Catatan: " + get('spi_6_catatan') + "\n" +
+        "[7] Pemahaman Nilai: " + get('spi_7_paham') + " | Penerapan: " + get('spi_7_terap') + " | Catatan: " + get('spi_7_catatan') + "\n" +
+        "[8] Dzikir & Doa: " + get('spi_8_dzikir') + " | Catatan: " + get('spi_8_catatan') + "\n" +
+        "[9] Lingkungan: Dukungan (" + get('spi_9_dukung') + "), Pengaruh (" + get('spi_9_pengaruh') + ") | Catatan: " + get('spi_9_catatan') + "\n" +
+        "[10] Khusus: " + get('spi_10_khusus') + " | Lainnya: " + get('spi_10_lainnya') + " | Tindakan: " + get('spi_10_tindakan') + "\n" +
+        "[*] Catatan Umum Spiritual: " + get('spi_catatan_umum'),
+
+      keluarga:
+        "[1] Persepsi: Perasaan (" + get('kel_1_perasaan') + "), Cara Gambar (" + get('kel_1_cara') + ") | Catatan: " + get('kel_1_catatan') + "\n" +
+        "[2] Kedekatan: Dengan Ortu (" + get('kel_2_dekat') + "), Terbuka (" + get('kel_2_terbuka') + "), Respon (" + get('kel_2_respon') + ") | Catatan: " + get('kel_2_catatan') + "\n" +
+        "[3] Pengalaman: Indikasi (" + get('kel_3_indikasi') + " - " + get('kel_3_lainnya') + "), Reaksi (" + get('kel_3_reaksi') + ") | Catatan: " + get('kel_3_catatan') + "\n" +
+        "[4] Inner Child: " + get('kel_4_inner') + " | Lainnya: " + get('kel_4_lainnya') + " | Catatan: " + get('kel_4_catatan') + "\n" +
+        "[5] Pengasuhan: Pola (" + get('kel_5_pola') + "), Dampak (" + get('kel_5_dampak') + ") | Catatan: " + get('kel_5_catatan') + "\n" +
+        "[6] Kondisi Keluarga: " + get('kel_6_kondisi') + " | Lainnya: " + get('kel_6_lainnya') + " | Catatan: " + get('kel_6_catatan') + "\n" +
+        "[7] Koping: " + get('kel_7_koping') + " | Lainnya: " + get('kel_7_lainnya') + " | Catatan: " + get('kel_7_catatan') + "\n" +
+        "[8] Kebutuhan: " + get('kel_8_kebutuhan') + " | Catatan: " + get('kel_8_catatan') + "\n" +
+        "[9] Rekomendasi: " + get('kel_9_rekomendasi') + " | Catatan: " + get('kel_9_catatan')
+    };
+
+    document.getElementById('btn-submit').textContent = 'Menyimpan...';
+    document.getElementById('btn-submit').disabled = true;
+     
+    if(typeof google !== 'undefined' && google.script) {
+        google.script.run
+        .withSuccessHandler(res => {
+            alert(res.message || "Data berhasil disimpan!");
+            form.reset();
+            
+            // Logika reset form
+            const steps = document.querySelectorAll('.form-step');
+            steps.forEach(step => step.classList.add('hidden')); 
+            currentStep = 0; 
+            steps[0].classList.remove('hidden');
+            
+            document.getElementById('step-indicator').textContent = `Langkah 1 dari ${totalSteps + 1}`;
+            document.getElementById('btn-prev').classList.add('hidden');
+            document.getElementById('btn-next').classList.remove('hidden');
+            document.getElementById('btn-submit').classList.add('hidden');
+            document.getElementById('btn-submit').textContent = 'Simpan Asesmen ✓';
+            document.getElementById('btn-submit').disabled = false;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Muat ulang daftar riwayat agar data terbaru langsung muncul
+            loadSavedAssessments();
+        })
+        .withFailureHandler(error => {
+            alert("Gagal menyimpan data: " + error);
+            document.getElementById('btn-submit').textContent = 'Simpan Asesmen ✓';
+            document.getElementById('btn-submit').disabled = false;
+        })
+        .submitForm(payload);
+    }
+  }
+ 
+// Variabel penanda baris atau status edit (pastikan hanya dideklarasikan sekali)
+  // let currentEditRowIndex = null; (ini sudah dideklarasikan di atas)
+
+  function editAssessment(namaSiswa) {
+    // 1. Cari data asesmen berdasarkan nama siswa di savedAssessmentsGlobal
+    const targetData = savedAssessmentsGlobal.find(item => {
+        let dbName = item.nama ? item.nama.trim().toLowerCase() : "";
+        return dbName.includes(namaSiswa.trim().toLowerCase());
+    });
+
+    if (!targetData) {
+        alert("Data asesmen untuk siswa ini tidak ditemukan di riwayat lokal.");
+        return;
+    }
+
+    // 2. Simpan nomor baris sheet untuk proses update agar tidak duplikat
+    currentEditRowIndex = targetData.rowIndex;
+
+    // 3. Pilih otomatis nama siswa di dropdown Identitas (Langkah 0)
+    const selectNama = document.getElementById('select-nama');
+    selectNama.value = targetData.nama;
+    
+    // Panggil fungsi autofill untuk mengisi kelas, kamar, dan wali asuh
+    autoFillStudentInfo(); 
+
+    // 4. Set tanggal asesmen jika tersimpan
+    if(targetData.tanggal) {
+        const inputTgl = document.querySelector('input[name="tanggal"]');
+        if(inputTgl) inputTgl.value = targetData.tanggal;
+    }
+
+    // 5. Eksekusi fungsi pengisian form kembali berdasarkan teks database
+    fillFormFromDatabase(targetData);
+
+    // 6. Buka kunci form agar elemen-elemen di dalamnya bisa diedit
+    toggleFormDisabled(false);
+    
+    // 7. Ubah teks tombol submit agar user tahu sedang dalam mode edit/update
+    const btnSubmit = document.getElementById('btn-submit');
+    if(btnSubmit) {
+        btnSubmit.classList.remove('hidden');
+        btnSubmit.textContent = 'Simpan Perubahan (Update) ✓';
+    }
+
+    // Arahkan kembali tampilan form ke langkah awal (Langkah 1 / index 0)
+    const steps = document.querySelectorAll('.form-step');
+    steps.forEach((step, idx) => {
+        if(idx === 0) step.classList.remove('hidden');
+        else step.classList.add('hidden');
+    });
+    currentStep = 0;
+    document.getElementById('step-indicator').textContent = `Langkah 1 dari ${totalSteps + 1}`;
+    document.getElementById('btn-prev').classList.add('hidden');
+    document.getElementById('btn-next').classList.remove('hidden');
+
+    alert(`Mode Edit aktif untuk ${targetData.nama}. Data lama berhasil dimuat ke form. Silakan sesuaikan data dan klik 'Simpan Perubahan' di langkah terakhir.`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Fungsi pembantu untuk mencentang kembali input form berdasarkan teks database
+  function fillFormFromDatabase(data) {
+    // 1. Reset form input teks/textarea khusus yang bukan identitas utama
+    const formElements = document.querySelectorAll('#form-asesmen input, #form-asesmen textarea');
+    formElements.forEach(el => {
+        if (el.type === 'radio' || el.type === 'checkbox') {
+            el.checked = false;
+        } else if ((el.type === 'text' || el.tagName === 'TEXTAREA') && 
+                   !['nama', 'kelas', 'kamar', 'wali', 'tanggal'].includes(el.name)) {
+            el.value = '';
+        }
+    });
+
+    // 2. Gabungkan seluruh teks aspek dari database untuk Radio/Checkbox
+    const fullText = (data.biologis || "") + "\n" + 
+                     (data.psikologis || "") + "\n" + 
+                     (data.sosial || "") + "\n" + 
+                     (data.spiritual || "") + "\n" + 
+                     (data.keluarga || "");
+
+    // 3. Petakan ulang pencocokan data ke elemen form secara presisi
+    formElements.forEach(el => {
+        if (!el.name || ['nama', 'kelas', 'kamar', 'wali', 'tanggal'].includes(el.name)) return;
+
+        // A. Handle Radio & Checkbox (bisa baca dari teks gabungan fullText)
+        if (el.type === 'radio' || el.type === 'checkbox') {
+            if (el.value && el.value !== 'on' && fullText.includes(el.value)) {
+                el.checked = true;
+            }
+        } 
+        // B. Handle Textbox Catatan & Input Lainnya
+        else if (el.type === 'text' || el.tagName === 'TEXTAREA') {
+            let fieldName = el.name.toLowerCase();
+
+            // PENTING: Batasi teks yang dilooping berdasarkan aspek elemen form agar tidak saling timpa (overwrite)
+            let specificText = fullText; // Default pakai semua teks
+            if (fieldName.startsWith('bio') || fieldName.includes('_bio')) specificText = data.biologis || "";
+            else if (fieldName.startsWith('psi') || fieldName.includes('_psi')) specificText = data.psikologis || "";
+            else if (fieldName.startsWith('sos') || fieldName.includes('_sos')) specificText = data.sosial || "";
+            else if (fieldName.startsWith('spi') || fieldName.includes('_spi')) specificText = data.spiritual || "";
+            else if (fieldName.startsWith('kel') || fieldName.includes('_kel')) specificText = data.keluarga || "";
+
+            let specificLines = specificText.split('\n');
+
+            specificLines.forEach(line => {
+                // Tangani Catatan Umum (Contoh: [*] Catatan Umum Biologis: ...)
+                if (fieldName.includes('catatan_umum') && line.includes('[*]') && line.toLowerCase().includes('catatan umum')) {
+                    let parts = line.split(':');
+                    if (parts.length >= 2) {
+                        let val = parts.slice(1).join(':').trim();
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+
+                // Tangani Catatan Spesifik per Poin (Contoh: [1] Kesehatan Umum: ... | Catatan: text)
+                if (fieldName.includes('catatan') && !fieldName.includes('catatan_umum')) {
+                    // Ekstrak angka poin dari name elemen menggunakan regex yang lebih fleksibel (cocok untuk bio_1_catatan atau catatan_1)
+                    let matchNum = fieldName.match(/(\d+)/);
+                    if (matchNum && matchNum[1]) {
+                        let targetPoinTag = `[${matchNum[1]}]`;
+                        
+                        // Pastikan baris di database diawali dengan tag nomor poin tersebut
+                        if (line.trim().startsWith(targetPoinTag)) {
+                            // Ekstrak catatan dengan regex (menangani spasi yang mungkin tidak konsisten)
+                            let noteMatch = line.match(/Catatan:\s*(.*)/i);
+                            if (noteMatch && noteMatch[1]) {
+                                // Ambil teks catatan sebelum pemisah pipa "|" berikutnya
+                                let catatanVal = noteMatch[1].split('|')[0].trim();
+                                if (catatanVal && catatanVal !== '-') {
+                                    el.value = catatanVal;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Tangani input teks khusus di dalam baris (Riwayat penyakit, alergi, jam tidur, dll)
+                if (fieldName.includes('riwayat_penyakit') && line.includes('[2] Riwayat:')) {
+                    if (line.includes('Penyakit (') && line.includes(')')) {
+                        let val = line.split('Penyakit (')[1].split(')')[0];
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+                if (fieldName.includes('riwayat_obat') && line.includes('[2] Riwayat:')) {
+                    if (line.includes('Obat (') && line.includes(')')) {
+                        let val = line.split('Obat (')[1].split(')')[0];
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+                if (fieldName.includes('alergi') && line.includes('[2] Riwayat:')) {
+                    if (line.includes('Alergi (') && line.includes(')')) {
+                        let val = line.split('Alergi (')[1].split(')')[0];
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+                if (fieldName.includes('bio_4_jam') && line.includes('[4] Tidur:')) {
+                    if (line.includes('Jam (')) {
+                        let val = line.split('Jam (')[1].split(')')[0];
+                        if (val && val !== '-') el.value = val;
+                    }
+                }
+            });
+        }
+    });
+}
+
+async function generateAndSavePDFAsesmen(namaSiswa, nisnSiswa) {
+    const cleanTarget = namaSiswa.trim().toLowerCase();
+    const targetData = savedAssessmentsGlobal.find(item => {
+        let dbName = item.nama ? item.nama.trim().toLowerCase() : "";
+        return dbName.includes(cleanTarget) || cleanTarget.includes(dbName);
+    });
+    
+    if (!targetData) {
+        alert("Data asesmen untuk siswa ini tidak ditemukan di riwayat.");
+        return;
+    }
+
+    const btnPdf = event.currentTarget;
+    let originalHtml = btnPdf.innerHTML;
+    btnPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    btnPdf.disabled = true;
+
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+        
+        const margin = 15;
+        let startY = margin;
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        // ==========================================
+        // 1. RENDER KOP SURAT (HANYA HALAMAN 1)
+        // ==========================================
+        let detailKop = (typeof globalPengaturan !== 'undefined' && globalPengaturan.kop) ? globalPengaturan.kop : {};
+        let arrKop = [];
+        try { 
+            arrKop = typeof detailKop.barisKop === 'string' ? JSON.parse(detailKop.barisKop) : (detailKop.barisKop || []); 
+        } catch(e){}
+
+        if (detailKop.logoKiri) {
+            try {
+                let sizeKiri = getLockedRatioSize(doc.getImageProperties(detailKop.logoKiri), 18, 18);
+                doc.addImage(detailKop.logoKiri, 'JPEG', margin, startY, sizeKiri.width, sizeKiri.height);
+            } catch(e){}
+        }
+        if (detailKop.logoKanan) {
+            try {
+                let sizeKanan = getLockedRatioSize(doc.getImageProperties(detailKop.logoKanan), 18, 18);
+                doc.addImage(detailKop.logoKanan, 'JPEG', pageWidth - margin - sizeKanan.width, startY, sizeKanan.width, sizeKanan.height);
+            } catch(e){}
+        }
+
+        let currentY = startY + 2;
+        arrKop.forEach(k => {
+            doc.setFont("helvetica", k.isBold ? "bold" : "normal");
+            doc.setFontSize(parseInt(k.ukuran) || 10);
+            doc.text(k.teks, pageWidth / 2, currentY, { align: "center" });
+            currentY += ((parseInt(k.ukuran) || 10) * 0.38); 
+        });
+
+        startY = Math.max(startY + 20, currentY + 3);
+        doc.setLineWidth(0.8);
+        doc.line(margin, startY, pageWidth - margin, startY);
+        startY += 6;
+
+        // ==========================================
+        // 2. JUDUL & BAGIAN A. IDENTITAS SISWA (BOX FORM)
+        // ==========================================
+        doc.setFillColor(240, 244, 248);
+        doc.rect(margin, startY, pageWidth - (margin * 2), 7, 'F');
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(30, 64, 175);
+        doc.text("A. IDENTITAS SISWA", margin + 3, startY + 5);
+        startY += 10;
+
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+
+        // Tabel Kotak Identitas
+        let identitasRows = [
+            ["Nama Lengkap", targetData.nama],
+            ["Kelas / Asrama", `${targetData.kelas} / ${targetData.kamar}`],
+            ["Wali Asuh", targetData.wali],
+            ["Tanggal Asesmen", targetData.tanggal],
+            ["Dinilai Oleh", targetData.penilai]
+        ];
+
+        identitasRows.forEach(row => {
+            doc.setDrawColor(200, 200, 200);
+            doc.rect(margin, startY, 40, 6);
+            doc.rect(margin + 40, startY, pageWidth - (margin * 2) - 40, 6);
+            
+            doc.setFont("helvetica", "bold");
+            doc.text(row[0], margin + 2, startY + 4);
+            doc.setFont("helvetica", "normal");
+            doc.text(String(row[1]), margin + 43, startY + 4);
+            startY += 6;
+        });
+        startY += 8;
+
+        // ==========================================
+        // 3. ISI KOMPILASI ASPEK (DENGAN FORMAT CHECKBOX)
+        // ==========================================
+        const sections = [
+            { title: "B. Aspek Biologis (Fisik & Kesehatan)", content: targetData.biologis },
+            { title: "C. Aspek Psikologis (Emosi & Perilaku)", content: targetData.psikologis },
+            { title: "D. Aspek Sosial (Interaksi & Adaptasi)", content: targetData.sosial },
+            { title: "E. Aspek Spiritual (Ibadah & Sikap Religius)", content: targetData.spiritual },
+            { title: "F. Aspek Hubungan dengan Keluarga", content: targetData.keluarga }
+        ];
+
+        sections.forEach(sec => {
+            if (startY > 260) { doc.addPage(); startY = margin; }
+
+            // Header Aspek
+            doc.setFillColor(240, 244, 248);
+            doc.rect(margin, startY, pageWidth - (margin * 2), 7, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10);
+            doc.setTextColor(30, 64, 175);
+            doc.text(sec.title.toUpperCase(), margin + 3, startY + 5);
+            startY += 9;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+
+            let rawLines = (sec.content || '-').split('\n');
+            
+            rawLines.forEach(line => {
+                if (startY > 275) {
+                    doc.addPage();
+                    startY = margin;
+                }
+
+                // Format tampilan baris teks agar rapi (Simulasi Checkbox [X] jika terdeteksi pilihan)
+                let formattedLine = line.trim();
+                
+                let splitText = doc.splitTextToSize(formattedLine, pageWidth - (margin * 2) - 4);
+                
+                splitText.forEach(subLine => {
+                    if (startY > 275) { doc.addPage(); startY = margin; }
+                    doc.text(subLine, margin + 2, startY);
+                    startY += 4.5;
+                });
+            });
+
+            startY += 5; // Jarak antar aspek
+        });
+
+        // Simpan File PDF
+        let cleanFileNama = targetData.nama.replace(/[^a-zA-Z0-9]/g, '_');
+        let fileName = `${cleanFileNama}_${nisnSiswa}.pdf`;
+
+        doc.save(fileName);
+
+        let pdfBase64 = doc.output('datauristring').split(',')[1];
+
+        google.script.run
+            .withSuccessHandler(res => {
+                btnPdf.innerHTML = originalHtml;
+                btnPdf.disabled = false;
+                alert("PDF berhasil diunduh dan disimpan ke Google Drive:\n" + res.message);
+            })
+            .withFailureHandler(err => {
+                btnPdf.innerHTML = originalHtml;
+                btnPdf.disabled = false;
+                alert("Berhasil diunduh lokal, namun gagal simpan ke Drive: " + err.message);
+            })
+            .simpanPDFAsesmenKeDrive(pdfBase64, fileName);
+
+    } catch (err) {
+        btnPdf.innerHTML = originalHtml;
+        btnPdf.disabled = false;
+        alert("Terjadi kesalahan saat generate PDF: " + err.message);
+    }
+}
+
+// ==========================================
+// FUNGSI POP UP PREVIEW ASESMEN
+// ==========================================
+
+function lihatAsesmen(namaSiswa) {
+    // 1. Cari data di array global berdasarkan nama
+    const targetData = savedAssessmentsGlobal.find(item => {
+        let dbName = item.nama ? item.nama.trim().toLowerCase() : "";
+        return dbName.includes(namaSiswa.trim().toLowerCase());
+    });
+
+    if (!targetData) {
+        alert("Data asesmen tidak ditemukan.");
+        return;
+    }
+
+    // 2. Format ulang teks newline (\n) menjadi <br> agar rapi di HTML
+    const formatText = (text) => text ? text.replace(/\n/g, '<br><br>') : '-';
+
+    // 3. Susun kerangka HTML untuk ditampilkan dalam Pop-up
+    let htmlContent = `
+        <div class="border-b pb-3 mb-4">
+            <h4 class="text-lg font-bold text-gray-900">${targetData.nama}</h4>
+            <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 mt-1">
+                <p><strong>Kelas/Asrama:</strong> ${targetData.kelas} / ${targetData.kamar}</p>
+                <p><strong>Wali Asuh:</strong> ${targetData.wali}</p>
+                <p><strong>Tanggal Asesmen:</strong> ${targetData.tanggal}</p>
+                <p><strong>Dinilai Oleh:</strong> ${targetData.penilai}</p>
+            </div>
+        </div>
+
+        <div class="space-y-4 text-xs leading-relaxed">
+            <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                <h5 class="font-bold text-blue-800 mb-2 uppercase">A. Aspek Biologis</h5>
+                <p>${formatText(targetData.biologis)}</p>
+            </div>
+            <div class="bg-purple-50/50 p-4 rounded-xl border border-purple-100">
+                <h5 class="font-bold text-purple-800 mb-2 uppercase">B. Aspek Psikologis</h5>
+                <p>${formatText(targetData.psikologis)}</p>
+            </div>
+            <div class="bg-yellow-50/50 p-4 rounded-xl border border-yellow-100">
+                <h5 class="font-bold text-yellow-800 mb-2 uppercase">C. Aspek Sosial</h5>
+                <p>${formatText(targetData.sosial)}</p>
+            </div>
+            <div class="bg-green-50/50 p-4 rounded-xl border border-green-100">
+                <h5 class="font-bold text-green-800 mb-2 uppercase">D. Aspek Spiritual</h5>
+                <p>${formatText(targetData.spiritual)}</p>
+            </div>
+            <div class="bg-red-50/50 p-4 rounded-xl border border-red-100">
+                <h5 class="font-bold text-red-800 mb-2 uppercase">E. Aspek Keluarga</h5>
+                <p>${formatText(targetData.keluarga)}</p>
+            </div>
+        </div>
+    `;
+
+    // 4. Masukkan ke body modal dan tampilkan modal
+    document.getElementById('preview-body').innerHTML = htmlContent;
+    document.getElementById('modal-preview-asesmen').classList.remove('hidden');
+    
+    // Matikan scroll pada background halaman utama
+    document.body.style.overflow = 'hidden'; 
+}
+
+function closeModalPreview() {
+    document.getElementById('modal-preview-asesmen').classList.add('hidden');
+    // Nyalakan kembali scroll pada background
+    document.body.style.overflow = 'auto'; 
+    
+    // Kembalikan ukuran ke semula jika sedang di-zoom
+    const mc = document.getElementById('modal-content');
+    if (mc.classList.contains('w-full')) {
+        toggleZoomModal(); 
+    }
+}
+
+function toggleZoomModal() {
+    const mc = document.getElementById('modal-content');
+    const header = document.getElementById('modal-header');
+    
+    // Toggle class untuk Fullscreen (Zoom) vs Proposional
+    mc.classList.toggle('w-full');
+    mc.classList.toggle('h-full');
+    mc.classList.toggle('max-h-screen');
+    mc.classList.toggle('rounded-none');
+    
+    // Toggle class bawaan (Normal)
+    mc.classList.toggle('w-11/12');
+    mc.classList.toggle('md:w-3/4');
+    mc.classList.toggle('lg:w-3/5');
+    mc.classList.toggle('max-h-[90vh]');
+    mc.classList.toggle('rounded-xl');
+    header.classList.toggle('rounded-t-xl');
+}
+
+// ==========================================
+  // FUNGSI INFORMASI SUMBER KARTU (INFO CARD)
+  // ==========================================
+  function showCardInfo(event, type) {
+    // Mencegah klik menyebar ke div parent (mencegah panel expand terbuka)
+    event.stopPropagation(); 
+    
+    let pesan = "";
+    switch(type) {
+        case 'depresi':
+            pesan = "📌 SUMBER DATA:\nDiambil dari form Aspek Psikologis (C).\nFilter mendeteksi jika siswa dinilai memiliki 'Emosi Kurang Stabil' atau terdapat indikasi terkait depresi.";
+            break;
+        case 'sosial':
+            pesan = "📌 SUMBER DATA:\nDiambil dari form Aspek Sosial (D).\nFilter mendeteksi jika nilai interaksi teman 'Kurang' atau ada perilaku 'Menarik diri dari lingkungan'.";
+            break;
+        case 'spiritual':
+            pesan = "📌 SUMBER DATA:\nDiambil dari form Aspek Spiritual (E).\nFilter mendeteksi jika kedisiplinan ibadah bernilai 'Kurang' atau siswa sering 'Lalai'.";
+            break;
+        case 'fisik':
+            pesan = "📌 SUMBER DATA:\nDiambil dari form Aspek Biologis (B).\nFilter mendeteksi jika ada masalah dasar seperti: Nafsu makan kurang, jarang mandi, kurang olahraga, atau BB kurang.";
+            break;
+        case 'fokus':
+            pesan = "📌 SUMBER DATA:\nDiambil dari form Aspek Psikologis (C).\nFilter memantau masalah akademis seperti: Fokus kurang, mandiri kurang, disiplin kurang, atau kontrol diri kurang.";
+            break;
+        case 'karakter':
+            pesan = "📌 SUMBER DATA:\nDiambil dari form Aspek Psikologis (C) & Aspek Spiritual (E).\nFilter mendeteksi indikasi masalah moral seperti: Kurang jujur atau kurang sopan santun.";
+            break;
+        case 'keluarga':
+            pesan = "📌 SUMBER DATA:\nDiambil dari form Aspek Hubungan Keluarga (F).\nMenyaring hasil POSITIF, yaitu siswa yang merasa nyaman, sangat dekat, dan terbuka pada keluarganya. Digunakan sebagai rekomendasi jalur penyelesaian masalah.";
+            break;
+        case 'selesai':
+            pesan = "📌 INFO:\nMenampilkan total jumlah siswa unik (tanpa duplikat) yang telah dilakukan asesmen pada bulan ini.";
+            break;
+    }
+    
+    // Tampilkan informasi melalui alert browser standar
+    alert(pesan);
+  }
+  // ==========================================
+// FUNGSI HAPUS ASESMEN
+// ==========================================
+function deleteAssessment(namaSiswa, rowIndex) {
+    // 1. Munculkan peringatan konfirmasi
+    const konfirmasi = confirm(`Apakah Anda yakin ingin menghapus data asesmen untuk siswa ${namaSiswa}? Tindakan ini tidak dapat dibatalkan.`);
+    
+    if (!konfirmasi) {
+        return; // Batal menghapus
+    }
+
+    if (typeof google !== 'undefined' && google.script) {
+        // 2. Panggil fungsi di backend (Code.gs)
+        google.script.run
+            .withSuccessHandler(res => {
+                alert(res.message || `Data asesmen ${namaSiswa} berhasil dihapus.`);
+                
+                // 3. Muat ulang data riwayat asesmen di tampilan
+                loadSavedAssessments();
+                
+                // 4. Reset pilihan form siswa agar tampilan tersimpan diperbarui
+                autoFillStudentInfo();
+            })
+            .withFailureHandler(err => {
+                alert("Gagal menghapus data: " + err.message);
+            })
+            .deleteAssessmentByRow(rowIndex); // Nama fungsi di Code.gs
+    } else {
+        alert("Lingkungan Google Apps Script tidak terdeteksi.");
+    }
+}
+</script>
