@@ -125,14 +125,29 @@
           </div>
         </div>
 
-        <!-- Penilaian Tersimpan -->
+        <!-- Penilaian Tersimpan (SUDAH DIPERBARUI DENGAN LIMIT & PAGINASI) -->
         <div v-if="!selectedNisn" class="section-card mt-4">
-          <h3 class="text-[#0f3c75] font-black uppercase mb-4 text-sm">PENILAIAN TERSIMPAN — {{ selectedBulan.toUpperCase() }} {{ selectedTahun }}</h3>
+          <!-- Header Judul & Dropdown Limit -->
+          <div class="flex justify-between items-center flex-wrap gap-4 mb-4">
+            <h3 class="text-[#0f3c75] font-black uppercase text-sm m-0">PENILAIAN TERSIMPAN — {{ selectedBulan.toUpperCase() }} {{ selectedTahun }}</h3>
+            
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-[#0f3c75]"><i class="fa-solid fa-list"></i> Tampilkan:</span>
+              <select v-model="itemsPerPage" @change="currentPage = 1" class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm bg-white outline-none focus:border-blue-500">
+                <option :value="10">10</option>
+                <option :value="25">25</option>
+                <option :value="50">50</option>
+                <option :value="100">100</option>
+                <option :value="-1">View All</option>
+              </select>
+            </div>
+          </div>
           
           <div v-if="assessments.length === 0" class="text-center text-gray-400 py-6">Belum ada penilaian tersimpan.</div>
           
           <div class="divide-y divide-gray-100">
-            <div v-for="ass in assessments" :key="ass.id" class="py-4 flex items-center justify-between">
+            <!-- Ubah v-for dari assessments menjadi paginatedAssessments -->
+            <div v-for="ass in paginatedAssessments" :key="ass.id" class="py-4 flex items-center justify-between">
               <div class="flex items-center space-x-4">
                 <div class="w-10 h-10 rounded-full bg-[#e0f2fe] flex items-center justify-center text-blue-600"><i class="fas fa-user"></i></div>
                 <div>
@@ -145,6 +160,25 @@
                 <button @click="deleteAssessment(ass.id)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
               </div>
             </div>
+          </div>
+
+          <!-- Tombol Paginasi Bawah -->
+          <div v-if="totalPages > 1 && itemsPerPage !== -1" class="mt-6 flex justify-center items-center space-x-4">
+            <button @click="prevPage" :disabled="currentPage === 1" 
+              class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-bold transition-colors" 
+              :class="currentPage === 1 ? 'bg-gray-50 text-gray-300 cursor-not-allowed' : 'bg-white text-[#0f3c75] hover:bg-gray-100 cursor-pointer'">
+              <i class="fa-solid fa-chevron-left"></i> Prev
+            </button>
+            
+            <span class="text-sm font-bold text-[#0f3c75]">
+              Halaman {{ currentPage }} dari {{ totalPages }}
+            </span>
+            
+            <button @click="nextPage" :disabled="currentPage === totalPages" 
+              class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-bold transition-colors" 
+              :class="currentPage === totalPages ? 'bg-gray-50 text-gray-300 cursor-not-allowed' : 'bg-white text-[#0f3c75] hover:bg-gray-100 cursor-pointer'">
+              Next <i class="fa-solid fa-chevron-right"></i>
+            </button>
           </div>
         </div>
 
@@ -164,7 +198,11 @@
           selectedTahun: 2026,
           students: [], indicators: [], assessments: [],
           selectedNisn: '', formScores: {}, openCategories: {},
-          loading: false, saving: false, generating: false
+          loading: false, saving: false, generating: false,
+          
+          // --- TAMBAHAN UNTUK LIMIT & PAGINASI ---
+          itemsPerPage: 10,
+          currentPage: 1
         }
       },
       computed: {
@@ -186,10 +224,23 @@
         },
         filledIndicatorsCount() {
           return Object.values(this.formScores).filter(v => v !== '' && v !== null).length;
+        },
+        
+        // --- TAMBAHAN FUNGSI COMPUTED PAGINASI ---
+        totalPages() {
+          if (this.itemsPerPage === -1) return 1;
+          return Math.ceil(this.assessments.length / this.itemsPerPage) || 1;
+        },
+        paginatedAssessments() {
+          if (this.itemsPerPage === -1) return this.assessments; // Tampilkan semua
+          const start = (this.currentPage - 1) * this.itemsPerPage;
+          const end = start + this.itemsPerPage;
+          return this.assessments.slice(start, end);
         }
       },
       methods: {
         loadData() {
+          this.currentPage = 1; // Reset halaman saat ganti bulan/tahun
           google.script.run.withSuccessHandler(res => {
             this.students = res.students;
             this.indicators = res.indicators;
@@ -200,6 +251,15 @@
             }
           }).getAppData(this.selectedBulan, this.selectedTahun);
         },
+        
+        // --- TAMBAHAN METODE NAVIGASI HALAMAN ---
+        prevPage() {
+          if (this.currentPage > 1) this.currentPage--;
+        },
+        nextPage() {
+          if (this.currentPage < this.totalPages) this.currentPage++;
+        },
+
         getGrade(score) {
           if (score === '' || score === null || score === undefined) return '';
           const s = parseFloat(score);
