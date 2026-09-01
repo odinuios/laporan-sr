@@ -2282,10 +2282,9 @@ function simpanPJEkstraBatch(payload) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = ss.getSheetByName('Data_PJ_Ekstra');
   
-  // TAMBAHKAN BLOK INI SEBAGAI PENGAMAN
   if(!sheet) {
       sheet = ss.insertSheet('Data_PJ_Ekstra');
-      sheet.appendRow(['ID', 'Timestamp', 'Email', 'Jenis', 'Pendamping', 'Tanggal', 'Keterangan', 'Foto', 'Kategori']);
+      sheet.appendRow(['ID', 'Timestamp', 'Email', 'Jenis', 'Pendamping', 'Tanggal', 'Keterangan', 'Foto1', 'Foto2', 'Foto3', 'Kategori']);
   }
   
   const reportId = payload.reportId || "PJE-" + new Date().getTime();
@@ -2299,11 +2298,15 @@ function simpanPJEkstraBatch(payload) {
 
  const folder = DriveApp.getFolderById(FOLDER_FOTO_EKSTRA_ID);
   payload.kegiatan.forEach((keg, index) => {
-    let url = uploadB64ToDriveSafe(keg.foto, folder, "Ekstra_" + index);
-    // Kategori disisipkan di parameter paling akhir (Kolom I)
+    // PERBAIKAN: Proses ketiga foto ke Google Drive
+    let url1 = uploadB64ToDriveSafe(keg.foto1 || keg.foto, folder, "Ekstra1_" + index);
+    let url2 = uploadB64ToDriveSafe(keg.foto2, folder, "Ekstra2_" + index);
+    let url3 = uploadB64ToDriveSafe(keg.foto3, folder, "Ekstra3_" + index);
+    
+    // PERBAIKAN: Susunan kolom disesuaikan dengan sheet baru (Kategori geser ke kolom 11 / index 10)
     sheet.appendRow([
       reportId, new Date(), payload.email, 
-      keg.jenis, keg.pendamping, keg.tanggal, keg.keterangan, url, keg.kategori || 'Umum'
+      keg.jenis, keg.pendamping, keg.tanggal, keg.keterangan, url1, url2, url3, keg.kategori || 'Umum'
     ]);
   });
   return { success: true, message: "Laporan PJ Ekstrakurikuler berhasil disimpan!" };
@@ -2398,8 +2401,12 @@ function getRiwayatPJMaster(jenis) {
           item.pendamping = row[4];
           item.tanggal = (row[5] instanceof Date) ? Utilities.formatDate(row[5], "GMT+7", "yyyy-MM-dd") : String(row[5]).substring(0,10);
           item.keterangan = row[6];
-          item.foto = row[7];
-          item.kategori = row[8] || '-';
+          // PERBAIKAN: Ambil ketiga URL foto dari kolom H, I, dan J
+          item.foto1 = row[7];
+          item.foto2 = row[8];
+          item.foto3 = row[9];
+          // Kategori bergeser ke kolom index 10 (Kolom K)
+          item.kategori = row[10] || '-';
       }
       
       grouped[id].items.push(item);
@@ -2497,12 +2504,8 @@ function getDataPJForPDF(jenis, tglAwal, tglAkhir, kategoriFilter = 'Semua') {
         }
       }
       
-      // =========================================================================
-      // PERBAIKAN: MENYAMAKAN KOLOM KATEGORI PUTRA & PUTRI (Menggunakan Kolom ke-11 / index 10)
-      // =========================================================================
       let rawKat = 'Umum';
-      if (isMakanTab) {
-          // Mengambil secara pasti dari indeks kolom ke-10 (Kolom K di Spreadsheet)
+      if (isMakanTab || jenis === 'Ekstra') { 
           rawKat = row[10] !== undefined && row[10] !== '' ? row[10] : 'Umum';
       } else {
           rawKat = row[8] || 'Umum';
@@ -2511,20 +2514,27 @@ function getDataPJForPDF(jenis, tglAwal, tglAkhir, kategoriFilter = 'Semua') {
       let dataKategori = String(rawKat).trim().toLowerCase();
       let filterKat = String(kategoriFilter).trim().toLowerCase();
       
-      // Normalisasi teks kategori agar konsisten
-      if (dataKategori === 'pria' || dataKategori === 'putra' || dataKategori.includes('pria') || dataKategori.includes('putra')) {
+      if (dataKategori === 'putra' || dataKategori.includes('putra')) {
           rawKat = 'Putra';
           dataKategori = 'putra';
-      } else if (dataKategori === 'wanita' || dataKategori === 'putri' || dataKategori.includes('wanita') || dataKategori.includes('putri')) {
+      } else if (dataKategori === 'putri' || dataKategori.includes('putri')) {
           rawKat = 'Putri';
           dataKategori = 'putri';
       }
 
-      if (filterKat === 'pria' || filterKat === 'putra') filterKat = 'putra';
-      if (filterKat === 'wanita' || filterKat === 'putri') filterKat = 'putri';
+      if (filterKat === 'putra') filterKat = 'putra';
+      if (filterKat === 'putri') filterKat = 'putri';
       
       let matchKategori = (filterKat === 'semua' || filterKat === '' || dataKategori === filterKat);
       
+      // ===== [PERBAIKAN] =====
+      // Bypass pengecekan Putra/Putri untuk PotongFC, Pembelian, dan Ekstra
+      // karena filter di sini dipakai untuk mencari Jenis Kegiatan (Kolom D)
+      if (jenis === 'PotongFC' || jenis === 'Pembelian' || jenis === 'Ekstra') {
+          matchKategori = true; 
+      }
+      // =======================
+
       // Filter Jenis
       let matchJenis = true;
       if (isMakanTab) {
@@ -2570,7 +2580,9 @@ function getDataPJForPDF(jenis, tglAwal, tglAkhir, kategoriFilter = 'Semua') {
             item.Keterangan = String(row[6] || ''); 
             item.Jenis_Ekstra = String(row[3] || '');
             item.Pendamping = String(row[4] || '');
-            item.b64 = safeGetB64(row[7]);
+            item.b64_1 = safeGetB64(row[7]);
+            item.b64_2 = safeGetB64(row[8]);
+            item.b64_3 = safeGetB64(row[9]);
         }
         result.push(item);
       }
@@ -2907,7 +2919,17 @@ function simpanPJPotongFCBatch(payload) {
       sheet.appendRow(['ID', 'Timestamp', 'Email', 'Jenis', 'Tanggal', 'Keterangan', 'Foto']);
   }
   
-  const reportId = "PJC-" + new Date().getTime(); 
+  // PERBAIKAN 1: Cek apakah ada ID lama yang dikirim. Jika tidak, buat ID baru.
+  const reportId = payload.reportId || "PJC-" + new Date().getTime(); 
+
+  // PERBAIKAN 2: Jika ini mode edit (ada reportId), hapus baris lama terlebih dahulu agar tidak double
+  if (payload.reportId) {
+     const data = sheet.getDataRange().getValues();
+     for (let i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] === payload.reportId) sheet.deleteRow(i + 1);
+     }
+  }
+  
   const folder = DriveApp.getFolderById(FOLDER_FOTO_EKSTRA_ID); 
   
   payload.kegiatan.forEach((keg, index) => {
@@ -3288,6 +3310,7 @@ function submitForm(payload) {
     payload.sosial,         
     payload.spiritual,      
     payload.keluarga,       
+    payload.catatan_wali,
     payload.user            // Penilai (bisa memperbarui penilai jika diedit user lain pada bulan yang sama)
   ];
 
@@ -3307,7 +3330,7 @@ function getHistoryAssesment() {
   const sheet = ss.getSheetByName('HasilAssesment');
   if (!sheet || sheet.getLastRow() < 2) return [];
   
-  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 12).getValues();
+  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 13).getValues();
   let result = [];
   
   data.forEach((row, index) => {
@@ -3325,7 +3348,8 @@ function getHistoryAssesment() {
       sosial: row[8],
       spiritual: row[9],
       keluarga: row[10],
-      penilai: row[11]
+      catatan_wali: row[11],
+      penilai: row[12]
     });
   });
   
@@ -3370,20 +3394,34 @@ function simpanPDFAsesmenKeDrive(base64Data, fileName) {
 }
 function deleteAssessmentByRow(rowIndex) {
   try {
-    // Ganti 'HasilAssesment' dengan nama sheet tempat data Anda disimpan
-    const sheetName = 'HasilAssesment'; 
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName(sheetName);
+
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('HasilAssesment');
     
     if (!sheet) {
-      throw new Error("Sheet tidak ditemukan.");
+      throw new Error("Sheet dengan nama '" + sheetName + "' tidak ditemukan.");
     }
     
-    // Hapus baris berdasarkan rowIndex
     sheet.deleteRow(rowIndex);
     
     return { status: 'success', message: 'Data berhasil dihapus.' };
   } catch (error) {
     throw new Error(error.message);
   }
+}
+function getUniqueJenisEkstra() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName("Data_PJ_Ekstra");
+  
+  if (!sheet) return []; // Mencegah error jika nama sheet salah/tidak ada
+  
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return []; // Mencegah error jika sheet masih kosong
+  
+  // Ambil data dari baris 2 ke bawah pada kolom D (Indeks kolom 4)
+  const data = sheet.getRange(2, 4, lastRow - 1, 1).getValues();
+  
+  // Filter data kosong dan ambil nilai uniknya saja
+  const uniqueJenis = [...new Set(data.map(row => row[0]).filter(val => val !== ""))];
+  return uniqueJenis.sort();
 }
