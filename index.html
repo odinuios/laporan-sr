@@ -578,6 +578,7 @@
     </style>
 </head>
 <body>
+    
     <!-- GLOBAL LOADER SCREEN -->
     <div id="global-loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-main); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.3s ease;">
         
@@ -683,9 +684,35 @@
         <div class="stat-box"><i class="fa-regular fa-file-lines"></i><h3 id="dash-laporan">0</h3><p>Laporan</p></div>
         <div class="stat-box"><i class="fa-solid fa-arrow-trend-up"></i><h3 id="dash-entri">0</h3><p>Kegiatan</p></div>
     </div>
-</div>
+</div>                            
+            
+                <div class="section-card">
+                    <h3 class="section-title">MENU UTAMA</h3>
+                    <div class="menu-grid"> 
+                        <div class="menu-item" id="menu-input" onclick="bukaInputData()"><div class="icon-box ic-1"><i class="fa-solid fa-plus"></i></div><p>Laporan Harian</p></div>
+                        <div class="menu-item" id="menu-pj" onclick="bukaMenuPJ()">
+                        <div class="icon-box ic-7"><i class="fa-solid fa-book"></i></div><p>Laporan PJ</p></div>
+                        <div class="menu-item" id="menu-preview" onclick="bukaPreview()"><div class="icon-box ic-2"><i class="fa-regular fa-eye"></i></div><p>Lihat Laporan Harian</p></div>
+                        <div class="menu-item" id="menu-riwayat" onclick="bukaRiwayat()"><div class="icon-box ic-3"><i class="fa-solid fa-clock-rotate-left"></i></div><p>Riwayat Laporan Harian</p></div>
+                        <div class="menu-item" id="menu-asesmen" onclick="bukaAsesmen()">
+                        <div class="icon-box ic-9"><i class="fa-solid fa-clipboard-user"></i></div><p>Asessmen Siswa</p></div>
+                        <div class="menu-item" id="menu-penilaian" onclick="bukaPenilaian()">
+                        <div class="icon-box ic-4"><i class="fa-solid fa-table-cells-large"></i></div><p>Rapor Asrama Siswa</p></div>
+                        <div class="menu-item" id="menu-pelanggaran" onclick="bukaPelanggaran()">
+                        <div class="icon-box ic-5"><i class="fa-solid fa-triangle-exclamation"></i></div><p>Pelanggaran Siswa</p></div>
+                        <div class="menu-item" id="menu-kesehatan" onclick="bukaKesehatan()">
+                        <div class="icon-box ic-6"><i class="fa-solid fa-notes-medical"></i></div><p>Riwayat Kesehatan</p></div>
+                        <div class="menu-item" id="menu-peta" onclick="bukaPeta()">
+                        <div class="icon-box ic-6"><i class="fa-solid fa-map-location-dot"></i></div><p>Peta Rumah Siswa</p></div>
+                        <div class="menu-item admin-only hidden" id="menu-users" onclick="bukaUsers()">
+                        <div class="icon-box ic-8"><i class="fa-solid fa-user-group"></i></div><p>Menu Admin</p></div>
+                        <div class="menu-item" id="menu-pengaturan" onclick="bukaPengaturan()">
+                        <div class="icon-box ic-5"><i class="fa-solid fa-gear"></i></div><p>Pengaturan</p></div>                        
+                    </div>
+                </div>
+                
 
-                            <!-- Card Jadwal Piket -->
+                <!-- Card Jadwal Piket -->
               <div class="section-card" id="card-jadwal-piket" style="margin-top: 25px; margin-bottom: 25px; display: none;">
     <h3 style="color: var(--blue-dark); margin-top: 0; margin-bottom: 15px; font-size: 15px;">
         <i class="fa-solid fa-calendar-day"></i> Jadwal Piket Wali Asuh/Asrama Hari Ini & Besok
@@ -696,32 +723,7 @@
         </div>
     </div>
 </div>
-            
-                <div class="section-card">
-                    <h3 class="section-title">MENU UTAMA</h3>
-                    <div class="menu-grid"> 
-                        <div class="menu-item" id="menu-input" onclick="bukaInputData()"><div class="icon-box ic-1"><i class="fa-solid fa-plus"></i></div><p>Laporan Harian</p></div>
-                        <div class="menu-item" id="menu-pj" onclick="bukaMenuPJ()">
-                        <div class="icon-box ic-7"><i class="fa-solid fa-book"></i></div><p>Laporan PJ</p></div>
-                        <div class="menu-item" id="menu-preview" onclick="bukaPreview()"><div class="icon-box ic-2"><i class="fa-regular fa-eye"></i></div><p>Lihat Laporan</p></div>
-                        <div class="menu-item" id="menu-riwayat" onclick="bukaRiwayat()"><div class="icon-box ic-3"><i class="fa-solid fa-clock-rotate-left"></i></div><p>Riwayat Laporan Harian</p></div>
-                        <div class="menu-item" id="menu-penilaian" onclick="bukaPenilaian()">
-                        <div class="icon-box ic-4"><i class="fa-solid fa-table-cells-large"></i></div>
-                        <p>Penilaian Asrama</p></div>
-                        <div class="menu-item" id="menu-pelanggaran" onclick="bukaPelanggaran()">
-                        <div class="icon-box ic-5"><i class="fa-solid fa-triangle-exclamation"></i></div><p>Pelanggaran Siswa</p></div>
-                        <div class="menu-item" id="menu-kesehatan" onclick="bukaKesehatan()">
-                        <div class="icon-box ic-6"><i class="fa-solid fa-notes-medical"></i></div><p>Riwayat Kesehatan</p></div>
-                        <div class="menu-item" id="menu-peta" onclick="bukaPeta()">
-                        <div class="icon-box ic-6"><i class="fa-solid fa-map-location-dot"></i></div><p>Peta Rumah Siswa</p></div>
-                        <div class="menu-item admin-only hidden" id="menu-users" onclick="bukaUsers()">
-                        <div class="icon-box ic-8"><i class="fa-solid fa-user-group"></i></div><p>Menu Admin</p></div>
-                        <div class="menu-item" id="menu-pengaturan" onclick="bukaPengaturan()">
-                        <div class="icon-box ic-5"><i class="fa-solid fa-gear"></i></div><p>Pengaturan</p></div>
-                        
-                    </div>
-                </div>
-                </div>
+</div>
 
             <!-- USERS MENU (ADMIN) -->
             <div id="users-content" class="hidden">
@@ -1105,6 +1107,18 @@
                     <button class="btn-back" style="padding:8px 15px;" onclick="resetFilterRiwayat()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
                 </div>
 
+                <!-- FILTER LIMIT DATA RIWAYAT LAPORAN -->
+<div style="background: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; display:flex; gap:15px; align-items:center; flex-wrap:wrap; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+    <b style="color:var(--blue-dark); font-size:14px;"><i class="fa-solid fa-list"></i> Tampilkan:</b>
+    <select id="limit-riwayat" class="form-group" style="margin:0; padding:8px; width:100px;" onchange="gantiLimitRiwayat()">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="all">View All</option>
+    </select>
+</div>
+
                 <div class="section-card">
                     <table class="table-kegiatan">
                         <thead>
@@ -1118,6 +1132,10 @@
                         </thead>
                         <tbody id="tbody-riwayat"></tbody>
                     </table>
+                    <!-- TAMBAHKAN WADAH PAGINASI INI TEPAT DI BAWAH TABLE -->
+<div id="pagination-riwayat" style="display:flex; justify-content:center; align-items:center; gap:15px; margin-top:20px;">
+    <!-- Tombol pagination akan muncul di sini -->
+</div>
                 </div>
             </div>
 
@@ -1276,6 +1294,9 @@
             <?!= include('peta'); ?>
             <!-- PENILAIAN CONTENT -->
             <?!= include('penilaian'); ?>
+            <!-- ASESMEN CONTENT -->
+            <?!= include('assesment'); ?>
+
           <!-- KESEHATAN CONTENT -->
 <div id="kesehatan-content" class="hidden">
     <div class="header-pengaturan" style="margin-bottom: 15px;">
@@ -1419,9 +1440,9 @@
         
         <!-- TAMBAHAN TAB BARU -->
         <button id="btn-tab-pj-pembelian" class="tab-btn" style="text-align: center; border-radius: 8px;" onclick="switchTabPJ('pembelian')">PJ Pembelian</button>
-        <button id="btn-tab-pj-potongfc" class="tab-btn" style="text-align: center; border-radius: 8px;" onclick="switchTabPJ('potongfc')">PJ Potong / FC</button>
+        <button id="btn-tab-pj-potongfc" class="tab-btn" style="text-align: center; border-radius: 8px;" onclick="switchTabPJ('potongfc')">PJ Potong / FC / Alat Kebersihan</button>
         
-        <button id="btn-tab-pj-riwayat" class="tab-btn" style="text-align: center; border-radius: 8px;" onclick="switchTabPJ('riwayat')">Riwayat & Generate</button>
+        <button id="btn-tab-pj-riwayat" class="tab-btn" style="text-align: center; border-radius: 8px;" onclick="switchTabPJ('riwayat')">Riwayat & Generate oleh TU</button>
     </div>
 
     <!-- TAB 1: PJ MAKAN -->
@@ -1446,6 +1467,7 @@
     </div>
 
     <!-- TAB 2: PJ EKSTRA -->
+    <datalist id="list-jenis-ekstra"></datalist>
     <div id="tab-pj-ekstra" class="section-card hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;">
             <h3 style="margin: 0; color: var(--blue-dark);"><i class="fa-solid fa-basketball"></i> Draft Laporan PJ Kegiatan/Ekstrakurikuler</h3>
@@ -1490,7 +1512,7 @@
     <!-- TAB: PJ POTONG / FC -->
     <div id="tab-pj-potongfc" class="section-card hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;">
-            <h3 style="margin: 0; color: var(--blue-dark);"><i class="fa-solid fa-scissors"></i> Draft Potong Rambut / Fotocopy</h3>
+            <h3 style="margin: 0; color: var(--blue-dark);"><i class="fa-solid fa-scissors"></i> Draft Potong Rambut / Fotocopy / Alat Kesehatan</h3>
             <div style="display: flex; gap: 10px;">
                 <button class="btn-back" onclick="resetPJPotongFC()" style="padding: 8px 15px; font-size: 13px;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
                 <button class="btn-save" onclick="bukaModalPJPotongFC()" style="padding: 8px 15px; font-size: 13px;"><i class="fa-solid fa-plus"></i> Tambah</button>
@@ -1515,13 +1537,24 @@
         <select id="filter-jenis-pj" class="form-group" style="margin:0; padding:8px; width:220px;" onchange="loadRiwayatPJ()">
             <option value="Makan">Permakanan - Makan</option>
             <option value="Snack">Permakanan - Snack</option>
-            <option value="Ekstra">Laporan Kegiatan</option>
+            <option value="Ekstra">Laporan Kegiatan/Ekstrakurikuler</option>
             <!-- TAMBAHAN OPSI FILTER -->
             <option value="Pembelian">Pembelian Barang</option>
-            <option value="PotongFC">Potong Rambut / Fotocopy</option>
+            <option value="PotongFC">Potong Rambut/Fotocopy/Alat Kebersihan</option>
         </select>
-        <button class="btn-save" style="margin-left: auto; background: #10b981;" onclick="bukaModalGeneratePJ()"><i class="fa-solid fa-file-pdf"></i> Generate PDF Cetak</button>
-    </div>
+
+        <!-- TAMBAHAN LIMIT PJ -->
+    <b style="color:var(--blue-dark); font-size:14px; margin-left: 10px;"><i class="fa-solid fa-list"></i> Tampilkan:</b>
+    <select id="limit-pj-riwayat" class="form-group" style="margin:0; padding:8px; width:100px;" onchange="gantiLimitPJ()">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="all">View All</option>
+    </select>
+
+    <button class="btn-save" style="margin-left: auto; background: #10b981;" onclick="bukaModalGeneratePJ()"><i class="fa-solid fa-file-pdf"></i> Generate PDF Cetak</button>
+</div>
 
     <div style="overflow-x: auto;">
         <table class="table-kegiatan">
@@ -1530,6 +1563,9 @@
             </thead>
             <tbody id="tbody-pj-riwayat"></tbody>
         </table>
+        <div id="pagination-pj-riwayat" style="display:flex; justify-content:center; align-items:center; gap:15px; margin-top:20px;">
+    <!-- Tombol pagination akan di-generate otomatis oleh JavaScript -->
+</div>
         <div id="empty-pj-riwayat" style="text-align:center; padding: 30px;">Memuat data...</div>
     </div>
 </div>
@@ -1547,9 +1583,9 @@
         <div class="form-group">
             <label>Filter Kategori</label>
             <select id="pj-pdf-kategori">
-                <option value="Semua">Semua (Gabungan Laki & Perempuan)</option>
-                <option value="Pria">Khusus Laki</option>
-                <option value="Wanita">Khusus Perempuan</option>
+                <option value="Semua">Semua (Gabungan Putra & Putri)</option>
+                <option value="Putra">Khusus Putra</option>
+                <option value="Putri">Khusus Putri</option>
             </select>
         </div>
 
@@ -1617,8 +1653,8 @@
         <div class="form-group">
             <label>SPJ Kategori Siswa</label>
             <select id="pjm-kategori">
-                <option value="Pria">Laki</option>
-                <option value="Wanita">Perempuan</option>
+                <option value="Putra">Putra</option>
+                <option value="Putri">Putri</option>
             </select>
         </div>
         <div class="form-group"><label>Tanggal</label><input type="date" id="pjm-tgl"></div>
@@ -1649,32 +1685,39 @@
 
 <!-- MODAL PJ EKSTRA -->
 <div id="modal-pj-ekstra" class="modal-overlay hidden">
-    <div class="modal-content" style="width: 450px; text-align: left;">
+    <div class="modal-content" style="width: 500px; text-align: left;">
         <button class="btn-close" onclick="document.getElementById('modal-pj-ekstra').classList.add('hidden')"><i class="fa-solid fa-xmark"></i></button>
         <h3 style="color:var(--blue-dark); margin-top:0;">TAMBAH PJ KEGIATAN</h3>
         
-        <div class="form-group"><label>Jenis Kegiatan</label><input type="text" id="pje-jenis" placeholder="Contoh: Pramuka / Futsal"></div>
+        <div class="form-group"><label>Jenis Kegiatan</label><input type="text" id="pje-jenis" list="list-jenis-ekstra" placeholder="Contoh: Pramuka / Futsal"></div>
         <div class="form-group"><label>Pendamping Kegiatan/Ekstrakurikuler</label><input type="text" id="pje-pendamping" placeholder="Nama Pendamping"></div>
-        <!-- TAMBAHAN KATEGORI -->
         <div class="form-group">
             <label>SPJ Kategori Siswa</label>
             <select id="pje-kategori">
-                <option value="Pria">Laki</option>
-                <option value="Wanita">Perempuan</option>
+                <option value="Putra">Putra</option>
+                <option value="Putri">Putri</option>
             </select>
         </div>
         <div class="form-group"><label>Tanggal</label><input type="date" id="pje-tgl"></div>
-        <div class="form-group"><label>Keterangan</label><input type="text" id="pje-ket" placeholder="Catatan opsional"></div>
+        <div class="form-group"><label>Lokasi</label><input type="text" id="pje-ket" placeholder="Lokasi Kegiatan/Ekstrakurikuler"></div>
         
-        <div class="form-group">
-            <label>Foto Pendukung</label>
-            <div class="upload-box" style="width:150px; height:120px;" onclick="document.getElementById('file-pje').click()" id="box-pje">
-                <div style="text-align:center; color:#94a3b8;"><i class="fa-solid fa-camera fa-2x"></i><br><small>Upload Foto</small></div>
+        <label style="font-size: 13px; font-weight: bold; color: var(--blue-dark); margin-bottom: 8px; display:block;">Foto Pendukung (Hingga 3 Foto)</label>
+        <div class="grid-3" style="gap: 10px;">
+            <div class="upload-box" style="width:100%; height:100px;" onclick="document.getElementById('file-pje-1').click()" id="box-pje-1">
+                <div style="text-align:center; font-size:11px; color:#94a3b8;"><i class="fa-solid fa-camera"></i><br>Foto 1</div>
             </div>
-            <input type="file" id="file-pje" class="hidden" accept="image/*" onchange="previewImgBase64(this, 'box-pje', 'b64pje')">
+            <div class="upload-box" style="width:100%; height:100px;" onclick="document.getElementById('file-pje-2').click()" id="box-pje-2">
+                <div style="text-align:center; font-size:11px; color:#94a3b8;"><i class="fa-solid fa-camera"></i><br>Foto 2</div>
+            </div>
+            <div class="upload-box" style="width:100%; height:100px;" onclick="document.getElementById('file-pje-3').click()" id="box-pje-3">
+                <div style="text-align:center; font-size:11px; color:#94a3b8;"><i class="fa-solid fa-camera"></i><br>Foto 3</div>
+            </div>
+            <input type="file" id="file-pje-1" class="hidden" accept="image/*" onchange="previewImgBase64(this, 'box-pje-1', 'b64pje1')">
+            <input type="file" id="file-pje-2" class="hidden" accept="image/*" onchange="previewImgBase64(this, 'box-pje-2', 'b64pje2')">
+            <input type="file" id="file-pje-3" class="hidden" accept="image/*" onchange="previewImgBase64(this, 'box-pje-3', 'b64pje3')">
         </div>
         
-        <div style="display: flex; gap: 15px; margin-top: 15px;">
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
             <button class="btn-back" style="flex:1; justify-content:center;" onclick="document.getElementById('modal-pj-ekstra').classList.add('hidden')">Batal</button>
             <button class="btn-save" style="flex:1;" onclick="simpanDrafPJEkstra()">Simpan ke Draf</button>
         </div>
@@ -1726,12 +1769,14 @@
         <h3 style="color:var(--blue-dark); margin-top:0;">TAMBAH POTONG RAMBUT / FC</h3>
         
         <div class="form-group">
-            <label>Jenis Kegiatan</label>
-            <select id="pjfc-jenis">
-                <option value="Potong Rambut">Potong Rambut</option>
-                <option value="Fotocopy">Fotocopy</option>
-            </select>
-        </div>
+    <label>Jenis Kegiatan</label>
+    <select id="pjfc-jenis">
+        <option value="Potong Rambut">Potong Rambut</option>
+        <option value="Fotocopy">Fotocopy</option>
+        <!-- Tambahkan baris di bawah ini -->
+        <option value="Kebersihan">Alat Kebersihan</option>
+    </select>
+</div>
         <div class="form-group"><label>Tanggal</label><input type="date" id="pjfc-tgl"></div>
         <div class="form-group"><label>Keterangan</label><input type="text" id="pjfc-ket" placeholder="Misal: FC Modul MTK / Nama Siswa"></div>
         
@@ -1962,7 +2007,7 @@ function submitToken() {
 
 //Pendaftaran menu ning ken breyyyyyy
 function navigasiHalaman(idTarget) {
-    const pages = ['dashboard-content', 'users-content', 'pengaturan-content', 'input-data-content', 'riwayat-content', 'preview-content', 'peta-content', 'pelanggaran-content', 'penilaian-content', 'kesehatan-content', 'pj-content'];
+    const pages = ['dashboard-content', 'users-content', 'pengaturan-content', 'input-data-content', 'riwayat-content', 'preview-content', 'peta-content', 'pelanggaran-content', 'penilaian-content', 'kesehatan-content', 'pj-content', 'assesment-content'];
 
     // 1. Reset filter atas jika sebelumnya disembunyikan oleh Preview PJ
     document.querySelectorAll('[data-hidden-by="pj"]').forEach(el => {
@@ -1993,6 +2038,10 @@ function navigasiHalaman(idTarget) {
 
 function bukaPenilaian() {
     navigasiHalaman('penilaian-content');
+}
+
+function bukaAsesmen() {
+    navigasiHalaman('assesment-content');
 }
 
 function populateData(data) {
@@ -3151,20 +3200,37 @@ function bukaRiwayat() {
     }).getRiwayatLaporan();
 }
 
+// --- VARIABEL & FUNGSI BANTUAN PAGINASI RIWAYAT LAPORAN ---
+let currentPageRiwayat = 1;
+
+function gantiLimitRiwayat() {
+    currentPageRiwayat = 1; // Reset ke halaman 1 setiap ganti limit
+    terapkanFilterRiwayat();
+}
+
+function ubahHalamanRiwayat(newPage) {
+    currentPageRiwayat = newPage;
+    terapkanFilterRiwayat();
+}
+
+// --- FUNGSI UTAMA (SUDAH DIPERBARUI) ---
 function terapkanFilterRiwayat() {
     const tbody = document.getElementById('tbody-riwayat');
+    const paginationContainer = document.getElementById('pagination-riwayat'); // Wadah paginasi
+    
     tbody.innerHTML = '';
+    if (paginationContainer) paginationContainer.innerHTML = ''; // Kosongkan paginasi sebelumnya
     
     let data = globalDataRiwayat;
     
-    if(IS_ADMIN || IS_KEPALA_SEKOLAH) {
+    if (IS_ADMIN || IS_KEPALA_SEKOLAH) {
         const fUser = document.getElementById('filter-user-riwayat').value;
         const fBulan = document.getElementById('filter-bulan-riwayat').value; 
         
-        if(fUser) data = data.filter(d => (d.nama || d.Nama || d.namaUser) === fUser);
+        if (fUser) data = data.filter(d => (d.nama || d.Nama || d.namaUser) === fUser);
         
         // [PERBAIKAN BUG FILTER BULAN FINAL]
-        if(fBulan) {
+        if (fBulan) {
             let [fYear, fMonth] = fBulan.split('-'); // misal: "2026", "07"
             
             // Siapkan array nama bulan untuk pencocokan singkatan ("Jul") dan nama lengkap ("Juli")
@@ -3191,11 +3257,53 @@ function terapkanFilterRiwayat() {
         }
     }
     
-    if(!data || data.length === 0) { 
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Tidak ada data laporan.</td></tr>'; return; 
+    if (!data || data.length === 0) { 
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Tidak ada data laporan.</td></tr>'; 
+        return; 
     }
     
-    data.forEach(r => {
+    // --- LOGIKA PAGINASI & LIMIT DATA ---
+    const limitElement = document.getElementById('limit-riwayat');
+    const limitVal = limitElement ? limitElement.value : '10';
+    let dataToRender = data;
+    
+    if (limitVal !== 'all') {
+        const limit = parseInt(limitVal);
+        const totalPages = Math.ceil(data.length / limit);
+        
+        // Pastikan current page valid
+        if (currentPageRiwayat > totalPages) currentPageRiwayat = totalPages;
+        if (currentPageRiwayat < 1) currentPageRiwayat = 1;
+        
+        const startIndex = (currentPageRiwayat - 1) * limit;
+        const endIndex = startIndex + limit;
+        
+        dataToRender = data.slice(startIndex, endIndex);
+        
+        // Buat tombol paginasi jika halaman lebih dari 1
+        if (totalPages > 1 && paginationContainer) {
+            let htmlPaginasi = `
+                <button onclick="ubahHalamanRiwayat(${currentPageRiwayat - 1})" ${currentPageRiwayat === 1 ? 'disabled' : ''} 
+                    style="padding:6px 12px; border:1px solid #ccc; border-radius:6px; background:${currentPageRiwayat === 1 ? '#f1f5f9' : 'white'}; cursor:${currentPageRiwayat === 1 ? 'not-allowed' : 'pointer'};">
+                    <i class="fa-solid fa-chevron-left"></i> Prev
+                </button>
+                
+                <span style="font-size:14px; font-weight:bold; color:var(--blue-dark);">
+                    Halaman ${currentPageRiwayat} dari ${totalPages}
+                </span>
+                
+                <button onclick="ubahHalamanRiwayat(${currentPageRiwayat + 1})" ${currentPageRiwayat === totalPages ? 'disabled' : ''} 
+                    style="padding:6px 12px; border:1px solid #ccc; border-radius:6px; background:${currentPageRiwayat === totalPages ? '#f1f5f9' : 'white'}; cursor:${currentPageRiwayat === totalPages ? 'not-allowed' : 'pointer'};">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            `;
+            paginationContainer.innerHTML = htmlPaginasi;
+        }
+    }
+    // ----------------------------------
+
+    // Render data ke tabel
+    dataToRender.forEach(r => {
         let namaPegawai = r.nama || r.Nama || r.namaUser || '-';
         let emailPegawai = r.email || r.Email || '-';
         let tglMulai = r.tanggalMulai || r.tanggal || '-';
@@ -4886,7 +4994,7 @@ let globalRiwayatPJ = []; // Penampung Data Riwayat
 let editReportIdPJ = null; // ID Laporan yang sedang diedit
 window.imgStore = { 
     b64pjm1: '', b64pjm2: '', b64pjm3: '', 
-    b64pje: '', 
+    b64pje1: '', b64pje2: '', b64pje3: '',
     b64pjp1: '', b64pjp2: '', b64pjp3: '', 
     b64pjfc: '' 
 };
@@ -4944,7 +5052,7 @@ function updateDropdownMakan() {
 function bukaModalPJMakan() {
     document.getElementById('pjm-jenis').value = '';
     updateDropdownMakan(); 
-    document.getElementById('pjm-kategori').value = 'Pria'; // Reset default
+    document.getElementById('pjm-kategori').value = 'Putra'; // Reset default
     document.getElementById('pjm-tgl').valueAsDate = new Date();
     document.getElementById('pjm-ket').value = '';
     
@@ -4998,7 +5106,7 @@ function renderTabelPJMakan() {
     btnSimpan.style.display = 'inline-block'; empty.style.display = 'none';
     
     drafPjMakan.forEach((k,i) => {
-        let spanKategori = `<span style="background:${k.kategori==='Pria'?'#dbeafe':'#fce7f3'}; color:${k.kategori==='Pria'?'#1d4ed8':'#be185d'}; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:bold;">${k.kategori}</span>`;
+        let spanKategori = `<span style="background:${k.kategori==='Putra'?'#dbeafe':'#fce7f3'}; color:${k.kategori==='Putra'?'#1d4ed8':'#be185d'}; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:bold;">${k.kategori}</span>`;
         tbody.innerHTML += `<tr>
             <td>${k.jenis}</td><td>${k.makan}</td><td>${spanKategori}</td><td>${formatTanggal(k.tanggal)}</td>
             <td>
@@ -5034,7 +5142,7 @@ function editDrafPJMakan(index) {
     updateDropdownMakan();
     setTimeout(() => {
         document.getElementById('pjm-makan').value = k.makan;
-        document.getElementById('pjm-kategori').value = k.kategori || 'Pria';
+        document.getElementById('pjm-kategori').value = k.kategori || 'Putra';
         document.getElementById('pjm-tgl').value = k.tanggal;
         document.getElementById('pjm-ket').value = k.keterangan;
         
@@ -5049,19 +5157,28 @@ function editDrafPJMakan(index) {
     }, 100);
 }
 // ----- FUNGSI PJ EKSTRA -----
+
 function bukaModalPJEkstra() {
     document.getElementById('pje-jenis').value = '';
     document.getElementById('pje-pendamping').value = '';
-    document.getElementById('pje-kategori').value = 'Pria';
+    document.getElementById('pje-kategori').value = 'Putra';
     document.getElementById('pje-tgl').valueAsDate = new Date();
     document.getElementById('pje-ket').value = '';
-    window.imgStore.b64pje = '';
-    document.getElementById('box-pje').innerHTML = `<div style="text-align:center; color:#94a3b8;"><i class="fa-solid fa-camera fa-2x"></i><br><small>Upload Foto</small></div>`;
+    
+    // Reset Image Preview
+    window.imgStore.b64pje1 = ''; window.imgStore.b64pje2 = ''; window.imgStore.b64pje3 = '';
+    document.getElementById('box-pje-1').innerHTML = `<div style="text-align:center; font-size:11px; color:#94a3b8;"><i class="fa-solid fa-camera"></i><br>Foto 1</div>`;
+    document.getElementById('box-pje-2').innerHTML = `<div style="text-align:center; font-size:11px; color:#94a3b8;"><i class="fa-solid fa-camera"></i><br>Foto 2</div>`;
+    document.getElementById('box-pje-3').innerHTML = `<div style="text-align:center; font-size:11px; color:#94a3b8;"><i class="fa-solid fa-camera"></i><br>Foto 3</div>`;
+    
     document.getElementById('modal-pj-ekstra').classList.remove('hidden');
 }
 
 function simpanDrafPJEkstra() {
-    if (!window.imgStore.b64pje) return alert("Harap upload foto pendukung!");
+    if (!window.imgStore.b64pje1 && !window.imgStore.b64pje2 && !window.imgStore.b64pje3) {
+        return alert("Harap upload minimal 1 foto pendukung!");
+    }
+    
     const tglInput = document.getElementById('pje-tgl').value;
     if (drafPjEkstra.length > 0 && tglInput !== drafPjEkstra[0].tanggal) {
         return alert("Input laporan harus diinput per hari, silahkan simpan laporan ini atau buat inputan baru untuk tanggal lain.");
@@ -5073,7 +5190,9 @@ function simpanDrafPJEkstra() {
         kategori: document.getElementById('pje-kategori').value,
         tanggal: tglInput,
         keterangan: document.getElementById('pje-ket').value,
-        foto: window.imgStore.b64pje
+        foto1: window.imgStore.b64pje1,
+        foto2: window.imgStore.b64pje2,
+        foto3: window.imgStore.b64pje3
     });
     
     document.getElementById('modal-pj-ekstra').classList.add('hidden');
@@ -5089,10 +5208,16 @@ function renderTabelPJEkstra() {
     btnSimpan.style.display = 'inline-block'; empty.style.display = 'none';
     
     drafPjEkstra.forEach((k,i) => {
-        let spanKategori = `<span style="background:${k.kategori==='Pria'?'#dbeafe':'#fce7f3'}; color:${k.kategori==='Pria'?'#1d4ed8':'#be185d'}; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:bold;">${k.kategori}</span>`;
+        let spanKategori = `<span style="background:${k.kategori==='Putra'?'#dbeafe':'#fce7f3'}; color:${k.kategori==='Putra'?'#1d4ed8':'#be185d'}; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:bold;">${k.kategori}</span>`;
         tbody.innerHTML += `<tr>
             <td>${k.jenis}</td><td>${k.pendamping}</td><td>${spanKategori}</td><td>${formatTanggal(k.tanggal)}</td>
-            <td><img src="${getDriveThumbnail(k.foto)}" style="width:40px; height:40px; object-fit:cover;" onerror="this.src=''"></td>
+            <td>
+                <div style="display:flex; gap:5px;">
+                    ${k.foto1 ? `<img src="${getDriveThumbnail(k.foto1)}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;">` : ''}
+                    ${k.foto2 ? `<img src="${getDriveThumbnail(k.foto2)}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;">` : ''}
+                    ${k.foto3 ? `<img src="${getDriveThumbnail(k.foto3)}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;">` : ''}
+                </div>
+            </td>
             <td style="text-align:center;">
                 <button class="btn-icon" style="color:var(--blue-card); margin-right: 5px;" onclick="editDrafPJEkstra(${i})"><i class="fa-solid fa-pen"></i></button>
                 <button class="btn-icon" onclick="drafPjEkstra.splice(${i},1); renderTabelPJEkstra()"><i class="fa-solid fa-trash" style="color:red;"></i></button>
@@ -5105,12 +5230,17 @@ function editDrafPJEkstra(index) {
     const k = drafPjEkstra[index];
     document.getElementById('pje-jenis').value = k.jenis;
     document.getElementById('pje-pendamping').value = k.pendamping;
-    document.getElementById('pje-kategori').value = k.kategori || 'Pria';
+    document.getElementById('pje-kategori').value = k.kategori || 'Putra';
     document.getElementById('pje-tgl').value = k.tanggal;
     document.getElementById('pje-ket').value = k.keterangan;
     
-    window.imgStore.b64pje = k.foto;
-    document.getElementById('box-pje').innerHTML = `<img src="${getThumbUrl(k.foto)}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src=''">`;
+    window.imgStore.b64pje1 = k.foto1 || ''; 
+    window.imgStore.b64pje2 = k.foto2 || ''; 
+    window.imgStore.b64pje3 = k.foto3 || '';
+    
+    document.getElementById('box-pje-1').innerHTML = k.foto1 ? `<img src="${getThumbUrl(k.foto1)}" style="width:100%; height:100%; object-fit:cover;">` : `<div style="text-align:center; font-size:11px; color:#94a3b8;"><i class="fa-solid fa-camera"></i><br>Foto 1</div>`;
+    document.getElementById('box-pje-2').innerHTML = k.foto2 ? `<img src="${getThumbUrl(k.foto2)}" style="width:100%; height:100%; object-fit:cover;">` : `<div style="text-align:center; font-size:11px; color:#94a3b8;"><i class="fa-solid fa-camera"></i><br>Foto 2</div>`;
+    document.getElementById('box-pje-3').innerHTML = k.foto3 ? `<img src="${getThumbUrl(k.foto3)}" style="width:100%; height:100%; object-fit:cover;">` : `<div style="text-align:center; font-size:11px; color:#94a3b8;"><i class="fa-solid fa-camera"></i><br>Foto 3</div>`;
     
     drafPjEkstra.splice(index, 1);
     renderTabelPJEkstra();
@@ -5381,12 +5511,27 @@ function resetPJPotongFC() { if(confirm("Hapus draf?")) { drafPjPotongFC = []; r
 
 function simpanFinalPJPotongFC() {
     const btn = document.getElementById('btn-simpan-pj-potongfc');
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; 
+    btn.disabled = true;
+
+    // Siapkan payload/data yang akan dikirim ke backend
+    let payload = { 
+        email: GLOBAL_USER_DATA.email, 
+        kegiatan: drafPjPotongFC,
+        reportId: editReportIdPJ
+    };
+
     google.script.run.withSuccessHandler(res => {
         tampilkanAlert(res.message);
-        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Laporan'; btn.disabled = false;
-        if(res.success) { drafPjPotongFC = []; renderTabelPJPotongFC(); }
-    }).simpanPJPotongFCBatch({ email: GLOBAL_USER_DATA.email, kegiatan: drafPjPotongFC });
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Laporan'; 
+        btn.disabled = false;
+        
+        if(res.success) { 
+            drafPjPotongFC = []; 
+            editReportIdPJ = null; // <--- Reset kembali ke null setelah berhasil
+            renderTabelPJPotongFC(); 
+        }
+    }).simpanPJPotongFCBatch(payload); // Kirim payload yang baru
 }
 
 function loadRiwayatPJ() {
@@ -5401,37 +5546,113 @@ function loadRiwayatPJ() {
     google.script.run.withSuccessHandler(data => {
         if (!data || data.length === 0) {
             empty.innerHTML = 'Belum ada data laporan.';
+            globalRiwayatPJ = [];
             return;
         }
         
         globalRiwayatPJ = data; // Simpan ke global variable
-        empty.style.display = 'none';
-        
-        data.forEach(d => {
-            let tglInput = new Date(d.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'});
-            
-            // --- INI TAMBAHANNYA: Mengambil tanggal dari data item pertama ---
-            let tglKegiatan = d.items.length > 0 ? formatTanggal(d.items[0].tanggal) : '-';
-
-            tbody.innerHTML += `
-            <tr>
-                <td>
-                    <b>${d.id}</b><br>
-                    <small style="color:var(--text-gray);"><i class="fa-regular fa-calendar"></i> Tgl: ${tglKegiatan}</small>
-                </td>
-                <td>${tglInput}</td>
-                <td>${d.email}</td>
-                <td style="text-align:center; font-weight:bold; color:var(--blue-card);">${d.items.length}</td>
-                <td style="text-align:center;">
-                    <div style="display:flex; justify-content:center; gap:5px;">
-                        <button class="btn-icon" style="color:white; background:#0ea5e9; padding:8px; border-radius:6px;" onclick="previewLaporanPJ('${d.id}', '${jenis}')" title="Preview"><i class="fa-solid fa-eye"></i></button>
-                        <button class="btn-icon" style="color:var(--blue-card); background:#f0f9ff; padding:8px; border-radius:6px;" onclick="editLaporanPJ('${d.id}', '${jenis}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn-icon" style="color:#ef4444; background:#fef2f2; padding:8px; border-radius:6px;" onclick="hapusLaporanPJ('${d.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </td>
-            </tr>`;
-        });
+        renderTabelRiwayatPJ(); // Panggil fungsi render terpisah
     }).getRiwayatPJMaster(jenis);
+}
+
+// --- FUNGSI BARU UNTUK RENDER TABEL PJ SESUAI LIMIT ---
+let currentPagePJ = 1;
+
+// Fungsi yang dipanggil saat dropdown limit diganti
+function gantiLimitPJ() {
+    currentPagePJ = 1; // Selalu reset ke halaman 1 jika limit diganti
+    renderTabelRiwayatPJ();
+}
+
+// Fungsi untuk tombol Next/Prev
+function ubahHalamanPJ(newPage) {
+    currentPagePJ = newPage;
+    renderTabelRiwayatPJ();
+}
+
+// UPDATE fungsi renderTabelRiwayatPJ Anda dengan yang ini
+function renderTabelRiwayatPJ() {
+    const tbody = document.getElementById('tbody-pj-riwayat');
+    const empty = document.getElementById('empty-pj-riwayat');
+    const paginationContainer = document.getElementById('pagination-pj-riwayat');
+    const jenis = document.getElementById('filter-jenis-pj').value;
+    
+    tbody.innerHTML = '';
+    if(paginationContainer) paginationContainer.innerHTML = ''; // Kosongkan paginasi
+    
+    if (!globalRiwayatPJ || globalRiwayatPJ.length === 0) {
+        empty.style.display = 'block';
+        empty.innerHTML = 'Belum ada data laporan.';
+        return;
+    }
+    
+    empty.style.display = 'none';
+    
+    const limitElement = document.getElementById('limit-pj-riwayat');
+    const limitVal = limitElement ? limitElement.value : '10';
+    
+    let dataToRender = globalRiwayatPJ;
+    
+    // --- LOGIKA PAGINASI ---
+    if (limitVal !== 'all') {
+        const limit = parseInt(limitVal);
+        const totalPages = Math.ceil(globalRiwayatPJ.length / limit);
+        
+        // Pastikan current page tidak melebihi total halaman (misal habis hapus data)
+        if (currentPagePJ > totalPages) currentPagePJ = totalPages;
+        if (currentPagePJ < 1) currentPagePJ = 1;
+        
+        const startIndex = (currentPagePJ - 1) * limit;
+        const endIndex = startIndex + limit;
+        
+        dataToRender = globalRiwayatPJ.slice(startIndex, endIndex);
+        
+        // Tampilkan tombol paginasi jika halaman lebih dari 1
+        if (totalPages > 1 && paginationContainer) {
+            let htmlPaginasi = `
+                <button onclick="ubahHalamanPJ(${currentPagePJ - 1})" ${currentPagePJ === 1 ? 'disabled' : ''} 
+                    style="padding:6px 12px; border:1px solid #ccc; border-radius:6px; background:${currentPagePJ === 1 ? '#f1f5f9' : 'white'}; cursor:${currentPagePJ === 1 ? 'not-allowed' : 'pointer'};">
+                    <i class="fa-solid fa-chevron-left"></i> Prev
+                </button>
+                
+                <span style="font-size:14px; font-weight:bold; color:var(--blue-dark);">
+                    Halaman ${currentPagePJ} dari ${totalPages}
+                </span>
+                
+                <button onclick="ubahHalamanPJ(${currentPagePJ + 1})" ${currentPagePJ === totalPages ? 'disabled' : ''} 
+                    style="padding:6px 12px; border:1px solid #ccc; border-radius:6px; background:${currentPagePJ === totalPages ? '#f1f5f9' : 'white'}; cursor:${currentPagePJ === totalPages ? 'not-allowed' : 'pointer'};">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            `;
+            paginationContainer.innerHTML = htmlPaginasi;
+        }
+    }
+    // -------------------------
+
+    // Render baris tabel
+    dataToRender.forEach(d => {
+        let tglInput = new Date(d.timestamp).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'});
+        let tglKegiatan = (d.items && d.items.length > 0) ? formatTanggal(d.items[0].tanggal) : '-';
+        let jumlahItem = (d.items && d.items.length) ? d.items.length : 0;
+
+        tbody.innerHTML += `
+        <tr>
+            <td>
+                <b>${d.id}</b><br>
+                <small style="color:var(--text-gray);"><i class="fa-regular fa-calendar"></i> Tgl: ${tglKegiatan}</small>
+            </td>
+            <td>${tglInput}</td>
+            <td>${d.email}</td>
+            <td style="text-align:center; font-weight:bold; color:var(--blue-card);">${jumlahItem}</td>
+            <td style="text-align:center;">
+                <div style="display:flex; justify-content:center; gap:5px;">
+                    <button class="btn-icon" style="color:white; background:#0ea5e9; padding:8px; border-radius:6px;" onclick="previewLaporanPJ('${d.id}', '${jenis}')" title="Preview"><i class="fa-solid fa-eye"></i></button>
+                    <button class="btn-icon" style="color:var(--blue-card); background:#f0f9ff; padding:8px; border-radius:6px;" onclick="editLaporanPJ('${d.id}', '${jenis}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-icon" style="color:#ef4444; background:#fef2f2; padding:8px; border-radius:6px;" onclick="hapusLaporanPJ('${d.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`;
+    });
 }
 // Helper ubah Link Drive asli menjadi Link Thumbnail agar ringan untuk preview web
 function getDriveThumbnail(url) {
@@ -5525,7 +5746,9 @@ function editLaporanPJ(idReport, jenis) {
             kategori: item.kategori,
             tanggal: item.tanggal,
             keterangan: item.keterangan,
-            foto: item.foto
+            foto1: item.foto1 || item.foto, // Toleransi struktur lama
+            foto2: item.foto2 || '',
+            foto3: item.foto3 || ''
         }));
         switchTabPJ('ekstra'); renderTabelPJEkstra();
     }
@@ -5666,17 +5889,35 @@ function renderPreviewPJEkstraHTML(report, pengaturan) {
     
     let tbody = '';
     report.items.forEach(item => {
-        // Hapus background warna kuning, tambahkan properti object-fit: contain, dan cegah terpotong halaman
+        // Ambil data foto. Gunakan item.foto sebagai cadangan jika item.foto1 kosong (untuk data lama)
+        let f1 = item.foto1 || item.foto;
+        let f2 = item.foto2;
+        let f3 = item.foto3;
+        
+        let fotoHtml = '';
+        
+        // Render persis menggunakan cara lama Anda yang sudah terbukti berfungsi
+        if (f1) {
+            fotoHtml += `<img src="${getDriveThumbnail(f1)}" style="width:100%; height:auto; max-height:250px; object-fit:contain; display:block; margin:auto; margin-bottom: 10px;" onerror="this.src=''">`;
+        }
+        if (f2) {
+            fotoHtml += `<img src="${getDriveThumbnail(f2)}" style="width:100%; height:auto; max-height:250px; object-fit:contain; display:block; margin:auto; margin-bottom: 10px;" onerror="this.src=''">`;
+        }
+        if (f3) {
+            // Foto terakhir tidak perlu margin-bottom
+            fotoHtml += `<img src="${getDriveThumbnail(f3)}" style="width:100%; height:auto; max-height:250px; object-fit:contain; display:block; margin:auto;" onerror="this.src=''">`;
+        }
+
+        // Susunan tabel dikembalikan ke rasio 40% dan 60% sesuai kode asli
         tbody += `<tr style="page-break-inside: avoid;">
             <td style="width:40%; text-align:center; padding:15px; vertical-align:middle; background: transparent; border: 1px solid #000;">
-                <img src="${getDriveThumbnail(item.foto)}" style="width:100%; height:auto; max-height:250px; object-fit:contain; display:block; margin:auto;" onerror="this.src=''">
+                ${fotoHtml}
             </td>
-            <td style="width:60%; padding:20px; vertical-align:middle; font-size:12pt; line-height:1.8; border: 1px solid #000;">
-                Kegiatan ekstrakurikuler <b>${item.jenis || '...'}</b> pada<br>
-                tanggal <b>${hariIndo(item.tanggal)}</b> bersama <b>${item.pendamping || '...'}</b>.<br>
-                Kegiatan Berada Pada:<br>
-<b style="white-space: pre-wrap;">${item.keterangan || '...'}</b>
-            </td>
+            <td style="width:60%; padding:20px; vertical-align:middle; font-size:12pt; line-height:1.8; border: 1px solid #000; text-align: justify; text-align-last: left; text-justify: inter-word;">
+    Kegiatan / Ekstrakurikuler :<b>${item.jenis || '...'}</b> pada hari <b>${hariIndo(item.tanggal)}</b> didampingi oleh <b>${item.pendamping || '...'}</b>.<br>
+    Kegiatan dilaksanakan di:
+    <b style="white-space: pre-wrap;">${item.keterangan || '...'}</b>.<br>
+    </td>
         </tr>`;
     });
 
@@ -5696,12 +5937,6 @@ function hapusLaporanPJ(idReport) {
             loadRiwayatPJ();
         }).hapusRiwayatPJMaster(idReport, jenis);
     }
-}
-
-function bukaModalGeneratePJ() {
-    const jenis = document.getElementById('filter-jenis-pj').value;
-    document.getElementById('label-jenis-generate').innerText = jenis;
-    document.getElementById('modal-generate-pj').classList.remove('hidden');
 }
 
 function hariIndo(dateStr) {
@@ -5774,7 +6009,7 @@ async function prosesGeneratePdfPJ() {
 
             let teksKategori = "";
             if (kategori !== 'Semua') {
-                if (isMakan) teksKategori = (kategori.toLowerCase() === 'pria' || kategori.toLowerCase() === 'putra') ? " (PUTRA)" : " (PUTRI)";
+                if (isMakan) teksKategori = (kategori.toLowerCase() === 'putra' || kategori.toLowerCase() === 'putra') ? " (PUTRA)" : " (PUTRI)";
                 else teksKategori = ` (${kategori.toUpperCase()})`; 
             }
 
@@ -5815,8 +6050,8 @@ async function prosesGeneratePdfPJ() {
                     let mkn = String(d.Makan || d.makan || d.Waktu || '').toLowerCase();
                     
                     let katVal = String(d.Kategori || d.kategori || '').trim();
-                    if(katVal.toLowerCase() === 'pria') katVal = 'Putra';
-                    if(katVal.toLowerCase() === 'wanita') katVal = 'Putri';
+                    if(katVal.toLowerCase() === 'putra') katVal = 'Putra';
+                    if(katVal.toLowerCase() === 'putri') katVal = 'Putri';
                     
                     let key = tgl + '_' + katVal;
 
@@ -5982,7 +6217,7 @@ async function prosesGeneratePdfPJ() {
                         } catch(e) {}
                     }
                     doc.setFontSize(8); doc.setFont("helvetica", "normal");
-                    //let textY = startYPos + boxH - 7;
+                    let textY = startYPos + boxH - 7;
                     //doc.text(hariIndo(d.Tanggal || d.tanggal), posX + (boxW / 2), textY, { align: "center" });// >>> tanggal di menu potongFC, tak nonaktifke sek
                     let limitKet = doc.splitTextToSize(d.Keterangan || '-', boxW - 4);
                     doc.text(limitKet[0], posX + (boxW / 2), textY + 4, { align: "center" });
@@ -5997,10 +6232,18 @@ async function prosesGeneratePdfPJ() {
                     }
                 }
             } else {
-                data.sort((a, b) => new Date(a.Tanggal) - new Date(b.Tanggal));
+                // [PERBAIKAN] Mengamankan sorting agar mengenali key huruf kecil atau kapital
+                data.sort((a, b) => new Date(a.Tanggal || a.tanggal) - new Date(b.Tanggal || b.tanggal));
+                
                 let tableBody = [];
                 data.forEach(d => { tableBody.push(['', '']); }); 
-                let imgW = 75; let imgH = 50;
+                
+                let imgW = 75; 
+                let imgH = 50;
+                
+                // [PERBAIKAN] Menyesuaikan tinggi baris tabel secara dinamis jika terdapat hingga 3 foto
+                let maxPhotos = Math.max(...data.map(d => (d.foto3 || d.b64_3) ? 3 : (d.foto2 || d.b64_2) ? 2 : 1));
+                let rowHeight = (imgH * maxPhotos) + (5 * maxPhotos) + 10;
 
                 doc.autoTable({
                     startY: startY,
@@ -6009,26 +6252,52 @@ async function prosesGeneratePdfPJ() {
                     theme: 'grid', rowPageBreak: 'avoid',
                     styles: { cellPadding: 5, textColor: 0 },
                     headStyles: { fillColor: [226, 232, 240], lineWidth: 0.1, lineColor: [0, 0, 0], valign: 'middle' },
-                    bodyStyles: { minCellHeight: imgH + 10 },
+                    bodyStyles: { minCellHeight: rowHeight },
                     columnStyles: { 0: { cellWidth: imgW + 5, halign: 'center' }, 1: { cellWidth: 'auto', valign: 'middle' } },
                     margin: { left: margin, right: margin },
                     didDrawCell: function(dCell) {
                         if (dCell.section === 'body') {
                             let rowData = data[dCell.row.index];
-                            if (dCell.column.index === 0 && rowData.b64) {
+                            
+                            // 1. Render Foto (Mendukung hingga 3 foto bersusun)
+                            if (dCell.column.index === 0) {
+                                let fotos = [
+                                    rowData.foto1 || rowData.foto || rowData.b64_1 || rowData.b64,
+                                    rowData.foto2 || rowData.b64_2,
+                                    rowData.foto3 || rowData.b64_3
+                                ].filter(f => f && f.length > 100);
+                                
                                 let xOffset = dCell.cell.x + (dCell.cell.width - imgW) / 2;
-                                let yOffset = dCell.cell.y + (dCell.cell.height - imgH) / 2;
-                                try { doc.addImage(rowData.b64, 'JPEG', xOffset, yOffset, imgW, imgH, undefined, 'FAST'); } catch(e){}
+                                let startYOffset = dCell.cell.y + 5;
+                                
+                                fotos.forEach((base64Img) => {
+                                    try { 
+                                        doc.addImage(base64Img, 'JPEG', xOffset, startYOffset, imgW, imgH, undefined, 'FAST'); 
+                                        startYOffset += imgH + 5;
+                                    } catch(e){}
+                                });
                             }
+                            
+                            // 2. Render Teks Keterangan dengan Key Dinamis
                             if (dCell.column.index === 1) {
                                 doc.setFontSize(11); doc.setFont("helvetica", "normal");
-                                let txtX = dCell.cell.x + 5; let txtY = dCell.cell.y + 20;
+                                let txtX = dCell.cell.x + 5; 
+                                let txtY = dCell.cell.y + 20;
                                 
-                                doc.text(`Kegiatan ekstrakurikuler ${rowData.Jenis_Ekstra || '-'}`, txtX, txtY); txtY += 6;
-                                doc.text(`bersama ${rowData.Pendamping || '-'}`, txtX, txtY); txtY += 6;
-                                doc.text(`pada tanggal ${hariIndo(rowData.Tanggal || rowData.tanggal)}.`, txtX, txtY); txtY += 12;
-                                doc.text(`Kegiatan Berada Pada:`, txtX, txtY); txtY += 6;
-                                doc.setFont("helvetica", "bold"); doc.text(`${rowData.Keterangan || '-'}`, txtX, txtY);
+                                // [PERBAIKAN] Memastikan properti terbaca baik dari data lama maupun baru
+                                let jenisEkstra = rowData.jenis || rowData.Jenis_Ekstra || '-';
+                                let pendamping = rowData.pendamping || rowData.Pendamping || '-';
+                                let tanggalStr = rowData.tanggal || rowData.Tanggal || '-';
+                                let keterangan = rowData.keterangan || rowData.Keterangan || '-';
+
+                                doc.text(`Kegiatan / ekstrakurikuler ${jenisEkstra}`, txtX, txtY); txtY += 6;
+                                doc.text(`didampingi oleh ${pendamping}`, txtX, txtY); txtY += 6;
+                                doc.text(`pada hari ${hariIndo(tanggalStr)}.`, txtX, txtY); txtY += 12;
+                                doc.text(`Kegiatan dilaksanakan di:`, txtX, txtY); txtY += 6;
+                                
+                                doc.setFont("helvetica", "bold"); 
+                                let splitKet = doc.splitTextToSize(keterangan, dCell.cell.width - 10);
+                                doc.text(splitKet, txtX, txtY);
                             }
                         }
                     }
@@ -7232,106 +7501,97 @@ function kumpulkanDataBlok() {
 
     return JSON.stringify(dataJSON); // Ini yang menghasilkan "[{tipe: 'judul', konten: 'tes'...}]"
 }
-// Panggil fungsi ini SAAT modal Generate PDF mau dimunculkan / dibuka
+// Simpan atribut style & class ke variabel agar tidak diulang-ulang (Prinsip DRY)
+const inputAttributes = 'id="pj-pdf-kategori" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;"';
+
+// --- FUNGSI TUNGGAL UNTUK FILTER DINAMIS ---
 function siapkanModalGeneratePDF() {
     const jenis = document.getElementById('filter-jenis-pj').value;
-    const parentKategori = document.getElementById('pj-pdf-kategori').parentNode;
     
-    // Hapus dropdown lama
-    document.getElementById('pj-pdf-kategori').remove();
+    // PERBAIKAN 1: Cari elemen berdasarkan ID default (select) ATAU ID ekstra (input text)
+    const elemenKategoriLama = document.getElementById('pj-pdf-kategori') || document.getElementById('filter-kategori-pje');
+    
+    // Keamanan tambahan untuk mencegah error jika elemen tidak ditemukan
+    if (!elemenKategoriLama) return; 
+    
+    const parentKategori = elemenKategoriLama.parentNode;
+    
+    // Hapus elemen lama
+    elemenKategoriLama.remove();
     
     let newElement = '';
     
+    // PERBAIKAN 2: Pastikan atribut id="pj-pdf-kategori" ditambahkan ke dalam tag <select> baru
     if (jenis === 'Makan' || jenis === 'Snack') {
         newElement = `
-            <select id="pj-pdf-kategori" class="form-control">
+            <select id="pj-pdf-kategori" ${inputAttributes}>
                 <option value="Semua">Semua (Gabungan Putra & Putri)</option>
                 <option value="Putra">Khusus Putra</option>
                 <option value="Putri">Khusus Putri</option>
-            </select>
-        `;
+            </select>`;
     } else if (jenis === 'Pembelian') {
         newElement = `
-            <select id="pj-pdf-kategori" class="form-control">
+            <select id="pj-pdf-kategori" ${inputAttributes}>
                 <option value="Semua">Semua Jenis Pembelian</option>
                 <option value="Obat-obatan">Obat-obatan</option>
                 <option value="Galon">Galon</option>
                 <option value="ATK Perkantoran">ATK Perkantoran</option>
-            </select>
-        `;
+            </select>`;
     } else if (jenis === 'PotongFC') {
         newElement = `
-            <select id="pj-pdf-kategori" class="form-control">
+            <select id="pj-pdf-kategori" ${inputAttributes}>
                 <option value="Semua">Semua Kegiatan</option>
                 <option value="Potong Rambut">Potong Rambut</option>
                 <option value="Fotocopy">Fotocopy</option>
-            </select>
-        `;
+                <option value="Kebersihan">Alat Kebersihan</option>
+            </select>`;
     } else {
-        // Untuk PJ Kegiatan (Ekstrakurikuler) karena inputnya bebas, kita pakai Input Text biasa
+        // Untuk PJ Kegiatan (Ekstrakurikuler) tetap gunakan ID filter-kategori-pje
         newElement = `
-            <input type="text" id="pj-pdf-kategori" class="form-control" placeholder="Ketik jenis (Misal: Pramuka) atau biarkan kosong">
-        `;
+            <input type="text" id="filter-kategori-pje" list="list-jenis-ekstra" placeholder="Ketik jenis (Misal: Pramuka) atau biarkan kosong" ${inputAttributes}>`;
     }
     
-    // Pasang elemen baru ke dalam modal
+    // Pasang elemen baru ke dalam DOM
     parentKategori.insertAdjacentHTML('beforeend', newElement);
 }
-//--- FUNGSI UNTUK MENGGANTI DROPDOWN FILTER SECARA DINAMIS ---
-function updateFilterModalPDF() {
-    const jenis = document.getElementById('filter-jenis-pj').value;
-    const elemenKategori = document.getElementById('pj-pdf-kategori');
-    if (!elemenKategori) return;
-    
-    const container = elemenKategori.parentElement;
-    let filterHTML = '';
 
-    if (jenis === 'Makan' || jenis === 'Snack') {
-        filterHTML = `
-            <select id="pj-pdf-kategori" class="form-control" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                <option value="Semua">Semua (Gabungan Laki & Perempuan)</option>
-                <option value="Putra">Khusus Laki</option>
-                <option value="Putri">Khusus Perempuan</option>
-            </select>
-        `;
-    } else if (jenis === 'Pembelian') {
-        filterHTML = `
-            <select id="pj-pdf-kategori" class="form-control" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                <option value="Semua">Semua Jenis Pembelian</option>
-                <option value="Obat-obatan">Obat-obatan</option>
-                <option value="Galon">Galon</option>
-                <option value="ATK Perkantoran">ATK Perkantoran</option>
-            </select>
-        `;
-    } else if (jenis === 'PotongFC') {
-        filterHTML = `
-            <select id="pj-pdf-kategori" class="form-control" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                <option value="Semua">Semua Kegiatan</option>
-                <option value="Potong Rambut">Potong Rambut</option>
-                <option value="Fotocopy">Fotocopy</option>
-            </select>
-        `;
-    } else {
-        filterHTML = `
-            <input type="text" id="pj-pdf-kategori" class="form-control" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;" placeholder="Ketik jenis (Misal: Pramuka) atau biarkan kosong">
-        `;
-    }
-    container.innerHTML = filterHTML;
-}
 // --- FUNGSI PEMBUKA MODAL PDF ---
 function bukaModalGeneratePJ() {
-    // Jalankan penggantian filter dinamis
-    updateFilterModalPDF();
+    siapkanModalGeneratePDF();
     
-    // Atur label nama laporan di judul pop-up
     const jenis = document.getElementById('filter-jenis-pj').value;
     document.getElementById('label-jenis-generate').innerText = 
         (jenis === 'PotongFC') ? 'Potong / FC' : 
         (jenis === 'Ekstra') ? 'Kegiatan' : jenis;
         
-    // Tampilkan modal
     document.getElementById('modal-generate-pj').classList.remove('hidden');
 }
+function loadListJenisEkstra() {
+    google.script.run.withSuccessHandler(function(data) {
+        const datalist = document.getElementById('list-jenis-ekstra');
+        datalist.innerHTML = ''; // Kosongkan list sebelumnya
+        
+        data.forEach(function(item) {
+            let option = document.createElement('option');
+            option.value = item;
+            datalist.appendChild(option);
+        });
+    }).getUniqueJenisEkstra();
+}
+
+// Panggil fungsi ini saat halaman pertama kali dimuat
+document.addEventListener("DOMContentLoaded", loadListJenisEkstra);
+
+// Opsi tambahan: Panggil ulang loadListJenisEkstra() di dalam fungsi simpanFinalPJEkstra() 
+// agar list otomatis terupdate jika ada jenis kegiatan baru yang disubmit.
 </script>
+<!-- FOOTER -->
+<footer class="mt-12 py-6">
+  <div class="max-w-5xl mx-auto px-4">
+    <p class="text-center text-sm text-gray-500 font-medium">
+      &copy; 2026 Copyright by <span class="text-blue-600 font-bold">byu.project</span>. All rights reserved.
+    </p>
+  </div>
+</footer>
 </body>
 </html>
