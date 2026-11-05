@@ -2,12 +2,19 @@
  * @OnlyCurrentDoc
  */
 
-const SPREADSHEET_ID = ''; 
-const ADMIN_EMAILS = ['', '']; 
-const FOLDER_FOTO_RHK_ID = ''; //  ID lama untuk RHK
-const FOLDER_FOTO_MAKAN_ID = ''; // ID Folder Permakanan
-const FOLDER_FOTO_EKSTRA_ID = ''; // ID Folder Kegiatan/Ekstra
-const FOLDER_ASSESMEN_SISWA_ID = ''; //ID Folder assesmen siswa
+const SPREADSHEET_ID = '1nLdFSrK1dvfrYu_db8tGEFVYuBILmNL-3X1eC1nu8YM'; 
+const ADMIN_EMAILS = ['byu.project.comp@gmail.com', 'ajeefes@gmail.com']; 
+const FOLDER_FOTO_RHK_ID = '13gHdT1Gt7S4uCeMskbIOTUy9FhHYzVBw'; 
+const FOLDER_FOTO_MAKAN_ID = '1nZWOfWDcBTo_amD2W5N3RXcz6YH6HMeJ'; 
+const FOLDER_FOTO_EKSTRA_ID = '1WPkuzpz-jI575WMfxQfWilV5mBAQMmu7'; 
+const FOLDER_ASSESMEN_SISWA_ID = '1YeZugs9o4N5T4S1A8ydyQE_YH8cSfRLL'; 
+const FOLDER_FOTO_CSDU_ID = '1NLSuoaLj6dAtjAQpO8BDsijTi2ujpLfU'; 
+const FOLDER_PDF_CSDU_ID  = '1yLnmxHpUm57OXVSXBGnia5dAmDjxxvky'; 
+const SHEET_CSDU_NAME     = 'Data_DU_CS_Security'; 
+
+// --- TAMBAHAN BARU UNTUK FOLDER BERKAS SISWA ---
+const FOLDER_KK_ID = '1p40IUSqbp0RMc6zQbjtCUVhX5KVPGfgw';
+const FOLDER_AKTA_ID = '1YkJD3hNxYBYLqogyrpoSpxDtX_ITzCeT';
 
 function doGet(e) {
   return HtmlService.createTemplateFromFile('Index')
@@ -572,19 +579,6 @@ function hapusData(id, jenis) {
   return { success: false };
 }
 
-function getSemuaPendahuluan() {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  let sheet = ss.getSheetByName('Pendahuluan_Master');
-  if (!sheet) {
-    sheet = ss.insertSheet('Pendahuluan_Master');
-    sheet.appendRow(['ID', 'Nama', 'Isi', 'RHK_Link']);
-    return [];
-  }
-  const data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return [];
-  return data.slice(1).map(row => ({ id: row[0], nama: row[1], isi: row[2], rhkLink: row[3] }));
-}
-
 function savePendahuluan(data) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = ss.getSheetByName('Pendahuluan_Master');
@@ -787,7 +781,6 @@ function getRiwayatLaporan() {
   if (sheetUsers) {
     const dataU = sheetUsers.getDataRange().getValues();
     const headers = dataU[0];
-    // PERBAIKAN 1: Mengarah ke kolom 'Jabatan'
     const roleIndex = headers.indexOf('Jabatan'); 
     
     for (let i = 1; i < dataU.length; i++) {
@@ -802,6 +795,11 @@ function getRiwayatLaporan() {
   const canViewAll = isAdmin || isKepalaSekolah; 
   const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 13).getValues();
   const riwayat = {};
+  
+  // --- PENAMBAHAN: Array Nama Bulan Bahasa Indonesia ---
+  const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const namaBulanPendek = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+  // -----------------------------------------------------
 
   for (let i = 0; i < data.length; i++) {
     let rowEmail = String(data[i][1]).toLowerCase().trim();
@@ -814,13 +812,28 @@ function getRiwayatLaporan() {
        let tglObj = data[i][7] ? new Date(data[i][7]) : null;
        let statusDB = data[i][12] || 'Draft'; 
        
+       // --- PERBAIKAN: Format Tanggal ke Bahasa Indonesia ---
+       let tglMulaiIndo = '-';
+       let bulanTahunIndo = '-';
+       
+       if (tglObj) {
+           let d = String(tglObj.getDate()).padStart(2, '0');
+           let m = tglObj.getMonth(); // Index 0-11
+           let yyyy = tglObj.getFullYear();
+           let yy = String(yyyy).slice(-2);
+           
+           tglMulaiIndo = `${d} ${namaBulanPendek[m]} ${yy}`; // Contoh: 03 Ags 26
+           bulanTahunIndo = `${namaBulan[m]} ${yyyy}`;        // Contoh: Agustus 2026
+       }
+       // -----------------------------------------------------
+       
        riwayat[reportId] = {
         id: reportId, 
         email: data[i][1], 
         nama: mapNama[rowEmail] || 'User', 
         jumlahKegiatan: 0,
-        tanggalMulai: tglObj ? Utilities.formatDate(tglObj, "GMT+7", "dd MMM yy") : '-',
-        bulanTahun: tglObj ? Utilities.formatDate(tglObj, "GMT+7", "MMMM yyyy") : '-',
+        tanggalMulai: tglMulaiIndo,   // Menggunakan string bahasa Indonesia
+        bulanTahun: bulanTahunIndo,   // Menggunakan string bahasa Indonesia ("Agustus 2026")
         status: statusDB 
       };
     }
@@ -881,27 +894,47 @@ function saveFileWithOverwrite(folder, fileName, b64Data) {
 
 function simpanKeDriveNative(payload) {
   try {
+    // ---- 1. SETUP ROOT DRIVE USER (FUNGSI ASLI) ----
     const root = DriveApp.getRootFolder();
     const folderUtama = getFolderByNameOrCreate(root, "Laporan Harian");
     const folderUser = getFolderByNameOrCreate(folderUtama, payload.namaUser); 
     const tglFile = payload.tglLaporan ? payload.tglLaporan : payload.bulanTahun;
 
+    // ---- 2. SETUP DRIVE PARALEL (TAMBAHAN) ----
+    const idBackup = '1quTf_wLAPnzta9EY_7dBsRE9RvmmHfAc';
+    const rootBackup = DriveApp.getFolderById(idBackup);
+    const folderUtamaBackup = getFolderByNameOrCreate(rootBackup, "Laporan Harian");
+    const folderUserBackup = getFolderByNameOrCreate(folderUtamaBackup, payload.namaUser); 
+
+    // ---- 3. EKSEKUSI SIMPAN (GABUNGAN) ----
     if (payload.pdfGabunganB64) {
-      const folderBulan = getFolderByNameOrCreate(folderUser, payload.bulanTahun);
       const fileName = `Laporan_Gabungan_${tglFile}.pdf`;
+      
+      // Simpan Asli
+      const folderBulan = getFolderByNameOrCreate(folderUser, payload.bulanTahun);
       saveFileWithOverwrite(folderBulan, fileName, payload.pdfGabunganB64);
+      
+      // Simpan Paralel
+      const folderBulanBackup = getFolderByNameOrCreate(folderUserBackup, payload.bulanTahun);
+      saveFileWithOverwrite(folderBulanBackup, fileName, payload.pdfGabunganB64);
     }
 
-   if (payload.dataPerRhk && payload.dataPerRhk.length > 0) {
+    // ---- 4. EKSEKUSI SIMPAN (PER RHK) ----
+    if (payload.dataPerRhk && payload.dataPerRhk.length > 0) {
       payload.dataPerRhk.forEach(item => {
         const amanRhkNama = item.rhkNama.replace(/[\\/:*?"<>|]/g, "_");
         const tgl = item.tanggal ? item.tanggal : "TanpaTanggal";
+        const fileName = `Laporan_${amanRhkNama}_${tgl}.pdf`;
         
+        // Simpan Asli
         const folderRhk = getFolderByNameOrCreate(folderUser, amanRhkNama);
         const folderBulanRhk = getFolderByNameOrCreate(folderRhk, payload.bulanTahun);
-        
-        const fileName = `Laporan_${amanRhkNama}_${tgl}.pdf`;
         saveFileWithOverwrite(folderBulanRhk, fileName, item.pdfB64);
+
+        // Simpan Paralel
+        const folderRhkBackup = getFolderByNameOrCreate(folderUserBackup, amanRhkNama);
+        const folderBulanRhkBackup = getFolderByNameOrCreate(folderRhkBackup, payload.bulanTahun);
+        saveFileWithOverwrite(folderBulanRhkBackup, fileName, item.pdfB64);
       });
     }
     
@@ -917,10 +950,99 @@ function simpanKeDriveNative(payload) {
        }
     }
 
-    return { success: true, message: "Laporan PDF berhasil di-generate dan tersimpan di Drive!" };
+    return { success: true, message: "Laporan PDF berhasil di-generate dan tersimpan secara paralel di Drive!" };
   } catch(e) {
     return { success: false, message: e.toString() };
   }
+}
+
+function hapusDataBulanPilihan(bulanString, arraySheetDipilih) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  
+  // --- KONFIGURASI KOLOM PER SHEET BERDASARKAN GAMBAR ---
+  // Catatan: Index kolom dimulai dari 0 (A=0, B=1, C=2, dst)
+  // colFoto dibuat dalam bentuk array [] agar bisa menghapus >1 foto per baris
+  const configKolom = {
+    "Data_Kegiatan":       { colTanggal: 7, colFoto: [10] },       // Tanggal: H(7), Foto: K(10)
+    "Data_DU_CS_Security": { colTanggal: 1, colFoto: [6, 7, 8] },  // Tanggal: B(1), Foto1: G(6), Foto2: H(7), Foto3: I(8)
+    "Data_PJ_PotongFC":    { colTanggal: 4, colFoto: [6] },        // Tanggal: E(4), Foto: G(6)
+    "Data_PJ_Pembelian":   { colTanggal: 4, colFoto: [6, 7, 8] },  // Tanggal: E(4), Foto1: G(6), Foto2: H(7), Foto3: I(8)
+    "Data_PJ_Ekstra":      { colTanggal: 5, colFoto: [7] },        // Tanggal: F(5), URL_Foto1: H(7)
+    "Data_PJ_Makan":       { colTanggal: 5, colFoto: [7] },        // Tanggal: F(5), URL_Foto_Makanan: H(7)
+    "LapKepsek":           { colTanggal: 2, colFoto: [] }          // Tanggal Laporan: C(2), Tidak ada kolom link foto langsung
+  };
+  
+  let summaryDihapus = {};
+  let totalKeseluruhan = 0;
+
+  // Lakukan perulangan untuk setiap sheet yang diceklis
+  arraySheetDipilih.forEach(sheetName => {
+    let sheet = ss.getSheetByName(sheetName);
+    let config = configKolom[sheetName];
+    
+    // Lewati jika sheet tidak ada atau konfigurasinya belum dibuat
+    if (!sheet || !config) {
+      summaryDihapus[sheetName] = "Gagal (Sheet/Konfigurasi tidak ditemukan)";
+      return;
+    }
+
+    const data = sheet.getDataRange().getValues();
+    let jumlahDihapus = 0;
+
+    // Perulangan dari bawah ke atas agar indeks baris tidak berantakan saat dihapus
+    for (let i = data.length - 1; i > 0; i--) { 
+      let baris = data[i];
+      let tanggalCell = baris[config.colTanggal];
+      let formatSheet = "";
+      
+      // Ambil dan konversi format tanggal menjadi "YYYY-MM"
+      if (tanggalCell instanceof Date) {
+        let thn = tanggalCell.getFullYear();
+        let bln = String(tanggalCell.getMonth() + 1).padStart(2, '0');
+        formatSheet = `${thn}-${bln}`;
+      } else if (typeof tanggalCell === "string" && tanggalCell.length >= 7) {
+        formatSheet = tanggalCell.substring(0, 7); 
+      }
+      
+      // Jika bulan di baris tersebut cocok dengan bulan pilihan user
+      if (formatSheet === bulanString) {
+        
+        // 1. Ekstrak dan hapus file foto (bisa lebih dari 1 kolom foto)
+        if (config.colFoto && config.colFoto.length > 0) {
+          config.colFoto.forEach(colIndex => {
+            let urlFoto = baris[colIndex];
+            if (urlFoto && typeof urlFoto === 'string' && urlFoto.includes('/d/')) {
+              try {
+                let idFile = urlFoto.split('/d/')[1].split('/')[0];
+                if (idFile) DriveApp.getFileById(idFile).setTrashed(true);
+              } catch (e) {
+                Logger.log(`Gagal menghapus file di ${sheetName} baris ${i+1}`);
+              }
+            }
+          });
+        }
+        
+        // 2. Hapus baris di Spreadsheet
+        sheet.deleteRow(i + 1);
+        jumlahDihapus++;
+      }
+    }
+    
+    summaryDihapus[sheetName] = `${jumlahDihapus} baris dihapus`;
+    totalKeseluruhan += jumlahDihapus;
+  });
+  
+  // Menyusun pesan summary untuk ditampilkan di pop-up HTML
+  let pesanSummary = `<b>Total: ${totalKeseluruhan} data berhasil dihapus.</b><br><br><ul style="text-align:left; margin-left: 20px;">`;
+  for (const [sheet, hasil] of Object.entries(summaryDihapus)) {
+    pesanSummary += `<li><b>${sheet}</b>: ${hasil}</li>`;
+  }
+  pesanSummary += `</ul>`;
+
+  return { 
+    status: "success", 
+    pesanHTML: pesanSummary 
+  };
 }
 
 function exportExcelBulanan(bulanTahunInput, namaUser) {
@@ -2253,12 +2375,28 @@ function simpanPJMakanBatch(payload) {
   
   const reportId = payload.reportId || "PJM-" + new Date().getTime(); 
 
+  // --- LOGIKA KEAMANAN EDIT ---
   if (payload.reportId) {
+     const emailUserAktif = Session.getActiveUser().getEmail().toLowerCase().trim();
+     const isAdmin = ADMIN_EMAILS.includes(emailUserAktif);
      const data = sheet.getDataRange().getValues();
+     
+     let isAuthorized = false;
+     for (let i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] === payload.reportId) {
+           const emailPenginput = String(data[i][2]).toLowerCase().trim();
+           if (emailUserAktif === emailPenginput || isAdmin) isAuthorized = true;
+           break;
+        }
+     }
+     
+     if (!isAuthorized) return { success: false, message: "AKSES DITOLAK: Anda hanya dapat mengedit data yang Anda input sendiri." };
+
      for (let i = data.length - 1; i >= 1; i--) {
         if (data[i][0] === payload.reportId) sheet.deleteRow(i + 1);
      }
   }
+  // ----------------------------
 
   const folder = DriveApp.getFolderById(FOLDER_FOTO_MAKAN_ID);
   payload.kegiatan.forEach((keg, index) => {
@@ -2266,7 +2404,6 @@ function simpanPJMakanBatch(payload) {
     let url2 = uploadB64ToDriveSafe(keg.foto2, folder, "Makan2_" + index);
     let url3 = uploadB64ToDriveSafe(keg.foto3, folder, "Makan3_" + index);
 
-    // Kategori disisipkan di parameter paling akhir (Kolom K)
     sheet.appendRow([
       reportId, new Date(), payload.email, 
       keg.jenis, keg.makan, keg.tanggal, keg.keterangan, 
@@ -2274,6 +2411,53 @@ function simpanPJMakanBatch(payload) {
     ]);
   });
   return { success: true, message: "Laporan PJ Makan berhasil disimpan!" };
+}
+
+function simpanPJMakanPuasaBatch(payload) {
+  if (!payload || !payload.kegiatan || payload.kegiatan.length === 0) return { success: false, message: "Data kosong" };
+  
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sheet = ss.getSheetByName('Data_PJ_Makan_Puasa'); 
+  
+  const reportId = payload.reportId || "PJMP-" + new Date().getTime(); 
+
+  // --- LOGIKA KEAMANAN EDIT ---
+  if (payload.reportId) {
+     const emailUserAktif = Session.getActiveUser().getEmail().toLowerCase().trim();
+     const isAdmin = ADMIN_EMAILS.includes(emailUserAktif);
+     const data = sheet.getDataRange().getValues();
+     
+     let isAuthorized = false;
+     for (let i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] === payload.reportId) {
+           const emailPenginput = String(data[i][2]).toLowerCase().trim();
+           if (emailUserAktif === emailPenginput || isAdmin) isAuthorized = true;
+           break;
+        }
+     }
+     
+     if (!isAuthorized) return { success: false, message: "AKSES DITOLAK: Anda hanya dapat mengedit data yang Anda input sendiri." };
+
+     for (let i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] === payload.reportId) sheet.deleteRow(i + 1);
+     }
+  }
+  // ----------------------------
+
+  const folder = DriveApp.getFolderById(FOLDER_FOTO_MAKAN_ID); 
+  payload.kegiatan.forEach((keg, index) => {
+    let url1 = uploadB64ToDriveSafe(keg.foto1, folder, "MakanPuasa1_" + index);
+    let url2 = uploadB64ToDriveSafe(keg.foto2, folder, "MakanPuasa2_" + index);
+    let url3 = uploadB64ToDriveSafe(keg.foto3, folder, "MakanPuasa3_" + index);
+
+    sheet.appendRow([
+      reportId, new Date(), payload.email, 
+      keg.jenis, keg.makan, keg.tanggal, keg.keterangan, 
+      url1, url2, url3, keg.kategori || 'Umum'
+    ]);
+  });
+  
+  return { success: true, message: "Laporan PJ Makan Puasa berhasil disimpan!" };
 }
 
 function simpanPJEkstraBatch(payload) {
@@ -2284,29 +2468,45 @@ function simpanPJEkstraBatch(payload) {
   
   if(!sheet) {
       sheet = ss.insertSheet('Data_PJ_Ekstra');
-      sheet.appendRow(['ID', 'Timestamp', 'Email', 'Jenis', 'Pendamping', 'Tanggal', 'Keterangan', 'Foto1', 'Foto2', 'Foto3', 'Kategori']);
+      sheet.appendRow(['ID', 'Timestamp', 'Email', 'Jenis', 'Pendamping', 'Tanggal', 'Keterangan', 'Foto1', 'Foto2', 'Foto3', 'Foto4', 'Foto5', 'Kategori']);
   }
   
   const reportId = payload.reportId || "PJE-" + new Date().getTime();
 
+  // --- LOGIKA KEAMANAN EDIT ---
   if (payload.reportId) {
+     const emailUserAktif = Session.getActiveUser().getEmail().toLowerCase().trim();
+     const isAdmin = ADMIN_EMAILS.includes(emailUserAktif);
      const data = sheet.getDataRange().getValues();
+     
+     let isAuthorized = false;
+     for (let i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] === payload.reportId) {
+           const emailPenginput = String(data[i][2]).toLowerCase().trim();
+           if (emailUserAktif === emailPenginput || isAdmin) isAuthorized = true;
+           break;
+        }
+     }
+     
+     if (!isAuthorized) return { success: false, message: "AKSES DITOLAK: Anda hanya dapat mengedit data yang Anda input sendiri." };
+
      for (let i = data.length - 1; i >= 1; i--) {
         if (data[i][0] === payload.reportId) sheet.deleteRow(i + 1);
      }
   }
+  // ----------------------------
 
  const folder = DriveApp.getFolderById(FOLDER_FOTO_EKSTRA_ID);
   payload.kegiatan.forEach((keg, index) => {
-    // PERBAIKAN: Proses ketiga foto ke Google Drive
     let url1 = uploadB64ToDriveSafe(keg.foto1 || keg.foto, folder, "Ekstra1_" + index);
     let url2 = uploadB64ToDriveSafe(keg.foto2, folder, "Ekstra2_" + index);
     let url3 = uploadB64ToDriveSafe(keg.foto3, folder, "Ekstra3_" + index);
+    let url4 = uploadB64ToDriveSafe(keg.foto4, folder, "Ekstra4_" + index);
+    let url5 = uploadB64ToDriveSafe(keg.foto5, folder, "Ekstra5_" + index);
     
-    // PERBAIKAN: Susunan kolom disesuaikan dengan sheet baru (Kategori geser ke kolom 11 / index 10)
     sheet.appendRow([
       reportId, new Date(), payload.email, 
-      keg.jenis, keg.pendamping, keg.tanggal, keg.keterangan, url1, url2, url3, keg.kategori || 'Umum'
+      keg.jenis, keg.pendamping, keg.tanggal, keg.keterangan, url1, url2, url3, url4, url5, keg.kategori || 'Umum'
     ]);
   });
   return { success: true, message: "Laporan PJ Ekstrakurikuler berhasil disimpan!" };
@@ -2335,9 +2535,11 @@ function uploadB64ToDriveSafe(b64, folder, prefixName) {
 
 function getRiwayatPJMaster(jenis) {
   try {
-    // 1. Penentuan nama sheet berdasarkan jenis laporan
+    // 1. Penentuan nama sheet berdasarkan jenis laporan [PERBAIKAN]
     let sheetName = '';
-    if (jenis === 'Makan' || jenis === 'Snack') {
+    if (jenis === 'MakanPuasa') {
+        sheetName = 'Data_PJ_Makan_Puasa';
+    } else if (jenis === 'Makan' || jenis === 'Snack') {
         sheetName = 'Data_PJ_Makan';
     } else if (jenis === 'Pembelian') {
         sheetName = 'Data_PJ_Pembelian';
@@ -2362,6 +2564,7 @@ function getRiwayatPJMaster(jenis) {
       if (!id) return;
 
       // Filter khusus agar Makan dan Snack tidak tercampur di Riwayat
+      // (Untuk MakanPuasa kita lewati filter ini karena sheet-nya sudah khusus)
       if ((jenis === 'Makan' || jenis === 'Snack') && row[3] !== jenis) return;
 
       let rawTimestamp = row[1];
@@ -2373,8 +2576,8 @@ function getRiwayatPJMaster(jenis) {
       
       let item = { jenis: row[3] };
       
-      // 2. Pemetaan index kolom berdasarkan struktur masing-masing Sheet
-      if (jenis === 'Makan' || jenis === 'Snack') {
+      // 2. Pemetaan index kolom [PERBAIKAN]
+      if (jenis === 'Makan' || jenis === 'Snack' || jenis === 'MakanPuasa') {
           item.makan = row[4];
           item.tanggal = (row[5] instanceof Date) ? Utilities.formatDate(row[5], "GMT+7", "yyyy-MM-dd") : String(row[5]).substring(0,10);
           item.keterangan = row[6];
@@ -2398,21 +2601,21 @@ function getRiwayatPJMaster(jenis) {
           item.kategori = '-';
       } 
       else {
+          // Jenis Ekstra
           item.pendamping = row[4];
           item.tanggal = (row[5] instanceof Date) ? Utilities.formatDate(row[5], "GMT+7", "yyyy-MM-dd") : String(row[5]).substring(0,10);
           item.keterangan = row[6];
-          // PERBAIKAN: Ambil ketiga URL foto dari kolom H, I, dan J
           item.foto1 = row[7];
           item.foto2 = row[8];
           item.foto3 = row[9];
-          // Kategori bergeser ke kolom index 10 (Kolom K)
-          item.kategori = row[10] || '-';
+          item.foto4 = row[10]; // Tambahan Foto 4
+          item.foto5 = row[11]; // Tambahan Foto 5
+          item.kategori = row[12] || '-'; // Geser ke index 12
       }
       
       grouped[id].items.push(item);
     });
     
-    // Hapus laporan yang items-nya 0 karena terfilter
     return Object.values(grouped).filter(g => g.items.length > 0).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
   } catch(e) {
     return [];
@@ -2421,8 +2624,15 @@ function getRiwayatPJMaster(jenis) {
 
 function hapusRiwayatPJMaster(idReport, jenis) {
   try {
+    // 1. TANGKAP EMAIL USER YANG SEDANG AKTIF & CEK ADMIN
+    const emailUserAktif = Session.getActiveUser().getEmail().toLowerCase().trim();
+    const isAdmin = ADMIN_EMAILS.includes(emailUserAktif);
+
+    // [PERBAIKAN] Penentuan Sheet
     let sheetName = 'Data_PJ_Ekstra';
-    if (jenis === 'Makan' || jenis === 'Snack') {
+    if (jenis === 'MakanPuasa') {
+        sheetName = 'Data_PJ_Makan_Puasa';
+    } else if (jenis === 'Makan' || jenis === 'Snack') {
         sheetName = 'Data_PJ_Makan';
     } else if (jenis === 'Pembelian') {
         sheetName = 'Data_PJ_Pembelian';
@@ -2435,8 +2645,19 @@ function hapusRiwayatPJMaster(idReport, jenis) {
     if (!sheet) return {success: false, message: 'Sheet tidak ditemukan'};
     
     const data = sheet.getDataRange().getValues();
+    
+    // Looping dari bawah ke atas untuk mencari data
     for (let i = data.length - 1; i > 0; i--) {
       if (data[i][0] === idReport) {
+        
+        // 2. CEK OTORISASI (KEAMANAN BACKEND)
+        const emailPenginput = String(data[i][2]).toLowerCase().trim(); // Email ada di index 2 (Kolom C)
+        
+        if (emailUserAktif !== emailPenginput && !isAdmin) {
+            throw new Error("AKSES DITOLAK: Anda hanya dapat menghapus data yang Anda input sendiri.");
+        }
+        
+        // Jika aman, eksekusi hapus baris
         sheet.deleteRow(i + 1);
       }
     }
@@ -2448,11 +2669,14 @@ function hapusRiwayatPJMaster(idReport, jenis) {
 
 function getDataPJForPDF(jenis, tglAwal, tglAkhir, kategoriFilter = 'Semua') {
   try {
-    const isMakanTab = (jenis === 'Makan' || jenis === 'Snack');
+    // [PERBAIKAN] Tambahkan MakanPuasa ke dalam grup isMakanTab
+    const isMakanTab = (jenis === 'Makan' || jenis === 'Snack' || jenis === 'MakanPuasa');
     
-    // 1. Tentukan Nama Sheet
+    // 1. Tentukan Nama Sheet [PERBAIKAN]
     let sheetName = 'Data_PJ_Ekstra';
-    if (isMakanTab) {
+    if (jenis === 'MakanPuasa') {
+        sheetName = 'Data_PJ_Makan_Puasa';
+    } else if (jenis === 'Makan' || jenis === 'Snack') {
         sheetName = 'Data_PJ_Makan';
     } else if (jenis === 'Pembelian') {
         sheetName = 'Data_PJ_Pembelian';
@@ -2465,11 +2689,10 @@ function getDataPJForPDF(jenis, tglAwal, tglAkhir, kategoriFilter = 'Semua') {
     if (!sheet) return [];
     
     const data = sheet.getDataRange().getValues();
-    data.shift(); // Hapus header
+    data.shift(); 
     
     let result = [];
     
-    // Fungsi internal konversi foto aman
     const safeGetB64 = (url) => {
         if (!url || String(url).trim() === '' || String(url).trim().toLowerCase() === '#n/a') return '';
         try {
@@ -2505,7 +2728,11 @@ function getDataPJForPDF(jenis, tglAwal, tglAkhir, kategoriFilter = 'Semua') {
       }
       
       let rawKat = 'Umum';
-      if (isMakanTab || jenis === 'Ekstra') { 
+      if (jenis === 'Ekstra') { 
+          // Ekstra memiliki 5 foto, jadi kategori ada di index 12 (Kolom M)
+          rawKat = row[12] !== undefined && row[12] !== '' ? row[12] : 'Umum';
+      } else if (isMakanTab) {
+          // Makan (Pagi, Siang, Malam, Puasa) hanya punya 3 foto, kategori ada di index 10 (Kolom K)
           rawKat = row[10] !== undefined && row[10] !== '' ? row[10] : 'Umum';
       } else {
           rawKat = row[8] || 'Umum';
@@ -2527,23 +2754,23 @@ function getDataPJForPDF(jenis, tglAwal, tglAkhir, kategoriFilter = 'Semua') {
       
       let matchKategori = (filterKat === 'semua' || filterKat === '' || dataKategori === filterKat);
       
-      // ===== [PERBAIKAN] =====
-      // Bypass pengecekan Putra/Putri untuk PotongFC, Pembelian, dan Ekstra
-      // karena filter di sini dipakai untuk mencari Jenis Kegiatan (Kolom D)
       if (jenis === 'PotongFC' || jenis === 'Pembelian' || jenis === 'Ekstra') {
           matchKategori = true; 
       }
-      // =======================
 
-      // Filter Jenis
+      // Filter Jenis [PERBAIKAN LOGIKA MAKAN PUASA]
       let matchJenis = true;
       if (isMakanTab) {
-          let jenisDiSheet = String(row[3] || '').trim().toLowerCase();
-          let waktuDiSheet = String(row[4] || '').trim().toLowerCase(); 
-          let jenisDiFilter = String(jenis).trim().toLowerCase();
-          
-          if (!jenisDiSheet.includes(jenisDiFilter) && !waktuDiSheet.includes(jenisDiFilter)) {
-              matchJenis = false;
+          if (jenis === 'MakanPuasa') {
+              matchJenis = true; // Langsung true karena khusus sheet puasa
+          } else {
+              let jenisDiSheet = String(row[3] || '').trim().toLowerCase();
+              let waktuDiSheet = String(row[4] || '').trim().toLowerCase(); 
+              let jenisDiFilter = String(jenis).trim().toLowerCase();
+              
+              if (!jenisDiSheet.includes(jenisDiFilter) && !waktuDiSheet.includes(jenisDiFilter)) {
+                  matchJenis = false;
+              }
           }
       } else {
           let jenisSub = String(row[3] || '').trim().toLowerCase();
@@ -2583,6 +2810,8 @@ function getDataPJForPDF(jenis, tglAwal, tglAkhir, kategoriFilter = 'Semua') {
             item.b64_1 = safeGetB64(row[7]);
             item.b64_2 = safeGetB64(row[8]);
             item.b64_3 = safeGetB64(row[9]);
+            item.b64_4 = safeGetB64(row[10]);
+            item.b64_5 = safeGetB64(row[11]);
         }
         result.push(item);
       }
@@ -2594,6 +2823,7 @@ function getDataPJForPDF(jenis, tglAwal, tglAkhir, kategoriFilter = 'Semua') {
     return [];
   }
 }
+
 // Helper untuk konversi gambar aman
 function getBase64FromDriveUrlSafe(url) {
   if (!url) return '';
@@ -2801,6 +3031,9 @@ function getJadwalPiketHariIni() {
 
         const data = sheet.getDataRange().getValues();
         
+        // Ambil nama bulan dari sel B1 (Baris 1, Kolom B pada array index adalah [0][1])
+        const bulanSheet = String(data[0][2] || "").trim();
+
         // 1. Dapatkan tanggal hari ini dan besok (WIB GMT+7)
         const hariIni = new Date();
         const tglHariIni = Number(Utilities.formatDate(hariIni, "GMT+7", "d")); 
@@ -2818,10 +3051,11 @@ function getJadwalPiketHariIni() {
             if (barisTanggal[c] == tglBesok) indexKolomBesok = c;
         }
 
-        // 3. Siapkan wadah kelompok jadwal (Pisahkan Hari Ini dan Besok)
+        // 3. Tambahkan properti bulan ke dalam objek jadwal
         let jadwal = {
-            hariIni: { P: [], S: [], M: [], L: [], LP: [] },
-            besok: { P: [], S: [], M: [], L: [], LP: [] }
+            hariIni: { P: [], S: [], M: [], L: [], LP: [], DL: [], C: [] },
+            besok: { P: [], S: [], M: [], L: [], LP: [], DL: [], C: [] },
+            bulan: bulanSheet // <--- Data bulan dimasukkan di sini
         };
 
         // 4. Looping data personil
@@ -2853,30 +3087,36 @@ function getJadwalPiketHariIni() {
 // ==========================================
 function simpanPDFPJKeDrive(base64Data, fileName, jenis, start, end, namaUser) {
   try {
+    // ---- 1. SIMPAN KE ROOT DRIVE USER (FUNGSI ASLI) ----
     const root = DriveApp.getRootFolder();
-    
-    // 1. Masuk ke folder utama
     const folderUtama = getFolderByNameOrCreate(root, "Laporan Harian");
-    
-    // 2. Masuk ke folder User bersangkutan (agar rapi & sesuai user generate)
     const folderUser = getFolderByNameOrCreate(folderUtama, namaUser);
-    
-    // 3. Buat/masuk ke sub-folder khusus Laporan PJ
     const folderLaporanPJ = getFolderByNameOrCreate(folderUser, "Laporan PJ");
     
-    // 4. Penamaan sub-folder berdasarkan jenis kegiatan (Makan, Snack, atau Ekstra_periode)
     let subFolderName = jenis; 
     if (jenis === 'Ekstra') {
         subFolderName = `Ekstra_${start}_SD_${end}`; 
     }
     const folderKegiatan = getFolderByNameOrCreate(folderLaporanPJ, subFolderName);
     
-    // 5. Simpan / Timpa file PDF jika file bernama sama sudah pernah di-generate
     saveFileWithOverwrite(folderKegiatan, fileName, base64Data);
+    
+    // ---- 2. SIMPAN PARALEL KE DRIVE ID SPESIFIK (TAMBAHAN) ----
+    const idBackup = '1quTf_wLAPnzta9EY_7dBsRE9RvmmHfAc';
+    const rootBackup = DriveApp.getFolderById(idBackup);
+    
+    // Membuat struktur folder yang persis sama di dalam Folder Backup
+    const folderUtamaBackup = getFolderByNameOrCreate(rootBackup, "Laporan Harian");
+    const folderUserBackup = getFolderByNameOrCreate(folderUtamaBackup, namaUser);
+    const folderLaporanPJBackup = getFolderByNameOrCreate(folderUserBackup, "Laporan PJ");
+    const folderKegiatanBackup = getFolderByNameOrCreate(folderLaporanPJBackup, subFolderName);
+    
+    // Simpan file ke folder Backup
+    saveFileWithOverwrite(folderKegiatanBackup, fileName, base64Data);
     
     return { 
       success: true, 
-      message: `Folder: Laporan Harian > ${namaUser} > Laporan PJ > ${subFolderName}` 
+      message: `Folder: Laporan Harian > ${namaUser} > Laporan PJ > ${subFolderName} (Tersimpan Paralel)` 
     };
   } catch (e) {
     throw new Error(e.toString());
@@ -2896,8 +3136,32 @@ function simpanPJPembelianBatch(payload) {
       sheet.appendRow(['ID', 'Timestamp', 'Email', 'Jenis', 'Tanggal', 'Keterangan', 'Foto1', 'Foto2', 'Foto3']);
   }
   
-  const reportId = "PJP-" + new Date().getTime(); 
-  const folder = DriveApp.getFolderById(FOLDER_FOTO_EKSTRA_ID); // Gunakan folder ekstra untuk penyimpanan b64
+  const reportId = payload.reportId || "PJP-" + new Date().getTime(); 
+
+  // --- LOGIKA KEAMANAN EDIT ---
+  if (payload.reportId) {
+     const emailUserAktif = Session.getActiveUser().getEmail().toLowerCase().trim();
+     const isAdmin = ADMIN_EMAILS.includes(emailUserAktif);
+     const data = sheet.getDataRange().getValues();
+     
+     let isAuthorized = false;
+     for (let i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] === payload.reportId) {
+           const emailPenginput = String(data[i][2]).toLowerCase().trim();
+           if (emailUserAktif === emailPenginput || isAdmin) isAuthorized = true;
+           break;
+        }
+     }
+     
+     if (!isAuthorized) return { success: false, message: "AKSES DITOLAK: Anda hanya dapat mengedit data yang Anda input sendiri." };
+
+     for (let i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] === payload.reportId) sheet.deleteRow(i + 1);
+     }
+  }
+  // ----------------------------
+  
+  const folder = DriveApp.getFolderById(FOLDER_FOTO_EKSTRA_ID); 
   
   payload.kegiatan.forEach((keg, index) => {
     let url1 = uploadB64ToDriveSafe(keg.foto1, folder, "Pembelian1_" + index);
@@ -2919,16 +3183,30 @@ function simpanPJPotongFCBatch(payload) {
       sheet.appendRow(['ID', 'Timestamp', 'Email', 'Jenis', 'Tanggal', 'Keterangan', 'Foto']);
   }
   
-  // PERBAIKAN 1: Cek apakah ada ID lama yang dikirim. Jika tidak, buat ID baru.
   const reportId = payload.reportId || "PJC-" + new Date().getTime(); 
 
-  // PERBAIKAN 2: Jika ini mode edit (ada reportId), hapus baris lama terlebih dahulu agar tidak double
+  // --- LOGIKA KEAMANAN EDIT ---
   if (payload.reportId) {
+     const emailUserAktif = Session.getActiveUser().getEmail().toLowerCase().trim();
+     const isAdmin = ADMIN_EMAILS.includes(emailUserAktif);
      const data = sheet.getDataRange().getValues();
+     
+     let isAuthorized = false;
+     for (let i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] === payload.reportId) {
+           const emailPenginput = String(data[i][2]).toLowerCase().trim();
+           if (emailUserAktif === emailPenginput || isAdmin) isAuthorized = true;
+           break;
+        }
+     }
+     
+     if (!isAuthorized) return { success: false, message: "AKSES DITOLAK: Anda hanya dapat mengedit data yang Anda input sendiri." };
+
      for (let i = data.length - 1; i >= 1; i--) {
         if (data[i][0] === payload.reportId) sheet.deleteRow(i + 1);
      }
   }
+  // ----------------------------
   
   const folder = DriveApp.getFolderById(FOLDER_FOTO_EKSTRA_ID); 
   
@@ -2938,6 +3216,7 @@ function simpanPJPotongFCBatch(payload) {
   });
   return { success: true, message: "Laporan Potong/FC berhasil disimpan!" };
 }
+
 // ==========================================
 // FUNGSI EXPORT EXCEL KESEHATAN
 // ==========================================
@@ -3028,31 +3307,7 @@ function exportExcelKesehatan(bulanInput) { // Format: YYYY-MM
     return { success: false, message: e.message };
   }
 }
-// Dipakai untuk mengambil semua isi master (baik Global maupun Aktivitas) untuk keperluan halaman Admin RHK.
-function getRhkDataFromSheet(ss, sheetName) {
-  const sheet = ss.getSheetByName(sheetName);
-  if (!sheet) return [];
-  
-  const rawData = sheet.getDataRange().getValues();
-  let result = [];
-  
-  for (let i = 1; i < rawData.length; i++) {
-    if (rawData[i][0]) { 
-      result.push({
-        id: rawData[i][0],
-        tipe: rawData[i][1],
-        parentId: rawData[i][2], // KUNCI JAWABANNYA DI SINI! (Kolom C)
-        
-        // Ambil nama berdasarkan tipenya
-        nama: (rawData[i][1] === 'Global') ? rawData[i][2] : rawData[i][3], 
-        
-        aktivitas: rawData[i][3] || '',  // Kolom D (Nama Aktivitas)
-        keterangan: rawData[i][4] || ''  // Kolom E (Keterangan)
-      });
-    }
-  }
-  return result;
-}
+
 // Dipakai khusus untuk menarik data RHK utama (yang bertipe 'Global') saja untuk dropdown di menu Pendahuluan.
 function getRHKDataDariSheet() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);    
@@ -3110,74 +3365,48 @@ function prosesDuplikatPendahuluan(id) {
   }
   return { success: false, message: "Gagal menduplikat, data asli tidak ditemukan." };
 }
-function getPendahuluanById(id) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID); // Pastikan SPREADSHEET_ID sudah dideklarasikan di file Anda
-  const sheet = ss.getSheetByName('Pendahuluan_Master');
-  
-  if (!sheet) {
-    return { success: false, message: "Sheet Pendahuluan_Master tidak ditemukan!" };
-  }
 
-  const data = sheet.getDataRange().getValues();
-  let dataPendahuluan = null;
-
-  // Looping untuk mencari baris dengan ID yang cocok
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0].toString() === id.toString()) {
-      dataPendahuluan = {
-        id: data[i][0],
-        nama: data[i][1],
-        isi: data[i][2],
-        rhkLink: data[i][3]
-      };
-      break; // Hentikan pencarian jika sudah ketemu
-    }
-  }
-
-  if (dataPendahuluan) {
-    let kopHtml = ""; 
-    
-    // Contoh jika Anda punya sheet Pengaturan_KOP (ubah sesuai sistem Anda):
-    // const sheetKop = ss.getSheetByName('Pengaturan_KOP');
-    // kopHtml = sheetKop.getRange("A2").getValue(); 
-
-    return { 
-      success: true, 
-      dataPendahuluan: dataPendahuluan, 
-      kopHtml: kopHtml 
-    };
-  } else {
-    return { success: false, message: "Data template pendahuluan tidak ditemukan." };
-  }
-}
-
-//FUNGSI HAPUS SAMPAH DI DRIVE UNTUK ID YANG KEPAKAI
+// FUNGSI HAPUS SAMPAH DI DRIVE UNTUK ID YANG KEPAKAI
 function cleanUpDriveFiles() {
   try {
-    var folderId = "1bNll1RtEYNRkSXdlu4tHB-yIAYHzZisw";
+    // ID Folder yang akan dibersihkan
+    var folderId = "1bNll1RtEYNRkSXdlu4tHB-yIAYHzZisw"; 
     var folder = DriveApp.getFolderById(folderId);
     
-    // 1. Kumpulkan semua ID file foto yang saat ini SEDANG DIGUNAKAN di database laporan
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var usedFileIds = new Set();
     
-    // Cek dari sheet Laporan_PJ (atau sesuaikan dengan nama sheet laporanmu yang menyimpan foto)
-    var sheetLaporan = ss.getSheetByName('Laporan_PJ'); 
-    if (sheetLaporan) {
-      var dataLaporan = sheetLaporan.getDataRange().getValues();
-      // Asumsi kolom foto ada di laporan, kita cek semua data sel yang mengandung ID link Google Drive / URL / Base64
-      for (var i = 1; i < dataLaporan.length; i++) {
-        for (var j = 0; j < dataLaporan[i].length; j++) {
-          var val = String(dataLaporan[i][j]);
-          // Jika menyimpan URL/ID file Drive, masukkan ke set
-          if (val.length > 20 && !val.includes(" ")) {
-            usedFileIds.add(val);
+    // 1. TAMBAHKAN NAMA-NAMA SHEET YANG INGIN DICEK DI SINI
+    var daftarSheet = [
+      'Laporan_PJ',
+      'Data_Kegiatan',
+      'Data_PJ_Makan',
+      'Data_PJ_Ekstra',
+      'Data_PJ_Pembelian',
+      'Data_PJ_PotongFC',
+      'Data_Pelanggaran',
+      'Data_DU_CS_Security' // Sesuaikan/tambahkan nama sheet lainnya jika ada
+    ];
+    
+    // 2. Kumpulkan semua ID file/URL dari semua sheet yang terdaftar di atas
+    daftarSheet.forEach(function(namaSheet) {
+      var sheet = ss.getSheetByName(namaSheet);
+      if (sheet) {
+        var data = sheet.getDataRange().getValues();
+        // Mulai dari baris ke-2 (index 1) untuk melewati Header
+        for (var i = 1; i < data.length; i++) {
+          for (var j = 0; j < data[i].length; j++) {
+            var val = String(data[i][j]);
+            // Jika val terlihat seperti URL / ID Google Drive
+            if (val.length > 20 && !val.includes(" ")) {
+              usedFileIds.add(val);
+            }
           }
         }
       }
-    }
+    });
 
-    // 2. Scan file di dalam folder sampah
+    // 3. Scan file di dalam folder Drive
     var files = folder.getFiles();
     var jumlahTerhapus = 0;
 
@@ -3185,10 +3414,18 @@ function cleanUpDriveFiles() {
       var file = files.next();
       var fileId = file.getId();
       var fileUrl = file.getUrl();
+      var mimeType = file.getMimeType();
 
-      // Jika file ID atau URL-nya TIDAK ADA di dalam data yang terpakai, maka anggap sebagai SAMPAH
+      // PROTEKSI: Lewati file Google Sheets, Apps Script, dan Google Sites
+      if (mimeType === MimeType.GOOGLE_SHEETS || 
+          mimeType === MimeType.GOOGLE_APPS_SCRIPT || 
+          mimeType === MimeType.GOOGLE_SITES) {
+        continue; 
+      }
+
+      // Jika ID atau URL file TIDAK ADA di satupun sheet, pindahkan ke sampah
       if (!usedFileIds.has(fileId) && !usedFileIds.has(fileUrl)) {
-        file.setTrashed(true); // Pindahkan ke sampah Google Drive
+        file.setTrashed(true);
         jumlahTerhapus++;
       }
     }
@@ -3207,15 +3444,23 @@ function cleanUpDriveFiles() {
 }
 function hapusSemuaDataNotifikasi() {
   try {
-    // Sesuaikan dengan nama sheet notifikasi kamu
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    // Membuka spreadsheet secara spesifik menggunakan ID
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName("Notifikasi"); 
+    
+    // Validasi apakah sheet ditemukan
+    if (!sheet) {
+      return { success: false, message: "Sheet dengan nama 'Notifikasi' tidak ditemukan." };
+    }
     
     const lastRow = sheet.getLastRow();
     
-    // Asumsi baris 1 adalah Header, jadi kita hapus dari baris 2 sampai terakhir
+    // Menghapus data jika ada baris selain header (baris 1)
     if (lastRow > 1) {
+      // Menghapus mulai dari baris ke-2, sebanyak (lastRow - 1) baris
       sheet.deleteRows(2, lastRow - 1);
+    } else {
+       return { success: true, message: "Data sudah kosong, tidak ada yang perlu dihapus." };
     }
     
     return { success: true };
@@ -3424,4 +3669,1240 @@ function getUniqueJenisEkstra() {
   // Filter data kosong dan ambil nilai uniknya saja
   const uniqueJenis = [...new Set(data.map(row => row[0]).filter(val => val !== ""))];
   return uniqueJenis.sort();
+}
+
+
+// Konfigurasi ID Folder & Sheet untuk CS, DU, & Security
+
+/**
+ * Menyimpan data laporan baru dan menyimpan foto ke Drive
+ */
+function simpanLaporanCSDUSecurity(payload) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    let sheet = ss.getSheetByName(SHEET_CSDU_NAME);
+    
+    if (!sheet) {
+      sheet = ss.insertSheet(SHEET_CSDU_NAME);
+      // Kolom 12 (L) & 13 (M) untuk Laporan Ke & Jam
+      sheet.appendRow(['ID', 'Tanggal', 'Kategori', 'Kegiatan', 'Nama Pelapor', 'Keterangan', 'Foto 1', 'Foto 2', 'Foto 3', 'Timestamp', 'Status', 'Laporan Ke', 'Jam']);
+    }
+
+    let photoUrls = ['', '', ''];
+    if (payload.fotos && payload.fotos.length > 0) {
+      const folderFoto = DriveApp.getFolderById(FOLDER_FOTO_CSDU_ID);
+      payload.fotos.forEach((base64Str, idx) => {
+        if (idx < 3) {
+          const splitData = base64Str.split(',');
+          const contentType = splitData[0].match(/:(.*?);/)[1];
+          const fileData = Utilities.base64Decode(splitData[1]);
+          const blob = Utilities.newBlob(fileData, contentType, `CSDU_${new Date().getTime()}_${idx+1}.jpg`);
+          const savedFile = folderFoto.createFile(blob);
+          try { savedFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (e) {}
+          photoUrls[idx] = savedFile.getUrl();
+        }
+      });
+    }
+
+    const reportId = 'CSDU-' + new Date().getTime();
+    sheet.appendRow([
+      reportId, payload.tanggal, payload.kategori, payload.kegiatan, payload.namaPelapor, 
+      payload.keterangan || '', photoUrls[0], photoUrls[1], photoUrls[2], new Date(), 
+      'Draft', payload.laporanKe, payload.jam
+    ]);
+    return { success: true, message: 'Data berhasil disimpan!' };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+}
+
+/**
+ * Mengambil seluruh data laporan CS, DU, Security
+ */
+function getLaporanCSDUSecurity() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_CSDU_NAME);
+  if (!sheet) return [];
+
+  const data = sheet.getDataRange().getValues();
+  const displayData = sheet.getDataRange().getDisplayValues(); 
+  if (data.length <= 1) return [];
+
+  let result = [];
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    let fotos = [];
+    if (row[6]) fotos.push(row[6]);
+    if (row[7]) fotos.push(row[7]);
+    if (row[8]) fotos.push(row[8]);
+
+    // Format Jam menjadi HH:mm agar dapat dibaca oleh input type="time"
+    let jamVal = displayData[i][12] || row[12] || '';
+    if (jamVal) {
+      if (jamVal.includes(':')) {
+        let parts = jamVal.split(':');
+        let h = parts[0].padStart(2, '0');
+        let m = parts[1].padStart(2, '0');
+        jamVal = `${h}:${m}`;
+      }
+    }
+
+    result.push({
+      rowIndex: i + 1,
+      id: row[0],
+      tanggal: row[1] ? Utilities.formatDate(new Date(row[1]), Session.getScriptTimeZone(), "yyyy-MM-dd") : '',
+      kategori: row[2],
+      kegiatan: row[3],
+      namaPelapor: row[4],
+      keterangan: row[5],
+      fotoUrls: fotos,
+      status: row[10] ? String(row[10]).trim() : 'Draft',
+      laporanKe: row[11] || '1',
+      jam: jamVal
+    });
+  }
+
+  return result.reverse();
+}
+
+/**
+ * Memperbarui data laporan
+ */
+function updateLaporanCSDUSecurity(payload) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_CSDU_NAME);
+  const rIndex = parseInt(payload.rowIndex);
+
+  // 1. Update data teks biasa termasuk Laporan Ke (Kolom L) & Jam (Kolom M)
+  sheet.getRange(rIndex, 2).setValue(payload.tanggal);
+  sheet.getRange(rIndex, 3).setValue(payload.kategori);
+  sheet.getRange(rIndex, 4).setValue(payload.kegiatan);
+  sheet.getRange(rIndex, 5).setValue(payload.namaPelapor);
+  sheet.getRange(rIndex, 6).setValue(payload.keterangan);
+  sheet.getRange(rIndex, 11).setValue('Draft'); // Reset status jadi Draft saat diedit
+  sheet.getRange(rIndex, 12).setValue(payload.laporanKe);
+  sheet.getRange(rIndex, 13).setValue("'" + payload.jam); // Tambah petik agar format jam aman
+
+  // 2. Proses dan update foto jika ada data fotos dari payload
+  if (payload.fotos) {
+    let fotoUrls = ['', '', ''];
+
+    payload.fotos.forEach((item, idx) => {
+      if (idx < 3) {
+        if (item && item.startsWith('http')) {
+          fotoUrls[idx] = item;
+        } else if (item && item.startsWith('data:image')) {
+          try {
+            const parts = item.split(',');
+            const contentType = parts[0].match(/:(.*?);/)[1];
+            const decodedData = Utilities.base64Decode(parts[1]);
+            const fileName = `foto_edit_${payload.kategori}_${new Date().getTime()}_${idx + 1}.jpg`;
+            const blob = Utilities.newBlob(decodedData, contentType, fileName);
+            
+            const folder = DriveApp.getFolderById(FOLDER_FOTO_CSDU_ID); 
+            const file = folder.createFile(blob);
+            try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (e) {}
+            
+            fotoUrls[idx] = file.getUrl();
+          } catch (err) {}
+        }
+      }
+    });
+
+    sheet.getRange(rIndex, 7).setValue(fotoUrls[0]);
+    sheet.getRange(rIndex, 8).setValue(fotoUrls[1]);
+    sheet.getRange(rIndex, 9).setValue(fotoUrls[2]);
+  }
+
+  return { success: true };
+}
+
+/**
+ * Mengambil nama pelapor unik untuk Autotext
+ */
+function getUniquePelaporCSDUSecurity() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_CSDU_NAME);
+  if (!sheet) return [];
+  
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return [];
+
+  let names = new Set();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][4]) names.add(data[i][4].toString().trim());
+  }
+  return Array.from(names);
+}
+
+/**
+ * Mengambil nama kegiatan unik untuk Autotext
+ */
+function getUniqueKegiatanCSDUSecurity() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_CSDU_NAME);
+  if (!sheet) return [];
+  
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return [];
+
+  let kegs = new Set();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][3]) kegs.add(data[i][3].toString().trim());
+  }
+  return Array.from(kegs);
+}
+
+/**
+ * Generate PDF dan Menyimpan ke Folder Drive PDF serta Update Status
+ */
+function generatePDFCSDUSecurity(dataItem) {
+  try {
+    const emailPembuat = Session.getActiveUser().getEmail();
+    const userRoleInfo = checkUserStatus(); 
+    const userConfig = getPengaturanUser(emailPembuat);
+    
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_CSDU_NAME);
+    const data = sheet.getDataRange().getValues();
+    const displayData = sheet.getDataRange().getDisplayValues();
+    
+    let kumpulanLaporan = [];
+
+    const bulanIndo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    let tglObj = new Date(dataItem.tanggal);
+    let namaBulan = bulanIndo[tglObj.getMonth()];
+    let tahun = tglObj.getFullYear();
+    
+    for (let i = 1; i < data.length; i++) {
+      let tglSheet = data[i][1] ? Utilities.formatDate(new Date(data[i][1]), "GMT+7", "yyyy-MM-dd") : '';
+      
+      if (tglSheet === dataItem.tanggal && data[i][2] === dataItem.kategori) {
+        let jamStr = displayData[i][12] || data[i][12] || '-';
+        if (jamStr.includes(':')) jamStr = jamStr.substring(0, 5).replace(':', '.');
+
+        let petugasRaw = data[i][4] ? String(data[i][4]).split('\n') : [];
+        let petugasHtml = petugasRaw.map((p, idx) => petugasRaw.length > 1 ? `${idx + 1}. ${p.trim()}` : p.trim()).join('<br/>');
+
+        let kegiatanRaw = data[i][3] ? String(data[i][3]) : '';
+        let ketRaw = data[i][5] ? String(data[i][5]) : '';
+        let gabungKegiatan = [kegiatanRaw, ketRaw].filter(Boolean).join('\n').split('\n');
+        let kegiatanHtml = gabungKegiatan.map(k => `- ${k.trim()}`).join('<br/>');
+
+        kumpulanLaporan.push({
+          laporanKe: parseInt(data[i][11]) || 99,
+          jam: jamStr,
+          petugas: petugasHtml,
+          kegiatan: kegiatanHtml,
+          foto1: data[i][6] ? getBase64FromDriveUrlSafe(data[i][6]) : '',
+          foto2: data[i][7] ? getBase64FromDriveUrlSafe(data[i][7]) : '',
+          foto3: data[i][8] ? getBase64FromDriveUrlSafe(data[i][8]) : '',
+          rowIndex: i + 1
+        });
+      }
+    }
+    
+    kumpulanLaporan.sort((a, b) => a.laporanKe - b.laporanKe);
+
+    let tableRows = '';
+    kumpulanLaporan.forEach((item, index) => {
+      let fotosHtml = '';
+      [item.foto1, item.foto2, item.foto3].forEach(b64 => {
+        if(b64) fotosHtml += `<img src="${b64}" style="width: 130px; height: 95px; object-fit: cover; border: 1px solid #444; margin: 2px;">`;
+      });
+
+      let tanggalFormatted = `${tglObj.getDate()} ${namaBulan} ${tahun}`;
+
+      tableRows += `
+        <tr>
+          <td style="text-align: center;">${index + 1}</td>
+          <td style="text-align: center;">${tanggalFormatted}</td>
+          <td style="text-align: center;">${item.jam}</td>
+          <td>${item.petugas}</td>
+          <td>${item.kegiatan}</td>
+          <td style="text-align: center; vertical-align: middle;">${fotosHtml}</td>
+        </tr>
+      `;
+    });
+
+    // Perbaikan KOP agar bersih dari string JSON mentah
+    let kopText = userConfig.kop.barisKop || '';
+    if (kopText.startsWith('[')) {
+        try {
+            let parsed = JSON.parse(kopText);
+            kopText = parsed.map(p => `<span style="font-size:${p.ukuran || 12}px; ${p.isBold ? 'font-weight:bold;' : ''}">${p.teks}</span>`).join('<br/>');
+        } catch(e) {
+            kopText = `<b>KEMENTERIAN SOSIAL REPUBLIK INDONESIA</b><br/><b>PUSDIKLATBANGPROFKESOS</b><br/><b>SEKOLAH RAKYAT MENENGAH ATAS 16 TEMANGGUNG</b><br/>Jalan Kartini No.1-2 Bendo Kertosari, Temanggung`;
+        }
+    } else if (!kopText) {
+        kopText = `<b>KEMENTERIAN SOSIAL REPUBLIK INDONESIA</b><br/><b>PUSDIKLATBANGPROFKESOS</b><br/><b>SEKOLAH RAKYAT MENENGAH ATAS 16 TEMANGGUNG</b><br/>Jalan Kartini No.1-2 Bendo Kertosari, Temanggung`;
+    }
+
+    let kopHtml = `
+      <table style="width:100%; border:none; margin-bottom:10px;">
+        <tr>
+          <td style="width:15%; border:none; text-align:center; vertical-align:middle;">
+            ${userConfig.kop.logoKiri ? `<img src="${userConfig.kop.logoKiri}" style="max-height:85px;">` : ''}
+          </td>
+          <td style="width:70%; border:none; text-align:center; line-height:1.2; font-family:Arial, sans-serif;">
+             ${kopText}
+          </td>
+          <td style="width:15%; border:none; text-align:center; vertical-align:middle;">
+            ${userConfig.kop.logoKanan ? `<img src="${userConfig.kop.logoKanan}" style="max-height:85px;">` : ''}
+          </td>
+        </tr>
+      </table>
+      <div style="border-bottom:3px solid #000; margin-bottom:15px; margin-top:5px;"></div>
+      <div style="text-align:center; margin-bottom: 15px;">
+        <h3 style="margin:0; font-size:14px; font-weight:bold;">
+           Laporan Kegiatan ${dataItem.kategori} Bulan ${namaBulan} Tahun ${tahun}
+        </h3>
+      </div>`;
+
+    let ttdHtml = '';
+    if(userConfig.ttd && userConfig.ttd.namaTtd) {
+      let imgTtd = userConfig.ttd.tandaTangan ? `<img src="${userConfig.ttd.tandaTangan}" style="max-height:75px; margin: 5px 0;">` : '<br/><br/><br/>';
+      ttdHtml = `
+      <div style="width: 280px; float: right; text-align: center; margin-top: 25px; font-size: 12px; font-family:Arial, sans-serif;">
+        Kepala SRMA 16 Temanggung<br/>
+        ${imgTtd}<br/>
+        <b><u>${userConfig.ttd.namaTtd}</u></b><br/>
+        NIP. ${userConfig.ttd.nipTtd || '-'}
+      </div>
+      <div style="clear:both;"></div>
+      `;
+    }
+
+    const htmlContent = `
+      <html>
+        <head>
+          <style>
+            @page { size: A4 landscape; margin: 1cm; }
+            body { font-family: 'Times New Roman', Times, serif; font-size: 12px; }
+            table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 10px;}
+            table.data-table th, table.data-table td { border: 1px solid #000; padding: 5px; vertical-align: top; }
+            table.data-table th { background-color: #f1f5f9; text-align: center; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          ${kopHtml}
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 5%;">No</th>
+                <th style="width: 10%;">Tanggal</th>
+                <th style="width: 8%;">Waktu</th>
+                <th style="width: 22%;">Petugas</th>
+                <th style="width: 25%;">Aktivitas / Kegiatan</th>
+                <th style="width: 30%;">Dokumentasi</th>
+              </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+          ${ttdHtml}
+        </body>
+      </html>
+    `;
+
+    const blob = Utilities.newBlob(htmlContent, 'text/html', 'temp.html');
+    const fileName = `Laporan_${dataItem.kategori}_${dataItem.tanggal}.pdf`;
+    const pdfBlob = blob.getAs('application/pdf').setName(fileName);
+    
+    // --- MENGGUNAKAN ID FOLDER SPESIFIK ---
+    const baseFolder = DriveApp.getFolderById(FOLDER_PDF_CSDU_ID);
+    let targetFolder;
+
+    if (userRoleInfo.role === 'Kepala Sekolah') {
+       let folderKepsek = getFolderByNameOrCreate(baseFolder, "Laporan Kepala Sekolah");
+       let folderBulan = getFolderByNameOrCreate(folderKepsek, Utilities.formatDate(tglObj, "GMT+7", "MMMM_yyyy"));
+       targetFolder = getFolderByNameOrCreate(folderBulan, dataItem.kategori);
+    } else {
+       // Jika admin/user biasa, masukkan ke subfolder CS_DU_Security di dalam folder ID
+       targetFolder = getFolderByNameOrCreate(baseFolder, "CS_DU_Security");
+    }
+
+    saveFileWithOverwrite(targetFolder, fileName, Utilities.base64Encode(pdfBlob.getBytes()));
+
+    kumpulanLaporan.forEach(item => {
+      sheet.getRange(item.rowIndex, 11).setValue('Generated'); 
+    });
+    
+    return { success: true, message: "PDF Gabungan A4 Landscape berhasil disimpan ke Drive." };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+}
+/**
+ * Menghapus baris data
+ */
+function deleteLaporanCSDUSecurity(rowIndex) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_CSDU_NAME);
+  sheet.deleteRow(parseInt(rowIndex));
+  return { success: true };
+}
+
+/**
+ * Generate PDF Berdasarkan Kategori dan Rentang Tanggal CS DU SECURITY yo brooooo
+ */
+function generatePDFCSDUSecurityRentang(filterConfig) {
+  try {
+    const emailPembuat = Session.getActiveUser().getEmail();
+    const userRoleInfo = checkUserStatus(); 
+    const userConfig = getPengaturanUser(emailPembuat);
+    
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_CSDU_NAME);
+    if (!sheet) return { success: false, message: "Sheet laporan tidak ditemukan." };
+    
+    const data = sheet.getDataRange().getValues();
+    const displayData = sheet.getDataRange().getDisplayValues();
+    
+    let kumpulanLaporan = [];
+    let katLabel = filterConfig.kategori === 'Semua' ? 'Gabungan' : filterConfig.kategori;
+
+    for (let i = 1; i < data.length; i++) {
+      let tglRaw = data[i][1];
+      if (!tglRaw) continue;
+      let tglSheet = Utilities.formatDate(new Date(tglRaw), "GMT+7", "yyyy-MM-dd");
+      let katSheet = String(data[i][2]).trim();
+
+      let matchKat = (filterConfig.kategori === 'Semua' || katSheet === filterConfig.kategori);
+      let matchTgl = (tglSheet >= filterConfig.tglAwal && tglSheet <= filterConfig.tglAkhir);
+
+      if (matchKat && matchTgl) {
+        let jamStr = displayData[i][12] || data[i][12] || '-';
+        if (jamStr.includes(':')) jamStr = jamStr.substring(0, 5).replace(':', '.');
+
+        let petugasRaw = data[i][4] ? String(data[i][4]).split('\n') : [];
+        let petugasHtml = petugasRaw.map((p, idx) => petugasRaw.length > 1 ? `${idx + 1}. ${p.trim()}` : p.trim()).join('<br/>');
+
+        let kegiatanRaw = data[i][3] ? String(data[i][3]) : '';
+        let ketRaw = data[i][5] ? String(data[i][5]) : '';
+        let gabungKegiatan = [kegiatanRaw, ketRaw].filter(Boolean).join('\n').split('\n');
+        let kegiatanHtml = gabungKegiatan.map(k => `- ${k.trim()}`).join('<br/>');
+
+        kumpulanLaporan.push({
+          tanggal: tglSheet,
+          laporanKe: parseInt(data[i][11]) || 99,
+          jam: jamStr,
+          petugas: petugasHtml,
+          kegiatan: kegiatanHtml,
+          foto1: data[i][6] ? getBase64FromDriveUrlSafe(data[i][6]) : '',
+          foto2: data[i][7] ? getBase64FromDriveUrlSafe(data[i][7]) : '',
+          foto3: data[i][8] ? getBase64FromDriveUrlSafe(data[i][8]) : '',
+          rowIndex: i + 1
+        });
+      }
+    }
+
+    if (kumpulanLaporan.length === 0) {
+      return { success: false, message: "Tidak ada data laporan yang cocok pada rentang tanggal dan kategori tersebut." };
+    }
+
+    // Urutkan berdasarkan Tanggal lalu Laporan Ke
+    kumpulanLaporan.sort((a, b) => {
+      if (a.tanggal !== b.tanggal) return a.tanggal.localeCompare(b.tanggal);
+      return a.laporanKe - b.laporanKe;
+    });
+
+    const bulanIndo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    let tglObj = new Date(filterConfig.tglAwal);
+    let namaBulan = bulanIndo[tglObj.getMonth()];
+    let tahun = tglObj.getFullYear();
+
+    let tableRows = '';
+    kumpulanLaporan.forEach((item, index) => {
+      let fotosHtml = '';
+      [item.foto1, item.foto2, item.foto3].forEach(b64 => {
+        if(b64) fotosHtml += `<img src="${b64}" style="width: 120px; height: 90px; object-fit: cover; border: 1px solid #444; margin: 2px;">`;
+      });
+
+      let partsTgl = item.tanggal.split('-');
+      let formattedDate = `${partsTgl[2]} ${bulanIndo[parseInt(partsTgl[1])-1]} ${partsTgl[0]}`;
+
+      tableRows += `
+        <tr>
+          <td style="text-align: center;">${index + 1}</td>
+          <td style="text-align: center;">${formattedDate}</td>
+          <td style="text-align: center;">${item.jam}</td>
+          <td>${item.petugas}</td>
+          <td>${item.kegiatan}</td>
+          <td style="text-align: center; vertical-align: middle;">${fotosHtml}</td>
+        </tr>
+      `;
+    });
+
+    let kopText = userConfig.kop.barisKop || '';
+    if (kopText.startsWith('[')) {
+        try {
+            let parsed = JSON.parse(kopText);
+            kopText = parsed.map(p => `<span style="font-size:${p.ukuran || 12}px; ${p.isBold ? 'font-weight:bold;' : ''}">${p.teks}</span>`).join('<br/>');
+        } catch(e) {
+            kopText = `<b>KEMENTERIAN SOSIAL REPUBLIK INDONESIA</b><br/><b>PUSDIKLATBANGPROFKESOS</b><br/><b>SEKOLAH RAKYAT MENENGAH ATAS 16 TEMANGGUNG</b><br/>Jalan Kartini No.1-2 Bendo Kertosari, Temanggung`;
+        }
+    } else if (!kopText) {
+        kopText = `<b>KEMENTERIAN SOSIAL REPUBLIK INDONESIA</b><br/><b>PUSDIKLATBANGPROFKESOS</b><br/><b>SEKOLAH RAKYAT MENENGAH ATAS 16 TEMANGGUNG</b><br/>Jalan Kartini No.1-2 Bendo Kertosari, Temanggung`;
+    }
+
+    let kopHtml = `
+      <table style="width:100%; border:none; margin-bottom:10px;">
+        <tr>
+          <td style="width:15%; border:none; text-align:center; vertical-align:middle;">
+            ${userConfig.kop.logoKiri ? `<img src="${userConfig.kop.logoKiri}" style="max-height:85px;">` : ''}
+          </td>
+          <td style="width:70%; border:none; text-align:center; line-height:1.2; font-family:Arial, sans-serif;">
+             ${kopText}
+          </td>
+          <td style="width:15%; border:none; text-align:center; vertical-align:middle;">
+            ${userConfig.kop.logoKanan ? `<img src="${userConfig.kop.logoKanan}" style="max-height:85px;">` : ''}
+          </td>
+        </tr>
+      </table>
+      <div style="border-bottom:3px solid #000; margin-bottom:15px; margin-top:5px;"></div>
+      <div style="text-align:center; margin-bottom: 15px;">
+        <h3 style="margin:0; font-size:14px; font-weight:bold;">
+           Laporan Rekap ${katLabel} Periode ${filterConfig.tglAwal} s.d. ${filterConfig.tglAkhir}
+        </h3>
+      </div>`;
+
+    let ttdHtml = '';
+    if(userConfig.ttd && userConfig.ttd.namaTtd) {
+      let imgTtd = userConfig.ttd.tandaTangan ? `<img src="${userConfig.ttd.tandaTangan}" style="max-height:75px; margin: 5px 0;">` : '<br/><br/><br/>';
+      ttdHtml = `
+      <div style="width: 280px; float: right; text-align: center; margin-top: 25px; font-size: 12px; font-family:Arial, sans-serif;">
+        Kepala SRMA 16 Temanggung<br/>
+        ${imgTtd}<br/>
+        <b><u>${userConfig.ttd.namaTtd}</u></b><br/>
+        NIP. ${userConfig.ttd.nipTtd || '-'}
+      </div>
+      <div style="clear:both;"></div>
+      `;
+    }
+
+    const htmlContent = `
+      <html>
+        <head>
+          <style>
+            @page { size: A4 landscape; margin: 1cm; }
+            body { font-family: 'Times New Roman', Times, serif; font-size: 12px; }
+            table.data-table { width: 100%; border-collapse: collapse; margin-bottom: 10px;}
+            table.data-table th, table.data-table td { border: 1px solid #000; padding: 5px; vertical-align: top; }
+            table.data-table th { background-color: #f1f5f9; text-align: center; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          ${kopHtml}
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 5%;">No</th>
+                <th style="width: 10%;">Tanggal</th>
+                <th style="width: 8%;">Waktu</th>
+                <th style="width: 22%;">Petugas</th>
+                <th style="width: 25%;">Aktivitas / Kegiatan</th>
+                <th style="width: 30%;">Dokumentasi</th>
+              </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+          ${ttdHtml}
+        </body>
+      </html>
+    `;
+
+    const blob = Utilities.newBlob(htmlContent, 'text/html', 'temp.html');
+    const fileName = `Rekap_Laporan_${katLabel}_${filterConfig.tglAwal}_sd_${filterConfig.tglAkhir}.pdf`;
+    const pdfBlob = blob.getAs('application/pdf').setName(fileName);
+    
+    // --- MENGGUNAKAN ID FOLDER SPESIFIK ---
+    const baseFolder = DriveApp.getFolderById(FOLDER_PDF_CSDU_ID);
+    let targetFolder;
+
+    if (userRoleInfo.role === 'Kepala Sekolah') {
+       let folderKepsek = getFolderByNameOrCreate(baseFolder, "Laporan Kepala Sekolah");
+       let folderBulan = getFolderByNameOrCreate(folderKepsek, Utilities.formatDate(tglObj, "GMT+7", "MMMM_yyyy"));
+       targetFolder = getFolderByNameOrCreate(folderBulan, katLabel);
+    } else {
+       // Jika admin/user biasa, masukkan ke subfolder CS_DU_Security di dalam folder ID
+       targetFolder = getFolderByNameOrCreate(baseFolder, "CS_DU_Security");
+    }
+
+    saveFileWithOverwrite(targetFolder, fileName, Utilities.base64Encode(pdfBlob.getBytes()));
+
+    // Ubah status baris yang ikut ter-generate menjadi 'Generated'
+    kumpulanLaporan.forEach(item => {
+      sheet.getRange(item.rowIndex, 11).setValue('Generated'); 
+    });
+    
+    return { success: true, message: "PDF Rekap Rentang Tanggal berhasil di-generate dan tersimpan di Google Drive." };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+}
+
+//LAPORAN KEPSEK
+const SHEET_NAME = 'LapKepsek';
+const MASTER_SHEET_NAME = 'Master_Aktivitas'; // Tambahkan nama sheet master
+const FOTO_FOLDER_ID = '1bEjthe5qif_2q3L7gzBmVz2MUwlvsbx_'; // Pastikan Folder ID benar
+const PDF_FOLDER_ID = '1JZW7_ShwiE1Zr4do7kTu8aHqLJ5ggMDo';
+
+// 1. Mengambil semua data saat aplikasi pertama kali dimuat
+function getInitialDataLapKesek() {
+  try {
+    const props = PropertiesService.getScriptProperties();
+    let settings = {};
+    try { 
+      const setStr = props.getProperty('lapkesek_settings');
+      if (setStr) settings = JSON.parse(setStr);
+    } catch(e) {}
+
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID); 
+    
+    // --- BUAT SHEET MASTER OTOMATIS JIKA BELUM ADA ---
+    let sheetMaster = ss.getSheetByName(MASTER_SHEET_NAME);
+    if (!sheetMaster) {
+      sheetMaster = ss.insertSheet(MASTER_SHEET_NAME);
+      sheetMaster.appendRow(["Jenis Aktivitas"]);
+      sheetMaster.appendRow(["Melaksanakan home visit"]);
+      sheetMaster.appendRow(["Mengikuti zoom"]);
+      sheetMaster.appendRow(["Pemantauan secara langsung"]);
+    }
+    
+    // Ambil daftar aktivitas dari Master Sheet
+    const dataMaster = sheetMaster.getDataRange().getValues();
+    let masterAktivitas = [];
+    for (let i = 1; i < dataMaster.length; i++) {
+      if (dataMaster[i][0]) masterAktivitas.push(dataMaster[i][0]);
+    }
+
+    // --- BUAT SHEET LAPORAN OTOMATIS JIKA BELUM ADA ---
+    let sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      sheet = ss.insertSheet(SHEET_NAME);
+      sheet.appendRow(["Laporan ID", "Tanggal Input", "Tanggal Laporan", "Data JSON", "Status", "PDF URL"]);
+    }
+
+    const data = sheet.getDataRange().getValues();
+    const reports = [];
+    
+    if (data && data.length > 1) {
+      for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        if (!row[0] || row[0] === "") continue; 
+
+        let jsonKegiatan = []; 
+        try {
+          if (row[3] && row[3] !== "") {
+            jsonKegiatan = JSON.parse(row[3]);
+          }
+        } catch(e) {}
+
+        // KOREKSI UTAMA: Ubah format Date menjadi String agar tidak membuat google.script.run error
+        let rawTglInput = row[1];
+        let rawTglLaporan = row[2];
+        
+        let stringTglInput = (rawTglInput instanceof Date) ? rawTglInput.toISOString() : String(rawTglInput);
+        let stringTglLaporan = (rawTglLaporan instanceof Date) ? rawTglLaporan.toISOString() : String(rawTglLaporan);
+
+        reports.push({
+          id: row[0],
+          tanggalInput: stringTglInput, // Menggunakan string
+          tanggalLaporan: stringTglLaporan, // Menggunakan string
+          kegiatan: jsonKegiatan, 
+          status: row[4],
+          pdfUrl: row[5] || ''
+        });
+      }
+    }
+    
+    return { 
+      settings: settings, 
+      masterAktivitas: masterAktivitas, 
+      reports: reports 
+    };
+
+  } catch(error) {
+    throw new Error("Backend Data Error: " + error.message);
+  }
+}
+
+// 2. FUNGSI BARU: Menyimpan pengaturan dan update Sheet Master_Aktivitas
+function saveSettingsLapKesek(settings, masterArr) {
+  const props = PropertiesService.getScriptProperties();
+  props.setProperty('lapkesek_settings', JSON.stringify(settings));
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sheetMaster = ss.getSheetByName(MASTER_SHEET_NAME);
+  
+  // Jika sheet belum ada, buat otomatis
+  if (!sheetMaster) {
+    sheetMaster = ss.insertSheet(MASTER_SHEET_NAME);
+  }
+  
+  // Bersihkan data lama dan masukkan data baru
+  sheetMaster.clear();
+  sheetMaster.appendRow(["Jenis Aktivitas"]);
+  
+  if (masterArr && masterArr.length > 0) {
+    const dataToWrite = masterArr.map(item => [item]);
+    sheetMaster.getRange(2, 1, dataToWrite.length, 1).setValues(dataToWrite);
+  }
+  
+  return true;
+}
+
+// 3. FUNGSI BARU: Mengunggah foto ke Google Drive
+function uploadFotoToDrive(base64Data, fileName) {
+  try {
+    const folder = DriveApp.getFolderById(FOTO_FOLDER_ID);
+    const contentType = base64Data.substring(5, base64Data.indexOf(';'));
+    const bytes = Utilities.base64Decode(base64Data.split(',')[1]);
+    const blob = Utilities.newBlob(bytes, contentType, fileName);
+    const file = folder.createFile(blob);
+    
+    // PELINDUNG WAJIB: Cegah error simpan jika admin sekolah memblokir sharing publik
+    try {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch(sharingErr) {
+      // Abaikan error sharing, biarkan proses berlanjut
+    }
+    
+    return `https://drive.google.com/file/d/${file.getId()}/view?usp=drivesdk`;
+  } catch (e) {
+    throw new Error("Upload Error: " + e.message);
+  }
+}
+
+// 4. FUNGSI BARU: Menyimpan data Laporan ke Sheet
+function saveReportLapKesek(reportData) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.appendRow(["Laporan ID", "Tanggal Input", "Tanggal Laporan", "Data JSON", "Status", "PDF URL"]);
+  }
+  
+  sheet.appendRow([
+    reportData.id,
+    reportData.tanggalInput,
+    reportData.tanggalLaporan,
+    JSON.stringify(reportData.kegiatan),
+    reportData.status,
+    reportData.pdfUrl
+  ]);
+  
+  return true;
+}
+
+// 5. FUNGSI BARU: Menghapus data laporan dari Sheet
+function deleteReportLapKesek(id) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  const data = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === id) {
+      sheet.deleteRow(i + 1); // +1 karena index row dimulai dari 1
+      break;
+    }
+  }
+  return true;
+}
+// 6. FUNGSI BARU: Update Data Laporan di Sheet
+function updateReportLapKesek(reportData) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  const data = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === reportData.id) {
+      sheet.getRange(i + 1, 2).setValue(reportData.tanggalInput);
+      sheet.getRange(i + 1, 3).setValue(reportData.tanggalLaporan);
+      sheet.getRange(i + 1, 4).setValue(JSON.stringify(reportData.kegiatan));
+      sheet.getRange(i + 1, 5).setValue(reportData.status);
+      return true;
+    }
+  }
+  return false;
+}
+
+// 7. FUNGSI PERBAIKAN FINAL: Generate PDF (Autoheight Fix) & Auto Replace Drive
+function generatePDFLapKesek(id) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    
+    let reportRowIndex = -1;
+    let reportData = null;
+    let emailPembuat = Session.getActiveUser().getEmail(); 
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === id) {
+        reportRowIndex = i + 1;
+        let kegObj = {};
+        try { kegObj = JSON.parse(data[i][3]); } catch(e) {}
+        reportData = { id: data[i][0], tanggalInput: data[i][1], tglLaporan: data[i][2], kegiatan: kegObj };
+        break;
+      }
+    }
+    if (!reportData) throw new Error("Data tidak ditemukan.");
+    
+    // --- 1. AMBIL KOP DARI PENGATURAN USER ---
+    let pengaturanUser = {};
+    try { pengaturanUser = getPengaturanUser(emailPembuat); } catch(e) {}
+    const kop = pengaturanUser.kop || {};
+
+    // --- 2. AMBIL ISIAN DARI PENGATURAN LAPKEPSEK ---
+    const props = PropertiesService.getScriptProperties();
+    let lapkesekSettings = {};
+    try { lapkesekSettings = JSON.parse(props.getProperty('lapkesek_settings')) || {}; } catch(e){}
+    
+    const namaKepsek = lapkesekSettings.kepsek || '-';
+    const koordinator = lapkesekSettings.koordinator || '-';
+    const pic = lapkesekSettings.pic || '-';
+    const lokasi = lapkesekSettings.lokasi || '-';
+    const ppk = lapkesekSettings.ppk || '-';
+    const nipKoordinator = lapkesekSettings.nipKoordinator || '';
+    const nipPic = lapkesekSettings.nipPic || '';
+    const nipKepsek = lapkesekSettings.nipKepsek || '';
+    
+    const tglFormatted = reportData.tglLaporan ? new Date(reportData.tglLaporan).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
+    const tglInputFormatted = reportData.tanggalInput ? new Date(reportData.tanggalInput).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
+
+    // --- PERBAIKAN AUTOHEIGHT: UBAH ENTER (\n) MENJADI <br> SECARA NATIVE ---
+    let daftarUraianHtml = '';
+    if (reportData.kegiatan.rincian && reportData.kegiatan.rincian.length > 0) {
+        reportData.kegiatan.rincian.forEach((rin, idx) => {
+            let textUraian = (rin.nama || '').toString().replace(/\n/g, '<br>');
+            daftarUraianHtml += `${idx + 1}. ${textUraian}<br>`;
+        });
+    } else {
+        daftarUraianHtml = (reportData.kegiatan.uraianUtama || '-').toString().replace(/\n/g, '<br>');
+    }
+    
+    // Ganti enter jadi <br> untuk Kendala & Tindak Lanjut
+    let kendalaHtml = (reportData.kegiatan.kendalaUtama || '-').toString().replace(/\n/g, '<br>');
+    let tindakLanjutHtml = (reportData.kegiatan.tindakLanjutUtama || '-').toString().replace(/\n/g, '<br>');
+
+    function getDriveThumb(url) {
+        if (!url) return '';
+        if (url.startsWith('data:image')) return url;
+        let fileId = '';
+        if (url.includes('/file/d/')) {
+            let match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (match) fileId = match[1];
+        } else if (url.includes('id=')) {
+            let match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (match) fileId = match[1];
+        }
+        return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : url;
+    }
+
+    // Susun Baris KOP
+    let barisKopHtml = '';
+    if (kop.barisKop) {
+        try {
+            let arrKop = typeof kop.barisKop === 'string' ? JSON.parse(kop.barisKop) : kop.barisKop;
+            arrKop.forEach(b => {
+                let isBold = b.B || b.isBold || b.b ? 'font-weight:bold;' : ''; 
+                barisKopHtml += `<div style="${isBold} font-size:${b.ukuran || 12}pt; margin-bottom: 2px;">${b.teks}</div>`;
+            });
+        } catch(e) {}
+    }
+
+    let html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+      <style>
+         @page { size: A4; margin: 15mm; }
+         body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; color: #000; }
+         
+         /* KUNCI AUTOHEIGHT TABEL: table-layout: fixed dan membatasi kolom */
+         .main-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
+         .main-table td { 
+             border: 1px solid black; 
+             padding: 8px; 
+             vertical-align: top; 
+             word-wrap: break-word; /* Memaksa teks panjang wrap ke bawah */
+         }
+         
+         .bg-gray { background-color: #f2f2f2; font-weight: bold; width: 35%; }
+         .content-td { width: 65%; line-height: 1.4; text-align: justify; }
+         
+         .photo-box { page-break-inside: avoid; text-align: center; margin-bottom: 15px; }
+      </style>
+      </head>
+      <body>
+      
+      <div>
+        <!-- KOP SURAT DINAMIS -->
+        <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 10px;">
+          <tr>
+            <td style="width: 15%; text-align: center; border: none; vertical-align: middle;">
+              ${kop.logoKiri ? `<img src="${getDriveThumb(kop.logoKiri)}" style="max-height: 80px; max-width: 100%; object-fit: contain;">` : ''}
+            </td>
+            <td style="width: 70%; text-align: center; border: none; vertical-align: middle;">
+              ${barisKopHtml}
+            </td>
+            <td style="width: 15%; text-align: center; border: none; vertical-align: middle;">
+              ${kop.logoKanan ? `<img src="${getDriveThumb(kop.logoKanan)}" style="max-height: 80px; max-width: 100%; object-fit: contain;">` : ''}
+            </td>
+          </tr>
+        </table>
+        
+        <hr style="border: none; border-top: 2px solid black; margin-bottom: 2px;">
+        <hr style="border: none; border-top: 1px solid black; margin-bottom: 15px;">
+
+        <!-- TABEL UTAMA FORM LAPORAN -->
+        <table class="main-table">
+          <tr>
+            <td class="bg-gray">TANGGAL</td>
+            <td class="content-td">${tglInputFormatted}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">NAMA KEPALA SEKOLAH</td>
+            <td class="content-td">${namaKepsek}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">NAMA KOORDINATOR</td>
+            <td class="content-td">${koordinator}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">NAMA PIC</td>
+            <td class="content-td">${pic}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">LOKASI SR</td>
+            <td class="content-td">${lokasi}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">NAMA PPK</td>
+            <td class="content-td">${ppk}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">TANGGAL LAPORAN</td>
+            <td class="content-td">${tglFormatted}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">URAIAN KEGIATAN/AKTIVITAS HARIAN</td>
+            <td class="content-td">${daftarUraianHtml}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">PERMASALAHAN DAN KENDALA</td>
+            <td class="content-td">${kendalaHtml}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">TINDAK LANJUT YANG DILAKUKAN (JIKA ADA)</td>
+            <td class="content-td">${tindakLanjutHtml}</td>
+          </tr>
+          <tr>
+            <td class="bg-gray">I. DOKUMENTASI KEGIATAN</td>
+            <td class="content-td" style="padding: 10px;">
+    `;
+
+    // Render Dokumentasi Foto
+    if (reportData.kegiatan.rincian && reportData.kegiatan.rincian.length > 0) {
+        reportData.kegiatan.rincian.forEach((rin, rIdx) => {
+            if (rin.foto && rin.foto.length > 0) {
+                rin.foto.forEach((fUrl, fIdx) => {
+                    let thumb = getDriveThumb(fUrl);
+                    let isLastPhotoOfItem = (fIdx === rin.foto.length - 1);
+                    
+                    if (thumb) {
+                        html += `
+                          <div class="photo-box">
+                            <img src="${thumb}" style="max-width: 100%; max-height: 250px; object-fit: contain; border: 1px solid #ccc; padding: 3px; background: #fff;">
+                        `;
+                        if (isLastPhotoOfItem) {
+                            html += `<span style="font-weight: bold; font-size: 10pt; display: block; margin-top: 5px; margin-bottom: 8px;">${rin.nama}</span>`;
+                        }
+                        html += `</div>`;
+                    }
+                });
+
+                if (rIdx < reportData.kegiatan.rincian.length - 1) {
+                    html += `<hr style="border: none; border-top: 1px dashed #aaa; margin: 12px 0;">`;
+                }
+            }
+        });
+    } else {
+        html += `<i>Tidak ada foto dokumentasi.</i>`;
+    }
+
+    html += `
+            </td>
+          </tr>
+        </table>
+
+        <!-- TANDA TANGAN -->
+        <table style="width: 100%; text-align: center; border: none; margin-top: 20px; page-break-inside: avoid;">
+          <tr>
+            <td style="width: 50%; border: none; vertical-align: top; padding-bottom: 40px;">
+              KOORDINATOR,<br><br><br><br>
+              <strong>${koordinator}</strong>
+              ${nipKoordinator ? '<br>NIP. ' + nipKoordinator : ''}
+            </td>
+            <td style="width: 50%; border: none; vertical-align: top; padding-bottom: 40px;">
+              PIC,<br><br><br><br>
+              <strong>${pic}</strong>
+              ${nipPic ? '<br>NIP. ' + nipPic : ''}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="border: none; vertical-align: top; padding-top: 10px;">
+              Mengetahui,<br>
+              <strong>KEPALA SEKOLAH</strong><br><br><br><br>
+              <strong>${namaKepsek}</strong>
+              ${nipKepsek ? '<br>NIP. ' + nipKepsek : ''}
+            </td>
+          </tr>
+        </table>
+        
+      </div>
+      </body>
+      </html>
+    `;
+
+    const folder = DriveApp.getFolderById(PDF_FOLDER_ID);
+    const fileName = `Laporan_${id}.pdf`;
+
+    // --- FITUR BARU: AUTO REPLACE JIKA FILE LAMA SUDAH ADA ---
+    const existingFiles = folder.getFilesByName(fileName);
+    while (existingFiles.hasNext()) {
+        let fileLama = existingFiles.next();
+        fileLama.setTrashed(true); // Pindahkan file PDF lama ke folder sampah
+    }
+
+    // Buat file PDF baru
+    const blob = Utilities.newBlob(html, MimeType.HTML).getAs(MimeType.PDF).setName(fileName);
+    const file = folder.createFile(blob);
+    
+    try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (e) {}
+    
+    const pdfUrl = file.getUrl();
+    sheet.getRange(reportRowIndex, 6).setValue(pdfUrl);
+    sheet.getRange(reportRowIndex, 5).setValue('PDF Generated');
+    
+    return { url: pdfUrl };
+  } catch (e) {
+    throw new Error("Gagal sistem backend: " + e.message);
+  }
+}
+
+//--END LAPORAN KEPSEK
+
+// ==========================================
+// MODUL MANAJEMEN DATA SISWA (TAMBAH, EDIT, KELUAR)
+// ==========================================
+
+// Helper Upload ke Folder Spesifik
+function uploadPdfToDrive(base64Data, fileName, folderId) {
+  try {
+    var splitBase = base64Data.split(',');
+    var type = splitBase[0].split(';')[0].replace('data:', '');
+    var byteCharacters = Utilities.base64Decode(splitBase[1]);
+    var blob = Utilities.newBlob(byteCharacters, type, fileName);
+    
+    var folder = DriveApp.getFolderById(folderId);
+    var file = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); 
+    return file.getUrl();
+  } catch (e) {
+    return "";
+  }
+}
+
+function getDataSiswaAll() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName('DataSiswa');
+  if (!sheet) return [];
+  
+  const data = sheet.getDataRange().getValues();
+  let result = [];
+  
+  for (let i = 2; i < data.length; i++) {
+    let tglLahirRaw = data[i][15]; // Kolom P
+    let tglLahirFormatted = (tglLahirRaw instanceof Date) ? Utilities.formatDate(tglLahirRaw, Session.getScriptTimeZone(), "yyyy-MM-dd") : tglLahirRaw;
+
+    if (data[i][0] && data[i][2] && data[i][2] !== "SEKOLAH RAKYAT") {
+      result.push({
+        rowIndex: i + 1, 
+        nisn: data[i][0],        // A (0)
+        nik: data[i][1],         // B (1)
+        nama: data[i][2],        // C (2)
+        alamat: data[i][3],      // D (3)
+        hpSiswa: data[i][4],     // E (4)
+        hpOrtu: data[i][5],      // F (5)
+        lat: data[i][6],         // G (6)
+        lng: data[i][7],         // H (7)
+        bapak: data[i][8],       // I (8)
+        ibu: data[i][9],         // J (9)
+        catatan: data[i][10],    // K (10)
+        kelas: data[i][11],      // L (11)
+        wali: data[i][12],       // M (12)
+        kamar: data[i][13],      // N (13)
+        tmptLahir: data[i][14],  // O (14)
+        tglLahir: tglLahirFormatted, // P (15)
+        jk: data[i][16],         // Q (16)
+        fileKK: data[i][17],     // R (17)
+        fileAkta: data[i][18]    // S (18)
+      });
+    }
+  }
+  return result;
+}
+
+function simpanDataSiswa(payload) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sheet = ss.getSheetByName('DataSiswa');
+  
+  // 1. Paksa konversi tipe data agar tidak meleset
+  let isEditMode = (payload.isEdit === true || String(payload.isEdit) === "true");
+  let rowIndex = parseInt(payload.rowIndex);
+  
+  // 2. SISTEM PENGAMAN: Jika disuruh Edit tapi nomor baris (rowIndex) hilang/error, blokir prosesnya!
+  if (isEditMode && (!rowIndex || isNaN(rowIndex) || rowIndex < 2)) {
+     return { success: false, message: "GAGAL EDIT: Nomor baris di Sheet tidak terdeteksi. Silakan muat ulang (refresh) halaman dan coba lagi." };
+  }
+  
+  // 3. Proses Upload File
+  let urlKK = payload.fileKK_lama || "";
+  let urlAkta = payload.fileAkta_lama || "";
+  
+  if (payload.fileKK_base64) {
+    urlKK = uploadPdfToDrive(payload.fileKK_base64, payload.nisn + "_KK.pdf", FOLDER_KK_ID);
+  }
+  if (payload.fileAkta_base64) {
+    urlAkta = uploadPdfToDrive(payload.fileAkta_base64, payload.nisn + "_AKTA.pdf", FOLDER_AKTA_ID);
+  }
+  
+  // 4. Siapkan Data (19 Kolom)
+  let rowData = [
+    payload.nisn, payload.nik, payload.nama, payload.alamat, payload.hpSiswa, 
+    payload.hpOrtu, payload.lat, payload.lng, payload.bapak, payload.ibu, 
+    payload.catatan, payload.kelas, payload.wali, payload.kamar, 
+    payload.tmptLahir, payload.tglLahir, payload.jk, urlKK, urlAkta
+  ];
+
+  // 5. Eksekusi Simpan
+  if (isEditMode) {
+    sheet.getRange(rowIndex, 1, 1, 19).setValues([rowData]);
+    return { success: true, message: "Data siswa berhasil diperbarui!" };
+  } else {
+    sheet.appendRow(rowData);
+    return { success: true, message: "Data siswa baru berhasil ditambahkan!" };
+  }
+}
+
+function keluarkanSiswa(nisn) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheetIn = ss.getSheetByName('DataSiswa');
+  let sheetOut = ss.getSheetByName('DataSiswaOut');
+  
+  if (!sheetOut) {
+    sheetOut = ss.insertSheet('DataSiswaOut');
+    const headers = sheetIn.getRange(1, 1, 1, sheetIn.getLastColumn()).getValues();
+    sheetOut.getRange(1, 1, 1, headers[0].length).setValues(headers); 
+  }
+  
+  const data = sheetIn.getDataRange().getValues();
+  
+  for (let i = 2; i < data.length; i++) { 
+    if (String(data[i][0]).trim() === String(nisn).trim()) {
+      sheetOut.appendRow(data[i]);
+      sheetIn.deleteRow(i + 1);
+      return { success: true, message: "Siswa berhasil dikeluarkan dan datanya dipindah ke sheet DataSiswaOut." };
+    }
+  }
+  return { success: false, message: "Data siswa tidak ditemukan!" };
+}
+
+// Fungsi untuk mengekstrak ID Folder dari URL Google Drive
+function dapatkanIdDariUrl(url) {
+  const match = url.match(/[-\w]{25,}/);
+  return match ? match[0] : null;
+}
+
+// Fungsi utama untuk memindahkan/copy folder bulanan ke folder drive tiap bulan yoo...
+function prosesCopyBackupKeDriveBaru(urlDriveTujuan, bulanTahunTarget) {
+  try {
+    // 1. Dapatkan ID Tujuan
+    const idTujuan = dapatkanIdDariUrl(urlDriveTujuan);
+    if (!idTujuan) throw new Error("Format Link Google Drive tidak valid.");
+
+    // 2. Setup Folder Tujuan (Langsung ke folder root dari link yang dimasukkan)
+    const folderTujuanRoot = DriveApp.getFolderById(idTujuan);
+
+    // 3. Setup Sumber Backup Lama
+    const idBackupLama = '1quTf_wLAPnzta9EY_7dBsRE9RvmmHfAc';
+    const rootBackupLama = DriveApp.getFolderById(idBackupLama);
+    const folderUtamaLama = rootBackupLama.getFoldersByName("Laporan Harian");
+
+    if (!folderUtamaLama.hasNext()) {
+      throw new Error("Folder sumber 'Laporan Harian' tidak ditemukan di backup.");
+    }
+    const folderHarian = folderUtamaLama.next();
+
+    // 4. Looping Data Per User
+    const folderUsers = folderHarian.getFolders();
+    let totalFileDicopy = 0;
+    let totalFolderUser = 0;
+
+    while (folderUsers.hasNext()) {
+      const userFolder = folderUsers.next();
+      const namaUser = userFolder.getName();
+      const bulanFolders = userFolder.getFoldersByName(bulanTahunTarget);
+
+      // Jika user memiliki folder laporan pada bulan tersebut
+      if (bulanFolders.hasNext()) {
+        const sourceBulanFolder = bulanFolders.next();
+        
+        // Mengecek apakah folder nama user sudah ada di folder tujuan
+        let newUserFolder;
+        const checkFolder = folderTujuanRoot.getFoldersByName(namaUser);
+        if (checkFolder.hasNext()) {
+            newUserFolder = checkFolder.next();
+        } else {
+            // Buat folder atas nama user baru
+            newUserFolder = folderTujuanRoot.createFolder(namaUser);
+        }
+        
+        totalFolderUser++;
+
+        // Copy seluruh file PDF dengan logika REPLACE
+        const files = sourceBulanFolder.getFiles();
+        while (files.hasNext()) {
+          const sourceFile = files.next();
+          const namaFile = sourceFile.getName();
+
+          // Cek apakah file dengan nama yang sama persis sudah ada
+          const existingFiles = newUserFolder.getFilesByName(namaFile);
+          
+          // Jika ada, hapus file lama tersebut (masukkan ke tong sampah Drive)
+          while (existingFiles.hasNext()) {
+             existingFiles.next().setTrashed(true);
+          }
+
+          // Setelah file lama bersih, salin (copy) file baru ke folder tersebut
+          sourceFile.makeCopy(namaFile, newUserFolder);
+          totalFileDicopy++;
+        }
+      }
+    }
+
+    return { 
+      status: true, 
+      pesan: `Berhasil! ${totalFileDicopy} file (replace) dipindahkan ke dalam ${totalFolderUser} folder pengguna.` 
+    };
+
+  } catch (error) {
+    return { 
+      status: false, 
+      pesan: `Terjadi kesalahan: ${error.message}` 
+    };
+  }
 }
